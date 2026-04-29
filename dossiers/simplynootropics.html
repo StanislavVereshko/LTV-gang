@@ -59,13 +59,57 @@
     font-size: 16px;
     color: var(--white);
   }
+  .nav-status-wrap { position: relative; }
   .nav-status {
     font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border: 1px solid var(--accent);
     color: var(--accent);
     border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
   }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 200;
+    flex-direction: column;
+  }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option {
+    padding: 0.65rem 1rem;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gray);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="researching"] { }
+  .status-option[data-status="testing"]:hover,
+  .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover,
+  .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover,
+  .status-option[data-status="pass"].active { color: var(--bad); }
 
   /* HERO */
   .hero {
@@ -577,7 +621,18 @@
 <nav>
   <a href="/dossiers" class="nav-back">всі дозьє</a>
   <div class="nav-title">Simply Nootropics</div>
-  <div class="nav-status">Researching</div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="simplynootropics">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
 </nav>
 
 <section class="hero">
@@ -969,9 +1024,45 @@
 
 <footer>
   <span>LTV Gang · Dossier · Simply Nootropics</span>
-  <span>Status: Researching</span>
+  <span id="footerStatus">Status: Researching</span>
   <span>Updated: 2026-04-28</span>
 </footer>
+
+<script>
+(() => {
+  const colors = {
+    researching: 'var(--accent)',
+    testing:     'var(--warn)',
+    win:         'var(--good)',
+    pass:        'var(--bad)',
+  };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const opts   = document.querySelectorAll('.status-option');
+  const key    = 'dossier-status-' + wrap.dataset.dossier;
+
+  function setStatus(val) {
+    const c = colors[val] || colors.researching;
+    btn.style.color = c;
+    btn.style.borderColor = c;
+    label.textContent = labels[val] || val;
+    footer.textContent = 'Status: ' + labels[val];
+    opts.forEach(o => o.classList.toggle('active', o.dataset.status === val));
+    localStorage.setItem(key, val);
+  }
+
+  const saved = localStorage.getItem(key);
+  if (saved) setStatus(saved);
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  opts.forEach(o => o.addEventListener('click', () => { setStatus(o.dataset.status); wrap.classList.remove('open'); }));
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+})();
+</script>
 
 </body>
 </html>
