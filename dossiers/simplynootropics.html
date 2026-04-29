@@ -120,10 +120,33 @@
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: 4rem;
-    align-items: center;
+    align-items: start;
   }
   @media (max-width: 800px) {
     .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .hero-product-desc {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .hero-product-desc-label {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.65rem;
+  }
+  .hero-product-desc p {
+    font-size: 13px;
+    color: rgba(245,242,236,0.75);
+    line-height: 1.7;
   }
   .hero-grid {
     position: absolute; inset: 0;
@@ -686,16 +709,20 @@
       </div>
     </div>
   </div>
-  <div class="hero-image">
-    <img src="https://simplynootropics.com/cdn/shop/files/2_88684288-6933-4069-8501-7545d838c6a9.png?v=1734527150"
-         alt="Simply Nootropics — NMN Powder"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-    <div class="hero-image-empty" style="display:none">
-      Фото недоступне
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://simplynootropics.com/cdn/shop/files/2_88684288-6933-4069-8501-7545d838c6a9.png?v=1734527150"
+           alt="Simply Nootropics — NMN Powder"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none">Фото недоступне</div>
+      <div class="hero-image-label">
+        <strong>Ageless NMN Powder</strong>
+        <span>Hero product</span>
+      </div>
     </div>
-    <div class="hero-image-label">
-      <strong>Ageless NMN Powder</strong>
-      <span>Hero product</span>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Що це таке</div>
+      <p>З віком організм виробляє все менше NAD+ — молекули яка дає клітинам енергію і тримає їх в нормі. NMN це прекурсор: пʼєш порошок, він конвертується в NAD+ прямо всередині клітин. Ефект — менше втоми, краще відновлення, відчуття що тілу років на 5 менше. По суті антивіковий апгрейд зсередини, не зовні.</p>
     </div>
   </div>
 </section>
