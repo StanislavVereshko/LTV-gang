@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTV Gang — Бізнес-план</title>
+<meta name="description" content="LTV Gang — бізнес-план який не мав би існувати. Стас + Паша і Ко. 2025.">
+<meta property="og:title" content="LTV Gang — Бізнес-план">
+<meta property="og:description" content="Досвід + гроші + команда. Єдине що залишилось — знайти оффер і полетіти.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger + SplitType + Lenis -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: auto; }
+
+  html.lenis,
+  html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  .lenis.lenis-scrolling iframe { pointer-events: none; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    body { cursor: auto; }
+    .cursor-dot, .cursor-ring { display: none; }
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor-dot, .cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+  .cursor-ring.is-hover {
+    width: 64px; height: 64px;
+    background: rgba(200,255,0,0.08);
+  }
+  .cursor-ring.is-text {
+    width: 4px; height: 28px;
+    border-radius: 2px;
+    background: var(--accent);
+    border: none;
+  }
+
+  /* PRELOADER */
+  .preloader {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .preloader-text {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 24px;
+    color: var(--accent);
+    overflow: hidden;
+  }
+  .preloader-bar {
+    width: 200px;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    overflow: hidden;
+  }
+  .preloader-bar-inner {
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+  }
+  .preloader-count {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.15em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+    animation: noiseShift 8s steps(8) infinite;
+  }
+  @keyframes noiseShift {
+    0%   { transform: translate(0,0); }
+    20%  { transform: translate(-2%, 1%); }
+    40%  { transform: translate(1%, -2%); }
+    60%  { transform: translate(-1%, 2%); }
+    80%  { transform: translate(2%, 1%); }
+    100% { transform: translate(0,0); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.4s cubic-bezier(.7,0,.2,1);
+    will-change: transform;
+  }
+  nav.nav-hidden { transform: translateY(-110%); }
+
+  .nav-logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: var(--white);
+  }
+  .nav-logo em { color: var(--accent); font-style: italic; }
+
+  .nav-links {
+    display: flex;
+    gap: 1.75rem;
+  }
+  .nav-link {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--accent); }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  .nav-tag {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .nav-tag .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    padding-top: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 20% 80%, rgba(200,255,0,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(200,255,0,0.02) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* mouse-following light */
+  .hero-spot {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,255,0,0.07) 0%, rgba(200,255,0,0) 60%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    will-change: left, top;
+    transition: opacity 0.4s;
+    opacity: 0;
+  }
+  .hero:hover .hero-spot { opacity: 1; }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .hero-number {
+    font-size: clamp(120px, 20vw, 220px);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    top: 50%;
+    right: -2rem;
+    transform: translateY(-50%);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(56px, 10vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+
+  /* SplitType char wrapper */
+  .reveal-char-wrap {
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1;
+    vertical-align: top;
+  }
+  .reveal-char {
+    display: inline-block;
+    transform: translateY(110%);
+    will-change: transform;
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--gray);
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+
+  .hero-intro {
+    max-width: 520px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(245,242,236,0.75);
+    margin-bottom: 3rem;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hero-meta-label {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .hero-meta-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .hero-meta-value .accent { color: var(--accent); }
+
+  .hero-scroll {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gray);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    animation: scrollSweep 2s ease-in-out infinite;
+  }
+  @keyframes scrollSweep {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* SECTIONS */
+  .section {
+    padding: 5rem 2rem;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+    gap: 2rem;
+  }
+
+  .section-num {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  .section-body { max-width: 600px; }
+  .section-body p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245,242,236,0.7);
+    margin-bottom: 1rem;
+  }
+  .section-body p:last-child { margin-bottom: 0; }
+
+  /* MODEL STEPS */
+  .model-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 3rem;
+  }
+  @media (max-width: 768px) { .model-grid { grid-template-columns: 1fr; } }
+
+  .model-step {
+    background: var(--black);
+    padding: 1.5rem 1.25rem;
+    position: relative;
+    transition: background 0.25s ease;
+    overflow: hidden;
+  }
+  .model-step::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 1px;
+    background: var(--accent);
+    transition: left 0.6s cubic-bezier(.7,0,.2,1);
+  }
+  .model-step:hover { background: rgba(200,255,0,0.04); }
+  .model-step:hover::before { left: 0; }
+
+  .model-step-num {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .model-step-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+  }
+
+  .model-step-desc {
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* ROLE GRID */
+  .role-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 3rem;
+  }
+  @media (max-width: 600px) { .role-split { grid-template-columns: 1fr; } }
+
+  .role-col {
+    background: var(--black);
+    padding: 2rem;
+    transition: background 0.3s;
+  }
+  .role-col:hover { background: rgba(200,255,0,0.02); }
+
+  .role-col-title {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .role-col ul { list-style: none; }
+  .role-col ul li {
+    font-size: 13px;
+    color: rgba(245,242,236,0.65);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.2s, transform 0.3s;
+  }
+  .role-col ul li:last-child { border-bottom: none; }
+  .role-col ul li:hover { color: var(--white); transform: translateX(4px); }
+  .role-col ul li::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+  .role-col ul li:hover::before { transform: scale(1.6); }
+
+  /* BUDGET TABLE */
+  .budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+  }
+  .budget-table tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .budget-table tr:last-child { border-bottom: none; }
+  .budget-table tr:hover td { background: rgba(200,255,0,0.02); }
+
+  .budget-table td {
+    padding: 1.25rem 1.5rem;
+    font-size: 13px;
+    vertical-align: top;
+  }
+  .budget-table .td-label {
+    color: var(--white);
+    font-weight: 500;
+    width: 35%;
+  }
+  .budget-table .td-note {
+    color: var(--gray);
+    width: 45%;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .budget-table .td-amount {
+    color: var(--accent);
+    text-align: right;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+  .budget-table tr.total td {
+    background: rgba(200,255,0,0.04);
+    border-top: 1px solid rgba(200,255,0,0.2);
+  }
+  .budget-table tr.total .td-label { color: var(--accent); }
+
+  /* CONDITIONS */
+  .conditions {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .condition {
+    background: var(--black);
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (max-width: 700px) { .condition { grid-template-columns: 1fr; gap: 0.75rem; } }
+  .condition:hover { background: rgba(200,255,0,0.025); }
+  .condition::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.4s ease;
+  }
+  .condition:hover::after { transform: scaleY(1); }
+
+  .condition-phase {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-top: 3px;
+  }
+  .condition-main {
+    font-family: 'Instrument Serif', serif;
+    font-size: 20px;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+  .condition-detail {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+  .condition-badge {
+    font-size: 24px;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* TESTING */
+  .test-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+  @media (max-width: 700px) { .test-layout { grid-template-columns: 1fr; } }
+
+  .test-col-title {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  /* TICKER */
+  .ticker {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 0;
+    margin: 2rem 0 0;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 3rem;
+    animation: ticker 28s linear infinite;
+    width: max-content;
+  }
+  .ticker-item {
+    font-size: 12px;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .ticker-item:hover { color: var(--white); }
+  .ticker-item span { color: var(--accent); margin-right: 0.5rem; }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 5rem 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .footer-text {
+    font-size: 16px;
+    color: rgba(245,242,236,0.7);
+    line-height: 1.7;
+    max-width: 480px;
+  }
+  .footer-cta-wrap {
+    perspective: 600px;
+  }
+  .footer-cta {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-style: italic;
+    color: var(--accent);
+    white-space: nowrap;
+    display: inline-block;
+    cursor: none;
+    will-change: transform;
+    text-decoration: none;
+  }
+  .footer-cta .arrow {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(.7,0,.2,1);
+  }
+  .footer-cta:hover .arrow { transform: translate(8px, -8px); }
+
+  .footer-meta {
+    width: 100%;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* utility */
+  .reveal-line { overflow: hidden; }
+  .reveal-line > * { display: block; will-change: transform; }
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <div class="preloader-text"><span id="preText">LTV Gang</span></div>
+  <div class="preloader-bar"><div class="preloader-bar-inner" id="preBar"></div></div>
+  <div class="preloader-count" id="preCount">000</div>
+</div>
+
+<nav id="nav">
+  <div class="nav-logo">LTV <em>Gang</em></div>
+  <div class="nav-links">
+    <a href="#model" class="nav-link" data-cursor="hover">Ідея</a>
+    <a href="#role" class="nav-link" data-cursor="hover">Команда</a>
+    <a href="#testing" class="nav-link" data-cursor="hover">Стратегія</a>
+    <a href="#budget" class="nav-link" data-cursor="hover">Бюджет</a>
+    <a href="#conditions" class="nav-link" data-cursor="hover">Умови</a>
+  </div>
+  <div class="nav-tag"><span class="dot"></span>Конфіденційно · 2025</div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-spot" id="heroSpot"></div>
+  <div class="hero-number" id="heroNumber" data-counter="2"><span id="heroCount">$0M</span></div>
+
+  <div class="hero-eyebrow" data-fade>Стас + Паша і Ко</div>
+  <h1 class="hero-title" data-split>LTV<br><em>Gang</em></h1>
+  <p class="hero-sub" data-fade>бізнес-план який не мав би існувати — бо все й так очевидно</p>
+  <p class="hero-intro" data-fade>Досвід + гроші + команда. Єдине що залишилось — знайти оффер і полетіти. Ось як я це бачу і що пропоную.</p>
+
+  <div class="hero-meta" data-fade>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Досвід</span>
+      <span class="hero-meta-value"><span class="accent">7</span> років</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Оборот</span>
+      <span class="hero-meta-value"><span class="accent">$2M</span>+</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Канал</span>
+      <span class="hero-meta-value">Meta Ads</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Поділ</span>
+      <span class="hero-meta-value"><span class="accent">50</span>/50</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll" data-fade>
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item"><span>—</span> Meta Ads</div>
+    <div class="ticker-item"><span>—</span> Tier-1 Markets</div>
+    <div class="ticker-item"><span>—</span> Shopify</div>
+    <div class="ticker-item"><span>—</span> LTV Growth</div>
+    <div class="ticker-item"><span>—</span> 7 років досвіду</div>
+    <div class="ticker-item"><span>—</span> $2M+ оборот</div>
+    <div class="ticker-item"><span>—</span> 50/50 після окупності</div>
+    <div class="ticker-item"><span>—</span> Stripe + PayPal HK</div>
+    <div class="ticker-item"><span>—</span> Meta Ads</div>
+    <div class="ticker-item"><span>—</span> Tier-1 Markets</div>
+    <div class="ticker-item"><span>—</span> Shopify</div>
+    <div class="ticker-item"><span>—</span> LTV Growth</div>
+    <div class="ticker-item"><span>—</span> 7 років досвіду</div>
+    <div class="ticker-item"><span>—</span> $2M+ оборот</div>
+    <div class="ticker-item"><span>—</span> 50/50 після окупності</div>
+    <div class="ticker-item"><span>—</span> Stripe + PayPal HK</div>
+  </div>
+</div>
+
+<section class="section" id="model" data-section>
+  <div class="section-header">
+    <div>
+      <div class="section-num" data-fade>01 — Ідея</div>
+      <h2 class="section-title" data-split-words>Про що це<br><em>взагалі</em></h2>
+    </div>
+  </div>
+  <div class="section-body">
+    <p data-fade>Не черговий магазин з рандомним шлаком і надією що щось стрільне. Ціль — знайти один сильний продукт, побудувати навколо нього бренд і зробити так щоб він друкував гроші сам по собі. А нам залишалось тільки його розвивати.</p>
+    <p data-fade>Знаходимо оффер який продається в плюс з першої покупки — нехай невеликий, 10–15% маржі, але в плюс. Паралельно даємо клієнту вибір — купити раз або підписатись зі знижкою. Наскільки агресивно пушити підписку з першого дня — вирішуємо разом. Але спойлер: швидше за все будемо пушити.</p>
+    <p data-fade>Реклама — тільки Meta. Facebook і Instagram. Без експериментів з платформами на старті.</p>
+  </div>
+  <div class="model-grid" data-stagger>
+    <div class="model-step" data-cursor="hover">
+      <div class="model-step-num">01</div>
+      <div class="model-step-title">Acquisition</div>
+      <div class="model-step-desc">Meta Ads, холодна аудиторія Tier-1</div>
+    </div>
+    <div class="model-step" data-cursor="hover">
+      <div class="model-step-num">02</div>
+      <div class="model-step-title">Conversion</div>
+      <div class="model-step-desc">Shopify лендінг під першу покупку</div>
+    </div>
+    <div class="model-step" data-cursor="hover">
+      <div class="model-step-num">03</div>
+      <div class="model-step-title">Monetization</div>
+      <div class="model-step-desc">Одноразово або підписка — клієнт обирає</div>
+    </div>
+    <div class="model-step" data-cursor="hover">
+      <div class="model-step-num">04</div>
+      <div class="model-step-title">Retention</div>
+      <div class="model-step-desc">Email і SMS flows, робота з базою</div>
+    </div>
+    <div class="model-step" data-cursor="hover">
+      <div class="model-step-num">05</div>
+      <div class="model-step-title">LTV Growth</div>
+      <div class="model-step-desc">Підписна база стає основним двигуном</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="role" data-section>
+  <div class="section-header">
+    <div>
+      <div class="section-num" data-fade>02 — Команда</div>
+      <h2 class="section-title" data-split-words>Хто що<br><em>робить</em></h2>
+    </div>
+  </div>
+  <div class="section-body">
+    <p data-fade>Підключаю весь свій досвід і ресурси — операційка, вибір продуктів, аналіз, рішення. Паралельно хочу використовувати ваші скіли і команду по максимуму.</p>
+    <p data-fade>По суті це взаємний обмін — я приношу своє, ви своє, і разом виходить більше ніж кожен окремо. Думаю це і є головна цінність такого партнерства.</p>
+  </div>
+  <div class="role-split" data-stagger>
+    <div class="role-col">
+      <div class="role-col-title">Стас</div>
+      <ul>
+        <li>Операційне керування</li>
+        <li>Вибір і підключення офферів</li>
+        <li>Аналіз реклами і метрик</li>
+        <li>Платіжна інфраструктура (HK)</li>
+        <li>7 років досвіду, $2M+ обороту</li>
+      </ul>
+    </div>
+    <div class="role-col">
+      <div class="role-col-title">Паша і Ко</div>
+      <ul>
+        <li>Фінансування тестів</li>
+        <li>Креативна команда</li>
+        <li>Супорт і оцінка ідей</li>
+        <li>Фінансування скейлінгу</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="testing" data-section>
+  <div class="section-header">
+    <div>
+      <div class="section-num" data-fade>03 — Стратегія</div>
+      <h2 class="section-title" data-split-words>Як будемо<br><em>тестувати</em></h2>
+    </div>
+  </div>
+  <div class="test-layout">
+    <div data-fade>
+      <div class="test-col-title">Підхід</div>
+      <div class="section-body">
+        <p>Ціль тестової фази одна — знайти оффер який працює. Не просто продається, а має потенціал стати брендом.</p>
+        <p>Я підходжу до тестів консервативно і скрупульозно — довгі акуратні запуски, глибокий аналіз даних з боку Shopify і рекламного кабінету. Ваш підхід швидший і агресивніший. Симбіоз цих двох стилів дасть ідеальну стратегію.</p>
+      </div>
+    </div>
+    <div data-fade>
+      <div class="test-col-title">Темп</div>
+      <div class="section-body">
+        <p>Ціль — 3–4 тести в місяць. Обʼєктивно оцінити наперед складно: треба знайти баланс між нашими стилями і просто притертись як команді.</p>
+        <p>На старті темп буде повільнішим. По мірі того як знаходимо спільну мову — виходимо на крейсерську швидкість. Знаходимо оффер — скейлимось агресивно. Все що після — окрема розмова.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="budget" data-section>
+  <div class="section-header">
+    <div>
+      <div class="section-num" data-fade>04 — Бюджет</div>
+      <h2 class="section-title" data-split-words>Скільки це<br><em>коштує</em></h2>
+    </div>
+  </div>
+  <div class="section-body">
+    <p data-fade>Я порахував приблизно скільки потрібно на один тест. Це мої оцінки базовані на ринкових даних і власному досвіді — не точний кошторис, але реалістична картина.</p>
+  </div>
+  <table class="budget-table" data-stagger>
+    <tbody>
+      <tr>
+        <td class="td-label">Shopify розробка</td>
+        <td class="td-note">Один раз на старті, для всіх тестів. Візуал і генерація топових зображень сильно впливають на ціну — якщо закриємо силами вашої команди, зекономимо нормально.</td>
+        <td class="td-amount">$800–1,000</td>
+      </tr>
+      <tr>
+        <td class="td-label">Рекламний бюджет · 1 тест</td>
+        <td class="td-note">Стартуємо з $500–800. Якщо є потенціал — збільшуємо до $1,200–1,500 щоб підтвердити гіпотезу. Якщо повна шляпа — закриваємо і йдемо далі.</td>
+        <td class="td-amount">$500–1,500</td>
+      </tr>
+      <tr>
+        <td class="td-label">Додатки Shopify</td>
+        <td class="td-note">Підписка, email flows, upsell. Щомісячні витрати, некритична сума.</td>
+        <td class="td-amount">~$150/міс</td>
+      </tr>
+      <tr>
+        <td class="td-label">Креативи</td>
+        <td class="td-note">Ваша сторона. Вартість участі команди — окрема розмова.</td>
+        <td class="td-amount">—</td>
+      </tr>
+      <tr class="total">
+        <td class="td-label">Орієнтовно · 10 тестів</td>
+        <td class="td-note">Залежить від кількості тестів що підуть на другий етап. Розробка сайту зверху.</td>
+        <td class="td-amount">$6,800–16,000</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="section" id="conditions" data-section>
+  <div class="section-header">
+    <div>
+      <div class="section-num" data-fade>05 — Умови</div>
+      <h2 class="section-title" data-split-words>Як ділимо<br><em>профіт</em></h2>
+    </div>
+  </div>
+  <div class="section-body">
+    <p data-fade>Поки не відбили вкладені гроші — я на ставці. Весь профіт іде на покриття інвестиції. Що рахується — рекламний бюджет і закуп товару. Все інше ваша сторона.</p>
+  </div>
+  <div class="conditions" data-stagger>
+    <div class="condition" data-cursor="hover">
+      <div class="condition-phase">Фаза 1 · до окупності</div>
+      <div>
+        <div class="condition-main">Ставка $2,000/міс · 0% від профіту</div>
+        <div class="condition-detail">Весь профіт іде на покриття інвестиції. Моя ставка не входить в суму яку треба відбити. Мені вигідно щоб ми якомога швидше пройшли цей етап.</div>
+      </div>
+      <div class="condition-badge">$2K</div>
+    </div>
+    <div class="condition" data-cursor="hover">
+      <div class="condition-phase">Фаза 2 · після окупності</div>
+      <div>
+        <div class="condition-main">50 на 50 · назавжди</div>
+        <div class="condition-detail">Як тільки інвестиція відбита — ділимо профіт порівну. Гроші на скейл повертаються з обороту першочергово але умови поділу не чіпають.</div>
+      </div>
+      <div class="condition-badge">50/50</div>
+    </div>
+    <div class="condition" data-cursor="hover">
+      <div class="condition-phase">Платіжки</div>
+      <div>
+        <div class="condition-main">Stripe + PayPal · HK компанія</div>
+        <div class="condition-detail">Мій актив і мій ризик. Всі питання повʼязані з chargebacks і фродом покриваються з бюджету проекту. Деталі обговоримо коли будуть обороти.</div>
+      </div>
+      <div class="condition-badge">HK</div>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <p class="footer-text" data-fade>Узгоджуємо умови, я починаю ресерч продуктів. Перші тести запускаємо як тільки є готовий сайт і креативи. Знаходимо оффер — летимо.</p>
+  <div class="footer-cta-wrap">
+    <a href="#hero" class="footer-cta" id="footerCta" data-cursor="hover">LTV Gang <span class="arrow">↗</span></a>
+  </div>
+  <div class="footer-meta">
+    <span>© 2025 · LTV Gang</span>
+    <span>Конфіденційно</span>
+    <span id="clock">—</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // ---------- helpers ----------
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  // ---------- preloader ----------
+  const preBar = document.getElementById('preBar');
+  const preCount = document.getElementById('preCount');
+  let p = 0;
+  const tick = () => {
+    p = Math.min(100, p + Math.random() * 14 + 4);
+    preBar.style.width = p + '%';
+    preCount.textContent = String(Math.floor(p)).padStart(3, '0');
+    if (p < 100) setTimeout(tick, 90);
+    else setTimeout(hidePreloader, 250);
+  };
+  setTimeout(tick, 180);
+
+  function hidePreloader() {
+    const pre = document.getElementById('preloader');
+    gsap.to(pre, {
+      yPercent: -101,
+      duration: 1,
+      ease: 'expo.inOut',
+      onComplete: () => { pre.style.display = 'none'; startIntro(); }
+    });
+  }
+
+  // ---------- custom cursor ----------
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let rx = mx, ry = my;
+
+  if (!isTouch) {
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    });
+    const animateRing = () => {
+      rx = lerp(rx, mx, 0.18);
+      ry = lerp(ry, my, 0.18);
+      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+      requestAnimationFrame(animateRing);
+    };
+    animateRing();
+
+    document.querySelectorAll('[data-cursor="hover"], a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('is-hover'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('is-hover'));
+    });
+  }
+
+  // ---------- Lenis smooth scroll ----------
+  const lenis = new Lenis({
+    duration: 1.15,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+    smoothTouch: false,
+  });
+  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  // anchor links via Lenis
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      const target = document.querySelector(id);
+      if (target) {
+        e.preventDefault();
+        lenis.scrollTo(target, { offset: -40, duration: 1.4 });
+      }
+    });
+  });
+
+  // ---------- nav hide on scroll ----------
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  lenis.on('scroll', ({ scroll }) => {
+    if (scroll > lastScroll && scroll > 100) nav.classList.add('nav-hidden');
+    else nav.classList.remove('nav-hidden');
+    lastScroll = scroll;
+  });
+
+  // ---------- hero spot follows mouse ----------
+  const hero = document.getElementById('hero');
+  const spot = document.getElementById('heroSpot');
+  if (!isTouch) {
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      spot.style.left = (e.clientX - r.left) + 'px';
+      spot.style.top  = (e.clientY - r.top)  + 'px';
+    });
+  }
+
+  // ---------- intro animation ----------
+  function startIntro() {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // split hero title into chars
+    const heroTitle = document.querySelector('[data-split]');
+    if (heroTitle && window.SplitType) {
+      const split = new SplitType(heroTitle, { types: 'chars', tagName: 'span' });
+      split.chars.forEach(c => {
+        const wrap = document.createElement('span');
+        wrap.className = 'reveal-char-wrap';
+        c.classList.add('reveal-char');
+        c.parentNode.insertBefore(wrap, c);
+        wrap.appendChild(c);
+      });
+
+      gsap.to(heroTitle.querySelectorAll('.reveal-char'), {
+        y: 0,
+        translateY: 0,
+        duration: 1.1,
+        ease: 'expo.out',
+        stagger: 0.04,
+        delay: 0.1
+      });
+    }
+
+    // hero fade items (eyebrow, sub, intro, meta, scroll)
+    gsap.from(document.querySelectorAll('.hero [data-fade]'), {
+      y: 24, opacity: 0,
+      duration: 1, ease: 'expo.out',
+      stagger: 0.1, delay: 0.45,
+    });
+
+    // counter $0M -> $2M
+    const heroCount = document.getElementById('heroCount');
+    const counter = { v: 0 };
+    gsap.to(counter, {
+      v: 2,
+      duration: 1.6,
+      ease: 'expo.out',
+      delay: 0.6,
+      onUpdate: () => { heroCount.textContent = '$' + counter.v.toFixed(1) + 'M'; },
+      onComplete: () => { heroCount.textContent = '$2M'; }
+    });
+
+    // hero number parallax on scroll
+    gsap.to('#heroNumber', {
+      yPercent: 30,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+    });
+
+    // ---------- section reveals ----------
+    document.querySelectorAll('[data-section] [data-fade]').forEach(el => {
+      gsap.from(el, {
+        y: 30, opacity: 0,
+        duration: 1, ease: 'expo.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+      });
+    });
+
+    // section titles word-by-word
+    document.querySelectorAll('[data-split-words]').forEach(el => {
+      const split = new SplitType(el, { types: 'words', tagName: 'span' });
+      split.words.forEach(w => {
+        const wrap = document.createElement('span');
+        wrap.style.display = 'inline-block';
+        wrap.style.overflow = 'hidden';
+        wrap.style.verticalAlign = 'top';
+        w.style.display = 'inline-block';
+        w.style.willChange = 'transform';
+        w.parentNode.insertBefore(wrap, w);
+        wrap.appendChild(w);
+      });
+      gsap.from(split.words, {
+        yPercent: 110,
+        duration: 1, ease: 'expo.out',
+        stagger: 0.05,
+        scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+      });
+    });
+
+    // staggered reveals on grids and tables
+    document.querySelectorAll('[data-stagger]').forEach(grid => {
+      const items = grid.matches('table') ? grid.querySelectorAll('tbody tr') : grid.children;
+      gsap.from(items, {
+        y: 30, opacity: 0,
+        duration: 0.9, ease: 'expo.out',
+        stagger: 0.08,
+        scrollTrigger: { trigger: grid, start: 'top 85%', once: true }
+      });
+    });
+
+    // 3D tilt on conditions
+    if (!isTouch) {
+      document.querySelectorAll('.condition').forEach(card => {
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width  - 0.5;
+          const py = (e.clientY - r.top)  / r.height - 0.5;
+          gsap.to(card, {
+            rotateX: -py * 4,
+            rotateY:  px * 4,
+            transformPerspective: 800,
+            duration: 0.4, ease: 'power2.out'
+          });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'expo.out' });
+        });
+      });
+    }
+
+    // magnetic CTA in footer
+    if (!isTouch) {
+      const cta = document.getElementById('footerCta');
+      const ctaWrap = cta.parentElement;
+      ctaWrap.addEventListener('mousemove', e => {
+        const r = ctaWrap.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top  + r.height / 2);
+        gsap.to(cta, { x: dx * 0.25, y: dy * 0.35, duration: 0.5, ease: 'power3.out' });
+      });
+      ctaWrap.addEventListener('mouseleave', () => {
+        gsap.to(cta, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1,0.4)' });
+      });
+    }
+  }
+
+  // ---------- footer clock (Warsaw time) ----------
+  const clock = document.getElementById('clock');
+  function updateClock() {
+    const now = new Date();
+    const fmt = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Warsaw',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    });
+    clock.textContent = 'WAW · ' + fmt.format(now);
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+})();
+</script>
+</body>
+</html>

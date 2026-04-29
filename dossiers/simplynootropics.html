@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simply Nootropics — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-back {
+    font-size: 11px; color: var(--gray);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--white);
+  }
+  .nav-status {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 4rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 24px; height: 1px; background: var(--accent);
+  }
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 8vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag {
+    max-width: 540px;
+    font-size: 16px;
+    color: rgba(245,242,236,0.75);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    max-width: 540px;
+  }
+  .hero-meta-item {
+    background: var(--black);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hero-meta-label {
+    font-size: 10px; color: var(--gray);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .hero-meta-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--white);
+  }
+  .hero-meta-value .accent { color: var(--accent); }
+
+  .hero-image {
+    background: linear-gradient(135deg, #cfdef5 0%, #a8c4e8 100%);
+    aspect-ratio: 4/5;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+  }
+  .hero-image-empty {
+    text-align: center;
+    color: rgba(10,10,10,0.5);
+    padding: 2rem;
+    font-size: 13px;
+  }
+  .hero-image-empty code {
+    background: rgba(10,10,10,0.1);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 11px;
+    color: rgba(10,10,10,0.7);
+  }
+
+  /* SECTION */
+  section.s {
+    padding: 5rem 2rem;
+    border-top: 1px solid var(--border);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .s-num {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.1em; margin-bottom: 0.5rem;
+  }
+  .s-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 2.5rem;
+  }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(245,242,236,0.75);
+    margin-bottom: 1rem;
+  }
+
+  /* FUNNEL DECODE */
+  .funnel {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+  .funnel-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  /* OFFER GRID */
+  .offer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell {
+    background: var(--black);
+    padding: 1.5rem;
+  }
+  .offer-cell-label {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .offer-cell-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 24px;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+  }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 0.5rem;
+  }
+
+  /* TIERED LIST */
+  .tier-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell {
+    background: var(--black);
+    padding: 1.75rem;
+  }
+  .tier-cell h4 {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    margin-bottom: 0.5rem;
+  }
+  .tier-cell-tag {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .tier-cell p {
+    font-size: 13px;
+    color: rgba(245,242,236,0.7);
+    line-height: 1.7;
+  }
+
+  /* ANGLES */
+  .angle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle {
+    background: var(--black);
+    padding: 1.75rem;
+    transition: background 0.25s;
+  }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+  .angle h4 {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    margin-bottom: 0.75rem;
+  }
+  .angle-pain {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  .angle-hook {
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.6;
+    padding: 1rem;
+    background: rgba(200,255,0,0.04);
+    border-left: 2px solid var(--accent);
+    margin-top: 1rem;
+  }
+  .angle-hook-label {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  /* CREATIVES */
+  .creatives {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .creative {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+    padding: 1.5rem;
+    border-radius: 3px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 800px) {
+    .creative { grid-template-columns: 1fr; }
+  }
+  .creative-media {
+    background: linear-gradient(135deg, #cfdef5 0%, #a8c4e8 100%);
+    border-radius: 3px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .creative-media img,
+  .creative-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .creative-media-empty {
+    text-align: center;
+    padding: 1rem;
+    font-size: 11px;
+    color: rgba(10,10,10,0.55);
+    line-height: 1.5;
+  }
+  .creative-media-empty code {
+    background: rgba(10,10,10,0.1);
+    padding: 2px 5px;
+    border-radius: 2px;
+    color: rgba(10,10,10,0.75);
+    font-size: 10px;
+  }
+  .creative-meta {
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .creative-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    color: var(--gray);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    font-style: italic;
+    line-height: 1.2;
+  }
+  .creative-block {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .creative-block-label {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .creative-block-text {
+    font-size: 13px;
+    color: rgba(245,242,236,0.8);
+    line-height: 1.65;
+  }
+  .creative-quote {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--white);
+    padding: 0.75rem 1rem;
+    background: rgba(200,255,0,0.04);
+    border-left: 2px solid var(--accent);
+    margin-top: 0.5rem;
+  }
+
+  /* PROS / CONS */
+  .pc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col {
+    background: var(--black);
+    padding: 2rem;
+  }
+  .pc-col-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+  }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: rgba(245,242,236,0.75);
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+  }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before {
+    content: ''; width: 4px; height: 4px;
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  /* VERDICT */
+  .verdict {
+    background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%);
+    border: 1px solid rgba(200,255,0,0.2);
+    padding: 3rem 2rem;
+    border-radius: 3px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; }
+  }
+  .verdict-badge {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .verdict-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .verdict-text {
+    font-size: 15px;
+    color: rgba(245,242,236,0.8);
+    line-height: 1.75;
+  }
+  .verdict-text p { margin-bottom: 0.75rem; }
+
+  /* NOTES */
+  .notes-box {
+    border: 1px dashed var(--border);
+    padding: 1.5rem;
+    border-radius: 3px;
+    color: var(--gray);
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.7;
+    margin-top: 1rem;
+  }
+
+  /* SOURCES */
+  .sources {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .sources h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    margin-bottom: 1rem;
+    color: var(--gray);
+  }
+  .sources ul { list-style: none; }
+  .sources li {
+    padding: 0.4rem 0;
+    font-size: 12px;
+  }
+  .sources a {
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Simply Nootropics</div>
+  <div class="nav-status">Researching</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Longevity / Anti-aging supplements</div>
+    <h1>Simply<br><em>Nootropics</em></h1>
+    <p class="hero-tag">NZ-бренд преміум longevity-добавок. Hero — NMN powder ($139.20 за 3 міс підписку), компаньон — TMG powder ($70 value, віддається free з кожним NMN). Pharmaceutical-grade, ≥99% pure, 3rd-party tested. Класичний LTV-бізнес: висока маржа + підписка + bundle hook.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Sub price</span>
+        <span class="hero-meta-value"><span class="accent">$139</span>/3 міс</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">AOV diapazon</span>
+        <span class="hero-meta-value"><span class="accent">$139</span>–$384</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Per serving</span>
+        <span class="hero-meta-value">≈$0.70</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">HQ</span>
+        <span class="hero-meta-value">Auckland, NZ</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="_assets/simplynootropics/screenshots/01.jpg" alt="Simply Nootropics hero" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="hero-image-empty" style="display:none">
+      Закинь скрін у<br><code>_assets/simplynootropics/screenshots/01.jpg</code><br>і фото підтягнеться тут
+    </div>
+  </div>
+</section>
+
+<!-- 01 — Funnel intelligence -->
+<section class="s">
+  <div class="s-num">01 — Funnel intelligence</div>
+  <h2 class="s-title">Що видно з <em>UTM-розшифровки</em></h2>
+  <div class="s-body">
+    <p>Лінк на продукт прийшов з utm-параметрами, які розкривають внутрішній naming-convention їх ad-ops. Це дорогий сигнал — означає що це не один-фрілансер запускає Meta-ads, а команда з трекінговим стандартом.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row"><span class="funnel-key">Campaign</span><span class="funnel-val">#92 ASIA NEW/ENGAGED · Broad (Adv+) · All Placements · Purchase · NMN (Max Volume)</span></div>
+    <div class="funnel-row"><span class="funnel-key">Ad set</span><span class="funnel-val">ASIA — Broad (Adv) (excl All Existing + Email) — All Attribution — excl AN</span></div>
+    <div class="funnel-row"><span class="funnel-key">Creator</span><span class="funnel-val">Natasha (UGC creator)</span></div>
+    <div class="funnel-row"><span class="funnel-key">Asset</span><span class="funnel-val">IMG486 · Static graphic · Single · indoor B/G — 100% pure</span></div>
+    <div class="funnel-row"><span class="funnel-key">Structure</span><span class="funnel-val">KM: Problem/Solution · CO: USP · Hook: "turn back the clock"</span></div>
+    <div class="funnel-row"><span class="funnel-key">CTA</span><span class="funnel-val">Shop Now → Product Specific URL</span></div>
+    <div class="funnel-row"><span class="funnel-key">Targeting</span><span class="funnel-val">Meta Advantage+ (broad), мульти-регіон: US/CA + ROW + ASIA</span></div>
+  </div>
+  <div class="s-body">
+    <p><strong>Висновки:</strong> вони стандартизують креативи по схемі hook → problem → solution → USP → CTA. Тестують Advantage+ broad замість manual targeting (типово для брендів з налагодженим pixel-сигналом). Регіональна сегментація на рівні campaign — означає що CPM різні і вони це відстежують. Креативи названі за концепцією + виконавцем + типом — UGC pipeline існує і масштабується.</p>
+    <p>Funnel простий: ad → product page (без advertorial-проміжку), price-anchor через subscription tiers (3/6/9 міс), upsell через bundle (free TMG).</p>
+  </div>
+</section>
+
+<!-- 02 — Offer / USP -->
+<section class="s">
+  <div class="s-num">02 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Ageless <span class="accent">NMN</span> Powder</div>
+      <div class="offer-cell-note">100g тин, ≥99% pure NMN, 3-month supply at 1g/day</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Bundle hook</div>
+      <div class="offer-cell-value"><span class="accent">Free TMG</span> $70</div>
+      <div class="offer-cell-note">TMG Longevity powder як free gift з кожним NMN — limited time</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing tiers</div>
+      <div class="offer-cell-value">$139 / $272 / $384</div>
+      <div class="offer-cell-note">3 / 6 / 9 month subscriptions, дисконт $20–$96 vs one-time</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Trust signals</div>
+      <div class="offer-cell-value">3rd-party <span class="accent">tested</span></div>
+      <div class="offer-cell-note">Pharmaceutical-grade, made in New Zealand, heavy metals + potency tests</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">PR placement</div>
+      <div class="offer-cell-value">Women's Weekly</div>
+      <div class="offer-cell-note">AU media placement — використовують для editorial-style ads</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Subscription lock</div>
+      <div class="offer-cell-value">Auto-reorder</div>
+      <div class="offer-cell-note">Subscribers ремовляться лише через support — лоу-friction LTV</div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Audience -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Wellness-curious women, 38–55</h4>
+      <p>Слідкують за здоровʼям, уже приймають омегу/колаген/магній. Дохід вище середнього. Не біохакери — рухає не наука а відчуття + outcomes ("почуваюсь молодше"). Конвертуються на anti-aging hook'и + UGC. Найбільший сегмент по обʼєму.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · high-value</div>
+      <h4>Biohackers / Bryan Johnson crowd, 30–55</h4>
+      <p>Чоловіки і жінки що читають Huberman, Attia, біоринг тестують. Переконані аргументами науковими — NAD+, sirtuins, mitochondrial health. Купують 6/9-міс subs, лояльні. Конверсяться на educational ads + lab references.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03</div>
+      <h4>Busy professionals, 32–48</h4>
+      <p>Не цікавляться longevity як концепцією, але хочуть енергії і мисленнєвої ясності "як в 25". Конверсяться на energy/focus angle, не на anti-aging. UGC формат "ось мій ритуал зранку" заходить.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04 · TMG angle</div>
+      <h4>Heart/liver-health concerned, 50+</h4>
+      <p>Сегмент під TMG companion product. Holistic-зацікавлені, з конкретною проблемою (печінка, тиск, вага). Можна заходити окремими creative angles на TMG, далі робити cross-sell на NMN.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Pains -->
+<section class="s">
+  <div class="s-num">04 — Болі / заперечення</div>
+  <h2 class="s-title">На що <em>давлять</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль</div>
+      <h4>Втомленість і хронічний crash</h4>
+      <p>"Прокидаюсь розбитим, до 3 дня — кави не вистачає, після 8 — нічого не хочу". NMN підвищує NAD+ → клітинна енергетика. Це найсильніший і найшвидше відчутний effect для нового користувача.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль</div>
+      <h4>Зовнішнє старіння</h4>
+      <p>Шкіра, волосся, обличчя. NAD+ продаж тут — про "клітинне відновлення" не дермато-косметика. Працює як "інсайд-аут" alternative до retinol/Ботокс.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення</div>
+      <h4>"Це шарлатанство?"</h4>
+      <p>Більшість ринку скептично настроєна щодо supplements. Контр: 3rd-party testing, NZ pharmaceutical-grade label, наукові посилання, Trustpilot social proof, Women's Weekly placement.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення</div>
+      <h4>"Дорого для щоденного прийому"</h4>
+      <p>$46/міс sub. Контр: per-serving $0.70 (дешевше кави), 90-day money-back, free TMG $70 знімає об'єкцію — "по факту платиш $69, а отримуєш $209 value".</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Sales angles -->
+<section class="s">
+  <div class="s-num">05 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Vanity / Anti-aging</div>
+      <h4>Turn back the clock</h4>
+      <p class="angle-pain">Біль: зовнішнє старіння, втрата енергії 25-річної</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        Я не була в залі 6 місяців і виглядаю краще ніж в 30. Все що я зробила — додала ось це у воду зранку.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Energy / Focus</div>
+      <h4>Куди поділась моя енергія</h4>
+      <p class="angle-pain">Біль: 3-PM crash, mental fog, вже не та</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        З 35 років я думала що це "просто життя". Поки лікар не сказав про NAD+. Через 3 тижні я працюю до 9 вечора без кави.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Science / Authority</div>
+      <h4>Чому Harvard вивчає NMN</h4>
+      <p class="angle-pain">Біль: недовіра до supplements, потреба в "real science"</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        Sinclair lab у Гарварді опублікував 47 досліджень на NAD+ за 5 років. Ось що це означає для людини якій 40+.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · Bundle / Value</div>
+      <h4>Free TMG · $70 value</h4>
+      <p class="angle-pain">Біль: ціна одна з причин відмови</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        Ми додаємо TMG безкоштовно до кожного NMN тільки до п'ятниці. Чому? Бо разом вони працюють краще ніж окремо. Pure marketing math.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A5 · Insider / FOMO</div>
+      <h4>Що приймає Bryan Johnson</h4>
+      <p class="angle-pain">Біль: бажання приєднатись до елітарного longevity-руху</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        У його протоколі 30 supplements щодня. Перший в списку — NMN. Ось чому, і ось що з ним робить кожна клітина.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A6 · Trust / Skeptic</div>
+      <h4>Я думала це маркетинг</h4>
+      <p class="angle-pain">Біль: страх "наколоти на гроші"</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Sample hook</span>
+        Я скептик. Тестую все що пробую сам, переглядаю lab reports. Ось що я знайшла в Simply Nootropics — і чому я лишилась на 6 місяцях.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 — Creatives breakdown -->
+<section class="s">
+  <div class="s-num">06 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Поки в матеріалі — 1 креатив, який дав ти. Як скинеш ще 3-4 з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/</code> — додам блоки з аналізом і фреймами.</p>
+  </div>
+
+  <div class="creatives">
+    <!-- Creative 01 -->
+    <div class="creative">
+      <div class="creative-media">
+        <img src="_assets/simplynootropics/screenshots/01.jpg" alt="Creative 01" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          <div>скрін очікується<br><br><code>screenshots/01.jpg</code></div>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag accent">Static</span>
+          <span class="tag">Bundle Hook</span>
+          <span class="tag">Limited Time</span>
+          <span class="tag">Product Shot</span>
+        </div>
+        <h3>"Free TMG powder valued at $70 with every NMN purchase"</h3>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Візуал</div>
+          <div class="creative-block-text">Світло-блакитний фон (медичний / clean wellness vibe). По центру — два preimum metal tin-и пліч-о-пліч: зелений Ageless NMN (cellular longevity / supports metabolism / daily energy) і помаранчевий TMG Longevity (heart health / liver detox / weight management). Брендовий ID — мінімалістичний "S" моноглиф.</div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Хук (примарний)</div>
+          <div class="creative-quote">Free TMG powder</div>
+          <div class="creative-block-text" style="margin-top:0.5rem">Великий темно-синій блок-pill з білим текстом. Контраст з фоном максимальний — "scroll-stop" елемент.</div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Sub-hook (вартість)</div>
+          <div class="creative-quote">valued at $70 with every NMN purchase</div>
+          <div class="creative-block-text" style="margin-top:0.5rem">Anchor на $70 — це механіка price perception. Free без числа = "ну ок". Free з $70 anchor = "ого, треба брати". Класичний AOV-trick.</div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Urgency badge</div>
+          <div class="creative-quote">for a limited time</div>
+          <div class="creative-block-text" style="margin-top:0.5rem">Окремий pill-блок знизу. Subtle — не червоний/жирний, а той же синій. Працює тонко, без AliExpress-вайбу.</div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Чому працює</div>
+          <div class="creative-block-text">
+            (1) Чистий "premium wellness" візуал — не схожий на типовий dropshipping. Викликає довіру з першої секунди.<br>
+            (2) Free + dollar value anchor — найсильніший ecom-механізм за 10 років.<br>
+            (3) Limited time без агресії — підходить wellness-аудиторії яка ненавидить hard-sell.<br>
+            (4) Two-product shot ілюструє "complete protocol" — підсвідомо більш повне рішення ніж один продукт.
+          </div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Чого не вистачає</div>
+          <div class="creative-block-text">Немає UGC/social proof, немає reviews-counter, немає демографії. Це чисто bottom-funnel ad для теплої аудиторії або retargeting. Для cold traffic ймовірно є інші креативи з problem/solution структурою.</div>
+        </div>
+
+        <div class="creative-block">
+          <div class="creative-block-label">Як адаптувати під свій бренд</div>
+          <div class="creative-block-text">Premium product photography + light coloured background + bold offer pill + dollar-value anchor + soft urgency badge. Шаблон легко переноситься на будь-який supplement / cosmetics / wellness товар. Бюджет на зйомку: $300-600 для product photo + $50-100 на дизайн.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Placeholders for creatives 2-4 -->
+    <div class="creative" style="opacity:0.5;border-style:dashed">
+      <div class="creative-media">
+        <img src="_assets/simplynootropics/screenshots/02.jpg" alt="Creative 02" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          <div>очікую<br><br><code>screenshots/02.jpg</code><br>або<br><code>creatives/02.mp4</code></div>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags"><span class="tag">Слот вільний</span></div>
+        <h3>Креатив #2 — додай файл</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Як заповнити</div>
+          <div class="creative-block-text">Закинь скрін ad card з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/02.jpg</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/02.mp4</code> — і пиши «оновити дозьє simplynootropics». Я витягну фрейми, проаналізую хук і концепцію, перепишу цей блок.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="creative" style="opacity:0.5;border-style:dashed">
+      <div class="creative-media">
+        <img src="_assets/simplynootropics/screenshots/03.jpg" alt="Creative 03" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          <div>очікую<br><br><code>screenshots/03.jpg</code><br>або<br><code>creatives/03.mp4</code></div>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags"><span class="tag">Слот вільний</span></div>
+        <h3>Креатив #3 — додай файл</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Як заповнити</div>
+          <div class="creative-block-text">Найкраще — взяти 3-4 креативи що активні в Ad Library найдовше (їх не вимикають = вони працюють). Звертай увагу на креативи з UGC-форматом, "Natasha"-серії, problem/solution структуру.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Pros / Cons -->
+<section class="s">
+  <div class="s-num">07 — Чи варто тестувати</div>
+  <h2 class="s-title">Pros vs <em>cons</em> для нашого тесту</h2>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Pros</div>
+      <ul>
+        <li>Високий AOV ($139–384) — менше тестів треба щоб окупити CAC</li>
+        <li>Subscription-first модель — це безпосередньо те що ми хочемо для LTV Gang</li>
+        <li>Bundle hook ($70 free) — перевірена механіка, легко скопіювати під свій оффер</li>
+        <li>Категорія longevity росте 20-30% YoY, не насичена new entrants</li>
+        <li>Маржа на supplements 70-85% — економіка прощає невдалі тести</li>
+        <li>Ad library наповнена — можна вчитись на чужих перевірених креативах</li>
+        <li>UGC pipeline existing (Natasha &amp; Co) — можна найняти тих самих creators через FullSend/Insense</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Cons / risks</div>
+      <ul>
+        <li><strong>FDA NMN status в US</strong> — у 2022 FDA сказала що NMN не може продаватись як supplement (NDIN issue). Шерс у US ризиковий, потрібен legal pathway або інший offer</li>
+        <li>Compliance — supplement claims тригерять Meta ad review, треба disclaimer'и</li>
+        <li>3rd-party testing — недешево ($800-2000/batch) і без нього немає trust signals</li>
+        <li>Висока конкуренція — Tru Niagen, ProHealth, DoNotAge, Renue by Science вже встановлені</li>
+        <li>Trust barrier на cold traffic — потрібно багато reviews, lab certs, possibly press</li>
+        <li>Subscription chargebacks — 5-12% типово для supplement, треба HK setup готовий</li>
+        <li>Inventory cost — pure NMN ≥99% коштує $100-200/100g оптом, потрібен MOQ закуп</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — Verdict -->
+<section class="s">
+  <div class="s-num">08 — Verdict</div>
+  <h2 class="s-title">Що з <em>цим робити</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">↗</div>
+    <div>
+      <div class="verdict-title">Не цей конкретний продукт. Але ця <em style="color:var(--accent);font-style:italic">грає-книга</em> — так.</div>
+      <div class="verdict-text">
+        <p>Лізти прямим конкурентом до Simply Nootropics в US-market з NMN — погана ідея. FDA-issue, висока конкуренція, потреба в великому inventory upfront. Шанси невисокі.</p>
+        <p>Що дійсно цінне в цьому дозьє — це <strong>повністю розкрита playbook</strong>: bundle hook + subscription-first + premium photography + UGC creators + 3rd-party testing trust signals + multi-region Advantage+ targeting. Ця механіка переноситься на десятки adjacent-ніш де немає такої конкуренції.</p>
+        <p><strong>Що пропоную як next step:</strong> шукати adjacent supplement/wellness категорії (mood, sleep, sex hormones, recovery, hair, sun protection — те що не блокує FDA, або де регуляторне поле спокійніше у CA/AU/UK), і застосовувати точно цю саму playbook. Перші 2-3 продукти у нашу research queue — у цій логіці.</p>
+        <p>Дозьє лишаю в статусі <strong>Researching</strong>. Якщо зʼявиться 4-6 ще одна schaltest креативи — підіграй ще і завершимо. Інакше використовуємо як reference book.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-box">
+    Notes (твої коментарі): додай що думаєш — чи бачиш сенс лізти в цю саме категорію, які adjacent ніші розглядаємо першими, що Паша скаже.
+  </div>
+</section>
+
+<!-- Sources -->
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://simplynootropics.com/products/nmn-powder" target="_blank">Simply Nootropics — NMN Powder product page</a></li>
+    <li><a href="https://simplynootropics.com/" target="_blank">Simply Nootropics Global homepage</a></li>
+    <li><a href="https://simplynootropics.com.au/products/nmn-powder" target="_blank">Simply Nootropics AU — NMN Powder</a></li>
+    <li><a href="https://www.trustpilot.com/review/simplynootropics.com" target="_blank">Trustpilot — Simply Nootropics reviews</a></li>
+    <li><a href="https://www.womensweekly.com.au/health/simply-nootropics-nmn-supplement/" target="_blank">Australian Women's Weekly — NMN feature</a></li>
+    <li><a href="https://fortune.com/article/best-nmn-supplements/" target="_blank">Fortune — Best NMN Supplements 2026</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=123812149532445" target="_blank">FB Ad Library — Simply Nootropics page</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Simply Nootropics</span>
+  <span>Status: Researching</span>
+  <span>Updated: 2026-04-28</span>
+</footer>
+
+</body>
+</html>
