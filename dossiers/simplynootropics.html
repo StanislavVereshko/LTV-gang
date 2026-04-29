@@ -188,18 +188,44 @@
 
   .hero-image {
     background: linear-gradient(135deg, #cfdef5 0%, #a8c4e8 100%);
-    aspect-ratio: 4/5;
+    aspect-ratio: 3/4;
+    max-height: 420px;
     border-radius: 3px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: center;
     position: relative;
     overflow: hidden;
   }
   .hero-image img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
+    width: 100%;
+    flex: 1;
+    object-fit: contain;
+    object-position: center;
+    padding: 1.5rem 1.5rem 0;
+  }
+  .hero-image-label {
+    background: rgba(10,10,10,0.72);
+    backdrop-filter: blur(8px);
+    padding: 0.65rem 1rem;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(245,242,236,0.75);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .hero-image-label strong {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--white);
+    letter-spacing: 0;
+    text-transform: none;
   }
   .hero-image-empty {
     text-align: center;
@@ -661,9 +687,15 @@
     </div>
   </div>
   <div class="hero-image">
-    <img src="_assets/simplynootropics/screenshots/01.jpg" alt="Simply Nootropics hero" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <img src="https://simplynootropics.com/cdn/shop/files/2_88684288-6933-4069-8501-7545d838c6a9.png?v=1734527150"
+         alt="Simply Nootropics — NMN Powder"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
     <div class="hero-image-empty" style="display:none">
-      Закинь скрін у<br><code>_assets/simplynootropics/screenshots/01.jpg</code><br>і фото підтягнеться тут
+      Фото недоступне
+    </div>
+    <div class="hero-image-label">
+      <strong>Ageless NMN Powder</strong>
+      <span>Hero product</span>
     </div>
   </div>
 </section>
