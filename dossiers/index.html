@@ -100,23 +100,23 @@
   /* NICHE BAR */
   .niche-bar {
     display: flex;
-    gap: 1px;
-    background: var(--border);
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
   }
   .niche-btn {
     flex: 1;
     padding: 1.4rem 2rem;
-    background: var(--black);
+    background: transparent;
     border: none;
-    border-right: 1px solid var(--border);
-    color: var(--gray);
+    border-right: 1px solid rgba(255,255,255,0.07);
+    color: rgba(245,242,236,0.45);
     font-family: inherit;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color 0.2s, background 0.2s;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -135,21 +135,21 @@
   }
   .niche-btn:hover::after,
   .niche-btn.active::after { left: 0; }
-  .niche-btn:hover { background: rgba(255,255,255,0.015); color: var(--white); }
-  .niche-btn.active { color: var(--accent); background: rgba(200,255,0,0.03); }
+  .niche-btn:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+  .niche-btn.active { color: var(--accent); background: rgba(200,255,0,0.04); }
   .niche-btn-name {
     font-family: 'Instrument Serif', serif;
     font-style: italic;
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1;
     letter-spacing: -0.01em;
     font-weight: 400;
     color: inherit;
   }
-  .niche-btn-count { font-size: 10px; letter-spacing: 0.1em; opacity: 0.45; }
+  .niche-btn-count { font-size: 10px; letter-spacing: 0.1em; opacity: 0.5; }
   @media (max-width: 700px) {
     .niche-bar { flex-wrap: wrap; }
-    .niche-btn { flex: 1 1 calc(50% - 1px); border-bottom: 1px solid var(--border); }
+    .niche-btn { flex: 1 1 calc(50% - 1px); border-bottom: 1px solid rgba(255,255,255,0.07); }
   }
 
   /* TOOLBAR */
@@ -200,7 +200,8 @@
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
-    margin: 2rem 2rem;
+    margin: 2rem;
+    overflow: visible;
   }
   @media (max-width: 600px) { .gallery { margin: 0; border-left: none; border-right: none; } }
 
@@ -264,26 +265,25 @@
   /* HOVER COMMENT POPUP */
   .card-comment {
     position: absolute;
-    top: calc(100% + 8px);
+    bottom: calc(100% + 10px);
     left: 0; right: 0;
-    background: rgba(14,14,14,0.98);
-    border: 1px solid rgba(200,255,0,0.2);
+    background: #111;
+    border: 1px solid rgba(200,255,0,0.25);
     padding: 1rem 1.25rem;
     border-radius: 2px;
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(6px);
     transition: opacity 0.18s, transform 0.18s;
     pointer-events: none;
-    z-index: 50;
-    backdrop-filter: blur(8px);
+    z-index: 1100;
   }
   .card:hover .card-comment { opacity: 1; transform: translateY(0); }
-  .card-comment::before {
+  .card-comment::after {
     content: '';
     position: absolute;
-    bottom: 100%; left: 1.5rem;
+    top: 100%; left: 1.5rem;
     border: 6px solid transparent;
-    border-bottom-color: rgba(200,255,0,0.2);
+    border-top-color: rgba(200,255,0,0.25);
   }
   .card-comment-label {
     font-size: 10px;
