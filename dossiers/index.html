@@ -46,17 +46,9 @@
     background: rgba(10,10,10,0.85);
     backdrop-filter: blur(12px);
   }
-  .nav-logo {
-    font-family: 'Instrument Serif', serif;
-    font-size: 18px;
-  }
+  .nav-logo { font-family: 'Instrument Serif', serif; font-size: 18px; }
   .nav-logo em { color: var(--accent); font-style: italic; }
-  .nav-tag {
-    font-size: 11px;
-    color: var(--gray);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
+  .nav-tag { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
   .nav-tag .dot {
     display: inline-block;
     width: 6px; height: 6px;
@@ -71,6 +63,7 @@
     50%     { opacity: 0.4; transform: scale(0.8); }
   }
 
+  /* HERO */
   .hero {
     padding: 5rem 2rem 3rem;
     border-bottom: 1px solid var(--border);
@@ -78,8 +71,7 @@
     overflow: hidden;
   }
   .hero-grid {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image:
       linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
@@ -89,21 +81,12 @@
     pointer-events: none;
   }
   .hero-eyebrow {
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
     margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: flex; align-items: center; gap: 12px;
   }
-  .hero-eyebrow::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--accent);
-  }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
   .hero h1 {
     font-family: 'Instrument Serif', serif;
     font-size: clamp(48px, 8vw, 84px);
@@ -112,15 +95,66 @@
     margin-bottom: 1.5rem;
   }
   .hero h1 em { color: var(--accent); font-style: italic; }
-  .hero p {
-    max-width: 520px;
-    font-size: 15px;
-    color: rgba(245,242,236,0.7);
-    line-height: 1.75;
+  .hero p { max-width: 520px; font-size: 15px; color: rgba(245,242,236,0.7); line-height: 1.75; }
+
+  /* NICHE BAR */
+  .niche-bar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .niche-btn {
+    flex: 1;
+    padding: 1.4rem 2rem;
+    background: var(--black);
+    border: none;
+    border-right: 1px solid var(--border);
+    color: var(--gray);
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+  }
+  .niche-btn:last-child { border-right: none; }
+  .niche-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: -100%;
+    width: 100%; height: 2px;
+    background: var(--accent);
+    transition: left 0.5s cubic-bezier(.7,0,.2,1);
+  }
+  .niche-btn:hover::after,
+  .niche-btn.active::after { left: 0; }
+  .niche-btn:hover { background: rgba(255,255,255,0.015); color: var(--white); }
+  .niche-btn.active { color: var(--accent); background: rgba(200,255,0,0.03); }
+  .niche-btn-name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    color: inherit;
+  }
+  .niche-btn-count { font-size: 10px; letter-spacing: 0.1em; opacity: 0.45; }
+  @media (max-width: 700px) {
+    .niche-bar { flex-wrap: wrap; }
+    .niche-btn { flex: 1 1 calc(50% - 1px); border-bottom: 1px solid var(--border); }
   }
 
+  /* TOOLBAR */
   .toolbar {
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 2rem;
     border-bottom: 1px solid var(--border);
     display: flex;
     gap: 1rem;
@@ -129,11 +163,11 @@
   }
   .search {
     flex: 1;
-    min-width: 240px;
+    min-width: 200px;
     background: transparent;
     border: 1px solid var(--border);
     color: var(--white);
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 1rem;
     font-family: inherit;
     font-size: 13px;
     border-radius: 2px;
@@ -142,13 +176,9 @@
   }
   .search:focus { border-color: var(--accent); }
   .search::placeholder { color: var(--gray); }
-  .filter-group {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
   .filter-chip {
-    padding: 0.65rem 1rem;
+    padding: 0.55rem 0.9rem;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -161,23 +191,20 @@
     transition: all 0.2s;
   }
   .filter-chip:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
-  .filter-chip.active {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: rgba(200,255,0,0.05);
-  }
+  .filter-chip.active { color: var(--accent); border-color: var(--accent); background: rgba(200,255,0,0.05); }
 
+  /* GALLERY */
   .gallery {
-    padding: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
-    margin: 0 2rem 2rem;
+    margin: 2rem 2rem;
   }
   @media (max-width: 600px) { .gallery { margin: 0; border-left: none; border-right: none; } }
 
+  /* CARD */
   .card {
     background: var(--black);
     padding: 1.5rem;
@@ -189,8 +216,9 @@
     transition: background 0.25s;
     position: relative;
     min-height: 260px;
+    z-index: 1;
   }
-  .card:hover { background: rgba(200,255,0,0.03); }
+  .card:hover { background: rgba(200,255,0,0.03); z-index: 20; }
   .card::before {
     content: '';
     position: absolute;
@@ -209,9 +237,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-  .card-status {
-    color: var(--accent);
-  }
+  .card-status { color: var(--accent); }
   .card h3 {
     font-family: 'Instrument Serif', serif;
     font-size: 28px;
@@ -219,12 +245,7 @@
     letter-spacing: -0.01em;
     font-style: italic;
   }
-  .card-desc {
-    font-size: 13px;
-    color: rgba(245,242,236,0.65);
-    line-height: 1.6;
-    flex: 1;
-  }
+  .card-desc { font-size: 13px; color: rgba(245,242,236,0.65); line-height: 1.6; flex: 1; }
   .card-stats {
     display: flex;
     gap: 1.25rem;
@@ -240,6 +261,44 @@
     font-size: 16px;
   }
 
+  /* HOVER COMMENT POPUP */
+  .card-comment {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    background: rgba(14,14,14,0.98);
+    border: 1px solid rgba(200,255,0,0.2);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+  }
+  .card:hover .card-comment { opacity: 1; transform: translateY(0); }
+  .card-comment::before {
+    content: '';
+    position: absolute;
+    bottom: 100%; left: 1.5rem;
+    border: 6px solid transparent;
+    border-bottom-color: rgba(200,255,0,0.2);
+  }
+  .card-comment-label {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .card-comment p {
+    font-size: 12px;
+    color: rgba(245,242,236,0.8);
+    line-height: 1.65;
+  }
+
+  /* EMPTY STATE */
   .empty {
     grid-column: 1 / -1;
     padding: 6rem 2rem;
@@ -255,26 +314,9 @@
     line-height: 1;
     margin-bottom: 1rem;
   }
-  .empty-title {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 32px;
-    color: var(--white);
-    margin-bottom: 1rem;
-  }
-  .empty-desc {
-    max-width: 480px;
-    margin: 0 auto;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-  .empty-desc code {
-    background: rgba(255,255,255,0.05);
-    color: var(--accent);
-    padding: 2px 6px;
-    border-radius: 2px;
-    font-size: 12px;
-  }
+  .empty-title { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 32px; color: var(--white); margin-bottom: 1rem; }
+  .empty-desc { max-width: 480px; margin: 0 auto; font-size: 14px; line-height: 1.7; }
+  .empty-desc code { background: rgba(255,255,255,0.05); color: var(--accent); padding: 2px 6px; border-radius: 2px; font-size: 12px; }
 
   footer {
     padding: 3rem 2rem;
@@ -304,8 +346,33 @@
   <p>Кожен бренд — окреме дозьє. Аналіз продукту, аудиторії, болів, кутів продажу і топ-креативів. Накопичувальна база яка з часом показує паттерни ніші.</p>
 </section>
 
+<!-- NICHE BAR -->
+<div class="niche-bar" id="niches">
+  <button class="niche-btn active" data-niche="all">
+    <span class="niche-btn-name">Всі ніші</span>
+    <span class="niche-btn-count" id="count-all">—</span>
+  </button>
+  <button class="niche-btn" data-niche="supplements">
+    <span class="niche-btn-name">Supplements</span>
+    <span class="niche-btn-count" id="count-supplements">—</span>
+  </button>
+  <button class="niche-btn" data-niche="pets">
+    <span class="niche-btn-name">Pets Supply</span>
+    <span class="niche-btn-count" id="count-pets">—</span>
+  </button>
+  <button class="niche-btn" data-niche="beauty">
+    <span class="niche-btn-name">Beauty & Health</span>
+    <span class="niche-btn-count" id="count-beauty">—</span>
+  </button>
+  <button class="niche-btn" data-niche="other">
+    <span class="niche-btn-name">Інші</span>
+    <span class="niche-btn-count" id="count-other">—</span>
+  </button>
+</div>
+
+<!-- TOOLBAR -->
 <div class="toolbar">
-  <input type="text" class="search" id="search" placeholder="Пошук за брендом, продуктом, нішею...">
+  <input type="text" class="search" id="search" placeholder="Пошук за брендом, продуктом...">
   <div class="filter-group" id="filters">
     <button class="filter-chip active" data-filter="all">All</button>
     <button class="filter-chip" data-filter="researching">Researching</button>
@@ -319,17 +386,22 @@
 
   <!-- DOSSIER_CARDS_START -->
 
-  <a href="/dossiers/simplynootropics" class="card" data-status="researching">
+  <a href="simplynootropics.html" class="card" data-status="researching" data-niche="supplements"
+     data-comment="Цікавить не сам NMN а механіка: один хіро продукт, три тири підписки, bundle-хук щоб зняти об'єкцію по ціні. Playbook який можна переносити на інші ніші.">
     <div class="card-meta">
-      <span>Longevity / Anti-aging</span>
+      <span>Supplements · Longevity</span>
       <span class="card-status">Researching</span>
     </div>
     <h3>Simply<br>Nootropics</h3>
-    <p class="card-desc">NZ-бренд преміум longevity-добавок. Hero — NMN powder, bundle-хук free TMG ($70). Класичний LTV-бізнес: subscription + premium positioning + UGC pipeline.</p>
+    <p class="card-desc">NZ-бренд преміум longevity-добавок. Hero — NMN powder, bundle-хук free TMG ($70). Subscription-first, маржа 70%+.</p>
     <div class="card-stats">
       <span><strong>$139</strong> 3 mo sub</span>
-      <span><strong>$0.70</strong> /serving</span>
-      <span><strong>NZ</strong> made</span>
+      <span><strong>$384</strong> AOV max</span>
+      <span><strong>✓</strong> bundle</span>
+    </div>
+    <div class="card-comment">
+      <div class="card-comment-label">Мій коментар</div>
+      <p></p>
     </div>
   </a>
 
@@ -337,57 +409,105 @@
 
   <div class="empty" id="emptyState">
     <div class="empty-num">00</div>
-    <div class="empty-title">Поки порожньо</div>
-    <div class="empty-desc">
-      Створи папку бренду в <code>_assets/НАЗВА/</code>, закинь туди відео в <code>creatives/</code> і скріни в <code>screenshots/</code>, і пиши Стасу-Клоду «готово, бренд НАЗВА, продукт: URL».
-      <br><br>
-      Перше дозьє згенерується сюди автоматично.
-    </div>
+    <div class="empty-title">Нічого не знайдено</div>
+    <div class="empty-desc">Спробуй змінити нішу або статус. Або пиши «готово, бренд НАЗВА, продукт: URL» — додам дозьє.</div>
   </div>
 
 </div>
 
 <footer>
   <span>LTV Gang · 2025</span>
-  <span>Dossiers · v1</span>
+  <span>Dossiers · v2</span>
   <span id="clock">—</span>
 </footer>
 
 <script>
-  // Filter + search
-  const search = document.getElementById('search');
-  const filters = document.querySelectorAll('.filter-chip');
-  const gallery = document.getElementById('gallery');
-  const empty = document.getElementById('emptyState');
-  const countEl = document.getElementById('count');
+(() => {
+  const searchEl   = document.getElementById('search');
+  const gallery    = document.getElementById('gallery');
+  const emptyEl    = document.getElementById('emptyState');
+  const navCount   = document.getElementById('count');
+  const filterBtns = document.querySelectorAll('.filter-chip');
+  const nicheBtns  = document.querySelectorAll('.niche-btn');
+
+  let activeStatus = 'all';
+  let activeNiche  = 'all';
+
+  // Populate comment text from data-comment attribute
+  document.querySelectorAll('.card[data-comment]').forEach(card => {
+    const popup = card.querySelector('.card-comment p');
+    if (popup) popup.textContent = card.dataset.comment;
+  });
+
+  function getCards() { return [...gallery.querySelectorAll('.card')]; }
+
+  function updateNicheCounts() {
+    const niches = ['all', 'supplements', 'pets', 'beauty', 'other'];
+    niches.forEach(n => {
+      const el = document.getElementById('count-' + n);
+      if (!el) return;
+      const cnt = n === 'all'
+        ? getCards().length
+        : getCards().filter(c => (c.dataset.niche || '') === n).length;
+      el.textContent = cnt + (cnt === 1 ? ' brand' : ' brands');
+    });
+  }
 
   function applyFilters() {
-    const q = search.value.toLowerCase().trim();
-    const activeFilter = document.querySelector('.filter-chip.active').dataset.filter;
-    const cards = gallery.querySelectorAll('.card');
+    const q = searchEl.value.toLowerCase().trim();
+    const cards = getCards();
     let visible = 0;
+
     cards.forEach(card => {
-      const text = card.textContent.toLowerCase();
+      const text   = card.textContent.toLowerCase();
       const status = (card.dataset.status || '').toLowerCase();
-      const matchQ = !q || text.includes(q);
-      const matchF = activeFilter === 'all' || status === activeFilter;
-      const show = matchQ && matchF;
+      const niche  = (card.dataset.niche  || '').toLowerCase();
+      const matchQ      = !q || text.includes(q);
+      const matchStatus = activeStatus === 'all' || status === activeStatus;
+      const matchNiche  = activeNiche  === 'all' || niche  === activeNiche;
+      const show = matchQ && matchStatus && matchNiche;
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-    countEl.textContent = cards.length + ' brand' + (cards.length === 1 ? '' : 's');
-    if (empty) empty.style.display = cards.length === 0 ? '' : 'none';
+
+    navCount.textContent = visible + ' brand' + (visible === 1 ? '' : 's');
+    if (emptyEl) emptyEl.style.display = visible === 0 ? '' : 'none';
   }
 
-  search.addEventListener('input', applyFilters);
-  filters.forEach(f => {
-    f.addEventListener('click', () => {
-      filters.forEach(x => x.classList.remove('active'));
-      f.classList.add('active');
+  // Status filters
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeStatus = btn.dataset.filter;
       applyFilters();
     });
   });
+
+  // Niche filters
+  nicheBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      nicheBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeNiche = btn.dataset.niche;
+      applyFilters();
+    });
+  });
+
+  searchEl.addEventListener('input', applyFilters);
+
+  updateNicheCounts();
   applyFilters();
+
+  // Fix links for local file:// testing
+  if (location.protocol === 'file:') {
+    getCards().forEach(card => {
+      const href = card.getAttribute('href');
+      if (href && !href.includes('.html')) {
+        card.setAttribute('href', href + '.html');
+      }
+    });
+  }
 
   // Warsaw clock
   const clock = document.getElementById('clock');
@@ -400,6 +520,7 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
+})();
 </script>
 </body>
 </html>
