@@ -659,6 +659,168 @@
     margin-top: 1rem;
   }
 
+  /* VALUE EQUATION */
+  .value-eq-grid {
+    border: 1px solid var(--border);
+    background: var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .value-eq-row {
+    background: var(--black);
+    display: grid;
+    grid-template-columns: 160px 1fr 110px;
+    align-items: center;
+  }
+  .value-eq-row.header {
+    background: rgba(255,255,255,0.02);
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span {
+    padding: 0.9rem 1.25rem;
+    font-size: 13px;
+    border-right: 1px solid var(--border);
+  }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  .warn-text { color: var(--warn); }
+  @media (max-width: 700px) {
+    .value-eq-row { grid-template-columns: 1fr; }
+    .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); }
+    .value-eq-row > span:last-child { border-bottom: none; }
+  }
+
+  /* JTBD BLOCK */
+  .jtbd-block {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(200,255,0,0.04);
+    border-left: 2px solid var(--accent);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .jtbd-label {
+    font-size: 9px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  /* AMPLIFICATION BLOCK */
+  .amplify-block {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255,107,107,0.04);
+    border-left: 2px solid var(--bad);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .amplify-label { font-size: 9px; color: var(--bad); letter-spacing: 0.15em; text-transform: uppercase; }
+  .amplify-text { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; }
+
+  /* AUDIT CHECKLIST */
+  .audit-grid {
+    border: 1px solid var(--border);
+    background: var(--border);
+    display: flex; flex-direction: column; gap: 1px;
+    margin-top: 1rem;
+  }
+  .audit-row {
+    background: var(--black);
+    display: grid;
+    grid-template-columns: 32px 28px 180px 1fr;
+    align-items: center;
+  }
+  .audit-row > span { padding: 0.85rem 1rem; border-right: 1px solid var(--border); }
+  .audit-row > span:last-child { border-right: none; }
+  .audit-step { font-size: 10px; color: var(--gray); text-align: center; }
+  .audit-check { font-size: 14px; text-align: center; }
+  .audit-row.pass { background: rgba(200,255,0,0.015); }
+  .audit-row.fail { background: rgba(255,107,107,0.015); }
+  .audit-row.pass .audit-check { color: var(--good); }
+  .audit-row.fail .audit-check { color: var(--bad); }
+  .audit-name { font-size: 12px; color: var(--white); }
+  .audit-note { font-size: 12px; color: rgba(245,242,236,0.6); line-height: 1.55; }
+  @media (max-width: 700px) {
+    .audit-row { grid-template-columns: 32px 28px 1fr; }
+    .audit-note { display: none; }
+  }
+
+  /* DR STRUCTURE */
+  .dr-struct {
+    margin-top: 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+  }
+  .dr-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .dr-row:last-child { border-bottom: none; }
+  .dr-label {
+    padding: 0.5rem 0.75rem;
+    font-size: 9px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    border-right: 1px solid var(--border);
+    display: flex; align-items: center;
+  }
+  .dr-val { padding: 0.5rem 0.75rem; font-size: 12px; color: rgba(245,242,236,0.7); line-height: 1.55; }
+
+  /* TRIGGER CHECKLIST */
+  .trigger-checklist {
+    margin-top: 0.75rem;
+    display: flex; flex-direction: column; gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .trigger-row {
+    background: var(--black);
+    display: grid;
+    grid-template-columns: 28px 140px 1fr;
+    align-items: center;
+  }
+  .trigger-row > span { padding: 0.5rem 0.75rem; border-right: 1px solid var(--border); font-size: 12px; }
+  .trigger-row > span:last-child { border-right: none; }
+  .trigger-check { text-align: center; }
+  .trigger-row.pass .trigger-check { color: var(--good); }
+  .trigger-row.fail .trigger-check { color: var(--bad); }
+  .trigger-row.warn .trigger-check { color: var(--warn); }
+  .trigger-name { color: var(--white); }
+  .trigger-note { color: rgba(245,242,236,0.55); font-size: 11px !important; line-height: 1.5; }
+  @media (max-width: 700px) {
+    .trigger-row { grid-template-columns: 28px 1fr; }
+    .trigger-note { display: none; }
+  }
+
+  /* ECONOMICS GRID */
+  .econ-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  @media (max-width: 700px) { .econ-grid { grid-template-columns: 1fr 1fr; } }
+  .econ-cell {
+    background: var(--black);
+    padding: 1.5rem 1.25rem;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .econ-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .econ-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px; color: var(--white); line-height: 1.1; margin: 4px 0;
+  }
+  .econ-note { font-size: 11px; color: var(--gray); line-height: 1.55; }
+
   /* SOURCES */
   .sources {
     border-top: 1px solid var(--border);
@@ -808,65 +970,136 @@
   </div>
 </section>
 
-<!-- 03 — Audience -->
+<!-- 02 — Offer anatomy -->
 <section class="s">
-  <div class="s-num">02 — Цільова аудиторія</div>
-  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="s-body">
+    <p>Value = (Dream Outcome × Likelihood) / (Time Delay × Effort). Чим вища перша частина і нижча друга — тим сильніший offer. Simply Nootropics оптимізує всі 4 ліфти одночасно.</p>
+  </div>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Відчувати себе молодше, більше енергії, сповільнити клітинне старіння — "feel like 30 again"</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">NZ pharmaceutical-grade, ≥99% purity test, Trustpilot 4.7★ (20k+ reviews), Women's Weekly editorial, David Sinclair research references</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">"Feel the difference in 2–3 weeks" — конкретний таймфрейм у copy. 90-day money-back якщо не відчув = психологічний ризик знятий</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">1 чайна ложка у воду зранку. Ніяких пігулок, ніяких режимів. "Add to your morning routine" — no lifestyle change required</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">90-day MBG + Free TMG ($70 value) знімає price objection. Психологічно: "по факту я плачу $69 і якщо не спрацює — поверну все". Максимальне усунення бар'єру першої покупки.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Audience + JTBD -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em> і навіщо</h2>
   <div class="tier-list">
     <div class="tier-cell">
       <div class="tier-cell-tag">Сегмент 01 · primary</div>
       <h4>Wellness-curious women, 38–55</h4>
-      <p>Слідкують за здоровʼям, уже приймають омегу/колаген/магній. Дохід вище середнього. Не біохакери — рухає не наука а відчуття + outcomes ("почуваюсь молодше"). Конвертуються на anti-aging hook'и + UGC. Найбільший сегмент по обʼєму.</p>
+      <p>Слідкують за здоров'ям, уже приймають омегу/колаген/магній. Дохід вище середнього. Не біохакери — рухає не наука а відчуття + outcomes. Конвертуються на anti-aging hook'и + UGC. Найбільший сегмент по об'єму.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">«Допоможи мені відчувати себе на 10 років молодше без кардинальних змін в способі життя»</span>
+      </div>
     </div>
     <div class="tier-cell">
       <div class="tier-cell-tag">Сегмент 02 · high-value</div>
       <h4>Biohackers / Bryan Johnson crowd, 30–55</h4>
-      <p>Чоловіки і жінки що читають Huberman, Attia, біоринг тестують. Переконані аргументами науковими — NAD+, sirtuins, mitochondrial health. Купують 6/9-міс subs, лояльні. Конверсяться на educational ads + lab references.</p>
+      <p>Читають Huberman, Attia, тестують біорінги. Переконані науковими аргументами — NAD+, sirtuins, mitochondrial health. Купують 6/9-міс subs, лояльні. Конверсяться на educational ads + lab references.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">«Дай мені науково підтверджений протокол для оптимізації біології — щоб я знав що це не маркетинг»</span>
+      </div>
     </div>
     <div class="tier-cell">
       <div class="tier-cell-tag">Сегмент 03</div>
       <h4>Busy professionals, 32–48</h4>
       <p>Не цікавляться longevity як концепцією, але хочуть енергії і мисленнєвої ясності "як в 25". Конверсяться на energy/focus angle, не на anti-aging. UGC формат "ось мій ритуал зранку" заходить.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">«Поверни мені продуктивність дня без кофеїнових гойдалок і afternoon crash»</span>
+      </div>
     </div>
     <div class="tier-cell">
       <div class="tier-cell-tag">Сегмент 04 · TMG angle</div>
       <h4>Heart/liver-health concerned, 50+</h4>
-      <p>Сегмент під TMG companion product. Holistic-зацікавлені, з конкретною проблемою (печінка, тиск, вага). Можна заходити окремими creative angles на TMG, далі робити cross-sell на NMN.</p>
+      <p>Сегмент під TMG companion product. Holistic-зацікавлені, з конкретною проблемою (печінка, тиск, вага). Можна заходити окремими creative angles на TMG, далі cross-sell на NMN.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">«Підтримай моє серце і печінку природнім шляхом поряд з тим що вже роблю»</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 04 — Pains -->
+<!-- 04 — Pains + Amplification -->
 <section class="s">
-  <div class="s-num">03 — Болі / заперечення</div>
-  <h2 class="s-title">На що <em>давлять</em></h2>
+  <div class="s-num">04 — Болі + Amplification</div>
+  <h2 class="s-title">На що <em>давлять</em> і як підсилюють</h2>
   <div class="tier-list">
     <div class="tier-cell">
-      <div class="tier-cell-tag">Біль</div>
+      <div class="tier-cell-tag">Біль 01</div>
       <h4>Втомленість і хронічний crash</h4>
-      <p>"Прокидаюсь розбитим, до 3 дня — кави не вистачає, після 8 — нічого не хочу". NMN підвищує NAD+ → клітинна енергетика. Це найсильніший і найшвидше відчутний effect для нового користувача.</p>
+      <p>"Прокидаюсь розбитим, до 3 дня — кави не вистачає, після 8 — нічого не хочу". NMN підвищує NAD+ → клітинна енергетика.</p>
+      <div class="amplify-block">
+        <span class="amplify-label">Amplification в рекламі</span>
+        <span class="amplify-text">Before/After framing: "З 35 я думала що це просто вік". Конкретний clock-time: "до 3 дня без кави". Прив'язка до identity loss: "це вже не та я".</span>
+      </div>
     </div>
     <div class="tier-cell">
-      <div class="tier-cell-tag">Біль</div>
+      <div class="tier-cell-tag">Біль 02</div>
       <h4>Зовнішнє старіння</h4>
       <p>Шкіра, волосся, обличчя. NAD+ продаж тут — про "клітинне відновлення" не дермато-косметика. Працює як "інсайд-аут" alternative до retinol/Ботокс.</p>
+      <div class="amplify-block">
+        <span class="amplify-label">Amplification в рекламі</span>
+        <span class="amplify-text">Clock metaphor: "turn back the clock". Порівняння "виглядаю краще ніж в 30 не ходячи в зал". Robbing identity peak у минулому і обіцяючи повернення.</span>
+      </div>
     </div>
     <div class="tier-cell">
-      <div class="tier-cell-tag">Заперечення</div>
+      <div class="tier-cell-tag">Заперечення 01</div>
       <h4>"Це шарлатанство?"</h4>
-      <p>Більшість ринку скептично настроєна щодо supplements. Контр: 3rd-party testing, NZ pharmaceutical-grade label, наукові посилання, Trustpilot social proof, Women's Weekly placement.</p>
+      <p>Більшість ринку скептично настроєна щодо supplements. Контр: 3rd-party testing, NZ pharmaceutical-grade label, наукові посилання, Trustpilot social proof.</p>
+      <div class="amplify-block">
+        <span class="amplify-label">Amplification в рекламі</span>
+        <span class="amplify-text">Skeptic-first hook: "Я не вірила в supplements доки...". Authority bridge: Sinclair/Huberman reference без прямої endorsement. Lab certificate visual як scroll-stopper.</span>
+      </div>
     </div>
     <div class="tier-cell">
-      <div class="tier-cell-tag">Заперечення</div>
+      <div class="tier-cell-tag">Заперечення 02</div>
       <h4>"Дорого для щоденного прийому"</h4>
-      <p>$46/міс sub. Контр: per-serving $0.70 (дешевше кави), 90-day money-back, free TMG $70 знімає об'єкцію — "по факту платиш $69, а отримуєш $209 value".</p>
+      <p>$46/міс sub. Контр: per-serving $0.70 (дешевше кави), 90-day money-back, free TMG $70 знімає об'єкцію.</p>
+      <div class="amplify-block">
+        <span class="amplify-label">Amplification в рекламі</span>
+        <span class="amplify-text">Price reframe: "$0.70 на день — дешевше за каву в Starbucks". Bundle math: "платиш $139, отримуєш $209 value". Free TMG як якір — "це навіть якщо не рахувати саму підписку".</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 04 — Funnel intelligence -->
+<!-- 05 — Funnel intelligence + Landing audit -->
 <section class="s">
-  <div class="s-num">04 — Funnel intelligence</div>
+  <div class="s-num">05 — Funnel intelligence + Landing audit</div>
   <h2 class="s-title">Що видно з <em>UTM-розшифровки</em></h2>
   <div class="s-body">
     <p>Лінк на продукт прийшов з utm-параметрами, які розкривають внутрішній naming-convention їх ad-ops. Це дорогий сигнал — означає що це не один-фрілансер запускає Meta-ads, а команда з трекінговим стандартом.</p>
@@ -884,17 +1117,72 @@
     <p><strong>Висновки:</strong> вони стандартизують креативи по схемі hook → problem → solution → USP → CTA. Тестують Advantage+ broad замість manual targeting (типово для брендів з налагодженим pixel-сигналом). Регіональна сегментація на рівні campaign — означає що CPM різні і вони це відстежують. Креативи названі за концепцією + виконавцем + типом — UGC pipeline існує і масштабується.</p>
     <p>Funnel простий: ad → product page (без advertorial-проміжку), price-anchor через subscription tiers (3/6/9 міс), upsell через bundle (free TMG).</p>
   </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1rem">Landing page audit · DR checklist</div>
+  <div class="audit-grid">
+    <div class="audit-row pass">
+      <span class="audit-step">01</span><span class="audit-check">✓</span>
+      <span class="audit-name">Attention / Hook</span>
+      <span class="audit-note">Hero headline "Ageless NMN" + product shot above fold. Клін преміум візуал зупиняє скрол.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">02</span><span class="audit-check">✓</span>
+      <span class="audit-name">Pain stated</span>
+      <span class="audit-note">"NAD+ levels drop 50% by age 40" — конкретна статистика болю першою секцією.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">03</span><span class="audit-check">✓</span>
+      <span class="audit-name">Amplification</span>
+      <span class="audit-note">Aging narrative + cellular decline framework. Проблема робиться worse before promising solution.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">04</span><span class="audit-check">✓</span>
+      <span class="audit-name">Promise</span>
+      <span class="audit-note">"Feel the difference in 2–3 weeks" — специфічний таймфрейм і outcome.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">05</span><span class="audit-check">✓</span>
+      <span class="audit-name">Mechanism</span>
+      <span class="audit-note">NAD+ precursor → клітинна енергетика. Не магія, а псевдо-наукова механіка.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">06</span><span class="audit-check">✓</span>
+      <span class="audit-name">Social proof</span>
+      <span class="audit-note">Trustpilot 4.7★, Women's Weekly editorial, lab certificate images. Triple-layer proof.</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">07</span><span class="audit-check">✓</span>
+      <span class="audit-name">Offer presentation</span>
+      <span class="audit-note">3 subscription tiers + free TMG bundle. Ціни відображають value descending (9-month best value).</span>
+    </div>
+    <div class="audit-row pass">
+      <span class="audit-step">08</span><span class="audit-check">✓</span>
+      <span class="audit-name">Risk reversal</span>
+      <span class="audit-note">90-day money-back guarantee + free TMG ($70 value). Психологічна ціна = $69, не $139.</span>
+    </div>
+    <div class="audit-row fail">
+      <span class="audit-step">09</span><span class="audit-check">✗</span>
+      <span class="audit-name">Continuity / Scarcity</span>
+      <span class="audit-note">Немає таймера або countdown на сторінці. "Limited time" обіцяється тільки в рекламі — на лендингу urgency втрачається.</span>
+    </div>
+  </div>
 </section>
 
-<!-- 05 — Sales angles -->
+<!-- 06 — Sales angles + DR structure -->
 <section class="s">
-  <div class="s-num">05 — Sales angles</div>
+  <div class="s-num">06 — Sales angles</div>
   <h2 class="s-title">Кути для <em>креативів</em></h2>
   <div class="angle-grid">
     <div class="angle">
       <div class="angle-num">A1 · Vanity / Anti-aging</div>
       <h4>Turn back the clock</h4>
       <p class="angle-pain">Біль: зовнішнє старіння, втрата енергії 25-річної</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">Виглядаю старше ніж відчуваю себе, шкіра та волосся не ті</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"В 38 мені говорять що виглядаю на 50" — identity crisis hook</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">Виглядати молодше без дерматолога і кремів за $400</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">NAD+ запускає клітинне відновлення — inside-out підхід</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         Я не була в залі 6 місяців і виглядаю краще ніж в 30. Все що я зробила — додала ось це у воду зранку.
@@ -904,6 +1192,12 @@
       <div class="angle-num">A2 · Energy / Focus</div>
       <h4>Куди поділась моя енергія</h4>
       <p class="angle-pain">Біль: 3-PM crash, mental fog, вже не та</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">До 3 дня — розбита, після 8 — не хочу нічого</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"Думала що це просто вік. Виявилось — NAD+ дефіцит"</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">Працювати до 9 вечора без кавових гойдалок</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">NMN → NAD+ → мітохондріальне паливо для клітин</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         З 35 років я думала що це "просто життя". Поки лікар не сказав про NAD+. Через 3 тижні я працюю до 9 вечора без кави.
@@ -913,6 +1207,12 @@
       <div class="angle-num">A3 · Science / Authority</div>
       <h4>Чому Harvard вивчає NMN</h4>
       <p class="angle-pain">Біль: недовіра до supplements, потреба в "real science"</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">Всі supplements виглядають однаково — як відрізнити реальне від маркетингу</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"Я витратила $2000 на пустушки за 5 років"</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">Перший supplement підкріплений peer-reviewed дослідженнями</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">Sinclair lab, 47 досліджень, third-party lab cert доступний онлайн</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         Sinclair lab у Гарварді опублікував 47 досліджень на NAD+ за 5 років. Ось що це означає для людини якій 40+.
@@ -922,6 +1222,12 @@
       <div class="angle-num">A4 · Bundle / Value</div>
       <h4>Free TMG · $70 value</h4>
       <p class="angle-pain">Біль: ціна одна з причин відмови</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">Supplements дорогі і невідомо чи спрацюють</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"$139 за місяць — це як 2 вечері в ресторані, але щодня"</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">$209 value за ціною $139 — і 90 днів щоб переконатись</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">Bundle math: NMN + TMG разом кращі ніж окремо (synergy play)</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         Ми додаємо TMG безкоштовно до кожного NMN тільки до п'ятниці. Чому? Бо разом вони працюють краще ніж окремо. Pure marketing math.
@@ -931,6 +1237,12 @@
       <div class="angle-num">A5 · Insider / FOMO</div>
       <h4>Що приймає Bryan Johnson</h4>
       <p class="angle-pain">Біль: бажання приєднатись до елітарного longevity-руху</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">Всі "хакери довголіття" знають щось що я не знаю</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"Поки ти не приймаєш — твоя NAD+ продовжує падати щороку"</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">Стати частиною тих хто вже оптимізує — без мільйонів Johnson'а</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">Той самий основний протокол — NMN + TMG — доступний зараз</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         У його протоколі 30 supplements щодня. Перший в списку — NMN. Ось чому, і ось що з ним робить кожна клітина.
@@ -940,6 +1252,12 @@
       <div class="angle-num">A6 · Trust / Skeptic</div>
       <h4>Я думала це маркетинг</h4>
       <p class="angle-pain">Біль: страх "наколоти на гроші"</p>
+      <div class="dr-struct">
+        <div class="dr-row"><span class="dr-label">Pain</span><span class="dr-val">Не хочу бути лохом який купує expensive placebo</span></div>
+        <div class="dr-row"><span class="dr-label">Amplify</span><span class="dr-val">"90% supplement брендів не публікують lab reports — чому?"</span></div>
+        <div class="dr-row"><span class="dr-label">Promise</span><span class="dr-val">Перший brand що не побоявся показати lab certificate публічно</span></div>
+        <div class="dr-row"><span class="dr-label">Mechanism</span><span class="dr-val">NZ pharma-grade + third-party testing + 90-day MBG = triple proof</span></div>
+      </div>
       <div class="angle-hook">
         <span class="angle-hook-label">Sample hook</span>
         Я скептик. Тестую все що пробую сам, переглядаю lab reports. Ось що я знайшла в Simply Nootropics — і чому я лишилась на 6 місяцях.
@@ -948,9 +1266,9 @@
   </div>
 </section>
 
-<!-- 06 — Creatives breakdown -->
+<!-- 07 — Creatives + trigger audit -->
 <section class="s">
-  <div class="s-num">06 — Розбір креативів</div>
+  <div class="s-num">07 — Розбір креативів</div>
   <h2 class="s-title">Топ <em>ads</em></h2>
   <div class="s-body">
     <p>Поки в матеріалі — 1 креатив, який дав ти. Як скинеш ще 3-4 з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/</code> — додам блоки з аналізом і фреймами.</p>
@@ -976,11 +1294,11 @@
 
         <div class="creative-block">
           <div class="creative-block-label">Візуал</div>
-          <div class="creative-block-text">Світло-блакитний фон (медичний / clean wellness vibe). По центру — два preimum metal tin-и пліч-о-пліч: зелений Ageless NMN (cellular longevity / supports metabolism / daily energy) і помаранчевий TMG Longevity (heart health / liver detox / weight management). Брендовий ID — мінімалістичний "S" моноглиф.</div>
+          <div class="creative-block-text">Світло-блакитний фон (медичний / clean wellness vibe). По центру — два premium metal tin-и пліч-о-пліч: зелений Ageless NMN і помаранчевий TMG Longevity. Брендовий ID — мінімалістичний "S" моноглиф.</div>
         </div>
 
         <div class="creative-block">
-          <div class="creative-block-label">Хук (примарний)</div>
+          <div class="creative-block-label">Хук (первинний)</div>
           <div class="creative-quote">Free TMG powder</div>
           <div class="creative-block-text" style="margin-top:0.5rem">Великий темно-синій блок-pill з білим текстом. Контраст з фоном максимальний — "scroll-stop" елемент.</div>
         </div>
@@ -988,7 +1306,7 @@
         <div class="creative-block">
           <div class="creative-block-label">Sub-hook (вартість)</div>
           <div class="creative-quote">valued at $70 with every NMN purchase</div>
-          <div class="creative-block-text" style="margin-top:0.5rem">Anchor на $70 — це механіка price perception. Free без числа = "ну ок". Free з $70 anchor = "ого, треба брати". Класичний AOV-trick.</div>
+          <div class="creative-block-text" style="margin-top:0.5rem">Anchor на $70 — механіка price perception. Free без числа = "ну ок". Free з $70 anchor = "ого, треба брати".</div>
         </div>
 
         <div class="creative-block">
@@ -998,23 +1316,24 @@
         </div>
 
         <div class="creative-block">
-          <div class="creative-block-label">Чому працює</div>
-          <div class="creative-block-text">
-            (1) Чистий "premium wellness" візуал — не схожий на типовий dropshipping. Викликає довіру з першої секунди.<br>
-            (2) Free + dollar value anchor — найсильніший ecom-механізм за 10 років.<br>
-            (3) Limited time без агресії — підходить wellness-аудиторії яка ненавидить hard-sell.<br>
-            (4) Two-product shot ілюструє "complete protocol" — підсвідомо більш повне рішення ніж один продукт.
+          <div class="creative-block-label">Trigger audit</div>
+          <div class="trigger-checklist">
+            <div class="trigger-row pass"><span class="trigger-check">✓</span><span class="trigger-name">Pattern interrupt</span><span class="trigger-note">Bold dark pill на light bg — scroll stopper</span></div>
+            <div class="trigger-row pass"><span class="trigger-check">✓</span><span class="trigger-name">Price anchor</span><span class="trigger-note">$70 value stated explicitly — free without number is weak, with number is strong</span></div>
+            <div class="trigger-row pass"><span class="trigger-check">✓</span><span class="trigger-name">Loss aversion / FOMO</span><span class="trigger-note">"for a limited time" — soft scarcity без агресії</span></div>
+            <div class="trigger-row pass"><span class="trigger-check">✓</span><span class="trigger-name">Bundle / completeness</span><span class="trigger-note">Two products together = complete protocol, не просто один product</span></div>
+            <div class="trigger-row pass"><span class="trigger-check">✓</span><span class="trigger-name">Brand trust (visual)</span><span class="trigger-note">Premium tins, clean medical aesthetic, не схоже на dropshipping</span></div>
+            <div class="trigger-row fail"><span class="trigger-check">✗</span><span class="trigger-name">Social proof</span><span class="trigger-note">Немає кількості reviews або ratings — typical for retargeting ad</span></div>
+            <div class="trigger-row fail"><span class="trigger-check">✗</span><span class="trigger-name">Authority / expert</span><span class="trigger-note">Немає doctor face або endorsement — is intentional, keeps premium feel</span></div>
+            <div class="trigger-row fail"><span class="trigger-check">✗</span><span class="trigger-name">Before / After</span><span class="trigger-note">Чисто offer-focused, немає трансформаційного наративу</span></div>
+            <div class="trigger-row warn"><span class="trigger-check">~</span><span class="trigger-name">Specificity</span><span class="trigger-note">$70 value specific, але таймфрейм результату відсутній</span></div>
           </div>
-        </div>
-
-        <div class="creative-block">
-          <div class="creative-block-label">Чого не вистачає</div>
-          <div class="creative-block-text">Немає UGC/social proof, немає reviews-counter, немає демографії. Це чисто bottom-funnel ad для теплої аудиторії або retargeting. Для cold traffic ймовірно є інші креативи з problem/solution структурою.</div>
+          <div class="creative-block-text" style="margin-top:0.75rem"><strong>Висновок:</strong> Bottom-funnel retargeting ad — не для cold traffic. Тригери вибрані під теплу аудиторію (offer-based, urgency, bundle). Для cold потрібна Problem/Solution структура + social proof.</div>
         </div>
 
         <div class="creative-block">
           <div class="creative-block-label">Як адаптувати під свій бренд</div>
-          <div class="creative-block-text">Premium product photography + light coloured background + bold offer pill + dollar-value anchor + soft urgency badge. Шаблон легко переноситься на будь-який supplement / cosmetics / wellness товар. Бюджет на зйомку: $300-600 для product photo + $50-100 на дизайн.</div>
+          <div class="creative-block-text">Premium product photography + light bg + bold offer pill + dollar-value anchor + soft urgency badge. Шаблон переноситься на будь-який supplement / cosmetics / wellness товар. Бюджет: $300-600 product photo + $50-100 дизайн.</div>
         </div>
       </div>
     </div>
@@ -1032,7 +1351,7 @@
         <h3>Креатив #2 — додай файл</h3>
         <div class="creative-block">
           <div class="creative-block-label">Як заповнити</div>
-          <div class="creative-block-text">Закинь скрін ad card з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/02.jpg</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/02.mp4</code> — і пиши «оновити дозьє simplynootropics». Я витягну фрейми, проаналізую хук і концепцію, перепишу цей блок.</div>
+          <div class="creative-block-text">Закинь скрін ad card з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/02.jpg</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/02.mp4</code> — і пиши «оновити дозьє simplynootropics».</div>
         </div>
       </div>
     </div>
@@ -1049,48 +1368,82 @@
         <h3>Креатив #3 — додай файл</h3>
         <div class="creative-block">
           <div class="creative-block-label">Як заповнити</div>
-          <div class="creative-block-text">Найкраще — взяти 3-4 креативи що активні в Ad Library найдовше (їх не вимикають = вони працюють). Звертай увагу на креативи з UGC-форматом, "Natasha"-серії, problem/solution структуру.</div>
+          <div class="creative-block-text">Найкраще — взяти 3-4 креативи що активні в Ad Library найдовше (не вимикають = працюють). Звертай увагу на UGC-формат, "Natasha"-серії, problem/solution структуру.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 07 — Pros / Cons -->
+<!-- 08 — Economics + Pros/Cons -->
 <section class="s">
-  <div class="s-num">07 — Чи варто тестувати</div>
-  <h2 class="s-title">Pros vs <em>cons</em> для нашого тесту</h2>
+  <div class="s-num">08 — Economics + Чи варто тестувати</div>
+  <h2 class="s-title">Бізнес <em>математика</em></h2>
+  <div class="econ-grid">
+    <div class="econ-cell">
+      <div class="econ-label">COGS estimate</div>
+      <div class="econ-value">~$25–40</div>
+      <div class="econ-note">NMN bulk powder ≥99% / 100g. Вище при MOQ &lt; 10kg.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Gross margin</div>
+      <div class="econ-value accent-text">70–82%</div>
+      <div class="econ-note">Типово для supplement DTC. Залишає хороший CAC-буфер.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Break-even ROAS</div>
+      <div class="econ-value">1.2–1.4×</div>
+      <div class="econ-note">На рівні першої покупки (3-month sub $139). Sub-model дозволяє low first-order ROAS.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Estimated LTV</div>
+      <div class="econ-value accent-text">$278–418</div>
+      <div class="econ-note">2-3 reorders при 50-60% retention на 3-місячній підписці.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Max CAC (3:1 LTV)</div>
+      <div class="econ-value">$90–140</div>
+      <div class="econ-note">При LTV $278–418 і LTV:CAC = 3:1. Агресивно але реально для Adv+.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Chargeback risk</div>
+      <div class="econ-value warn-text">5–12%</div>
+      <div class="econ-note">Типово для supplement subscription. Потрібен HK/processor setup.</div>
+    </div>
+  </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1.5rem">Чи варто тестувати</div>
   <div class="pc-grid">
     <div class="pc-col pros">
       <div class="pc-col-title pros">Pros</div>
       <ul>
         <li>Високий AOV ($139–384) — менше тестів треба щоб окупити CAC</li>
-        <li>Subscription-first модель — це безпосередньо те що ми хочемо для LTV Gang</li>
-        <li>Bundle hook ($70 free) — перевірена механіка, легко скопіювати під свій оффер</li>
+        <li>Subscription-first модель — безпосередньо те що треба для LTV Gang</li>
+        <li>Bundle hook ($70 free) — перевірена механіка, легко копіювати</li>
         <li>Категорія longevity росте 20-30% YoY, не насичена new entrants</li>
-        <li>Маржа на supplements 70-85% — економіка прощає невдалі тести</li>
-        <li>Ad library наповнена — можна вчитись на чужих перевірених креативах</li>
-        <li>UGC pipeline existing (Natasha &amp; Co) — можна найняти тих самих creators через FullSend/Insense</li>
+        <li>Маржа 70-85% — економіка прощає невдалі тести</li>
+        <li>Ad library наповнена — вчимось на перевірених креативах</li>
+        <li>UGC pipeline (Natasha &amp; Co) — можна найняти через FullSend/Insense</li>
       </ul>
     </div>
     <div class="pc-col cons">
       <div class="pc-col-title cons">Cons / risks</div>
       <ul>
-        <li><strong>FDA NMN status в US</strong> — у 2022 FDA сказала що NMN не може продаватись як supplement (NDIN issue). Шерс у US ризиковий, потрібен legal pathway або інший offer</li>
+        <li><strong>FDA NMN status в US</strong> — у 2022 FDA сказала що NMN не supplement (NDIN issue). US-market ризикований.</li>
         <li>Compliance — supplement claims тригерять Meta ad review, треба disclaimer'и</li>
-        <li>3rd-party testing — недешево ($800-2000/batch) і без нього немає trust signals</li>
-        <li>Висока конкуренція — Tru Niagen, ProHealth, DoNotAge, Renue by Science вже встановлені</li>
-        <li>Trust barrier на cold traffic — потрібно багато reviews, lab certs, possibly press</li>
-        <li>Subscription chargebacks — 5-12% типово для supplement, треба HK setup готовий</li>
-        <li>Inventory cost — pure NMN ≥99% коштує $100-200/100g оптом, потрібен MOQ закуп</li>
+        <li>3rd-party testing — $800-2000/batch, без цього немає trust signals</li>
+        <li>Висока конкуренція — Tru Niagen, ProHealth, DoNotAge вже встановлені</li>
+        <li>Trust barrier на cold traffic — потрібно reviews, lab certs, possibly press</li>
+        <li>Subscription chargebacks 5-12% — потрібен HK setup готовий</li>
+        <li>Inventory cost — pure NMN ≥99% $100-200/100g оптом, потрібен MOQ закуп</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- 08 — Verdict -->
+<!-- 09 — Verdict -->
 <section class="s">
-  <div class="s-num">08 — Verdict</div>
+  <div class="s-num">09 — Verdict</div>
   <h2 class="s-title">Що з <em>цим робити</em></h2>
   <div class="verdict">
     <div class="verdict-badge">↗</div>
@@ -1100,7 +1453,7 @@
         <p>Лізти прямим конкурентом до Simply Nootropics в US-market з NMN — погана ідея. FDA-issue, висока конкуренція, потреба в великому inventory upfront. Шанси невисокі.</p>
         <p>Що дійсно цінне в цьому дозьє — це <strong>повністю розкрита playbook</strong>: bundle hook + subscription-first + premium photography + UGC creators + 3rd-party testing trust signals + multi-region Advantage+ targeting. Ця механіка переноситься на десятки adjacent-ніш де немає такої конкуренції.</p>
         <p><strong>Що пропоную як next step:</strong> шукати adjacent supplement/wellness категорії (mood, sleep, sex hormones, recovery, hair, sun protection — те що не блокує FDA, або де регуляторне поле спокійніше у CA/AU/UK), і застосовувати точно цю саму playbook. Перші 2-3 продукти у нашу research queue — у цій логіці.</p>
-        <p>Дозьє лишаю в статусі <strong>Researching</strong>. Якщо зʼявиться 4-6 ще одна schaltest креативи — підіграй ще і завершимо. Інакше використовуємо як reference book.</p>
+        <p>Дозьє лишаю в статусі <strong>Researching</strong>. Якщо з'являться ще 4-6 креативів — підіграй ще і завершимо. Інакше використовуємо як reference book.</p>
       </div>
     </div>
   </div>
@@ -1127,7 +1480,7 @@
 <footer>
   <span>LTV Gang · Dossier · Simply Nootropics</span>
   <span id="footerStatus">Status: Researching</span>
-  <span>Updated: 2026-04-28</span>
+  <span>Updated: 2026-04-29</span>
 </footer>
 
 <script>
