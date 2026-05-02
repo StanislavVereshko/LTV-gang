@@ -59,6 +59,18 @@
     font-size: 16px;
     color: var(--white);
   }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gray); text-decoration: none;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 600px) { .nav-links { display: none; } }
   .nav-status-wrap { position: relative; }
   .nav-status {
     font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -938,6 +950,10 @@
 <nav>
   <a href="/dossiers" class="nav-back">всі дозьє</a>
   <div class="nav-title">Simply Nootropics</div>
+  <div class="nav-links">
+    <a href="https://simplynootropics.com/products/nmn-powder" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=123812149532445" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
   <div class="nav-status-wrap" id="statusWrap" data-dossier="simplynootropics">
     <button class="nav-status" id="statusBtn">
       <span id="statusLabel">Researching</span>
