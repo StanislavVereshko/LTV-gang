@@ -194,55 +194,55 @@
     line-height: 1.7;
     margin-bottom: 2rem;
   }
-  .hero-meta {
+  .hero-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    max-width: 540px;
+    gap: 8px;
+    max-width: 560px;
   }
-  .hero-adlib {
-    margin-top: 1px;
-    max-width: 540px;
-    background: var(--border);
+  .hero-stat {
+    background: rgba(255,255,255,0.03);
     border: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 1px;
-  }
-  .hero-adlib-cell {
-    background: var(--black);
-    padding: 0.85rem 1.25rem;
+    border-radius: 6px;
+    padding: 1rem 1.1rem 1.1rem;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
   }
-  .hero-adlib-cell.link {
-    align-items: center;
-    justify-content: center;
-    background: var(--black);
-    transition: background 0.2s;
+  .hero-stat.wide {
+    grid-column: 1 / -1;
   }
-  .hero-adlib-cell.link:hover { background: rgba(200,255,0,0.05); }
-  .hero-adlib-cell.link a {
-    font-size: 10px;
+  .hero-stat-label {
+    font-size: 9px; color: var(--gray);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .hero-stat-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--white);
+  }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .hero-stat-sub .tag {
+    display: inline-block;
+    background: rgba(200,255,0,0.12);
     color: var(--accent);
-    letter-spacing: 0.1em;
+    font-size: 9px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-right: 4px;
   }
-  .hero-adlib-cell.link a::after { content: '↗'; font-size: 12px; }
-  .hero-meta-item {
-    background: var(--black);
-    padding: 1rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+  /* legacy — kept for adlib compat */
   .hero-meta-label {
     font-size: 10px; color: var(--gray);
     letter-spacing: 0.15em; text-transform: uppercase;
@@ -978,31 +978,28 @@
       <a href="https://simplynootropics.com/products/nmn-powder" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
       <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=123812149532445" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
     </div>
-    <div class="hero-meta">
-      <div class="hero-meta-item">
-        <span class="hero-meta-label">Sub price</span>
-        <span class="hero-meta-value"><span class="accent">$139</span>/3 міс</span>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value">Ageless <span class="accent">NMN</span> Powder</div>
+        <div class="hero-stat-sub">100g тин · ≥99% pure · 3-month supply at 1g/day</div>
       </div>
-      <div class="hero-meta-item">
-        <span class="hero-meta-label">AOV diapazon</span>
-        <span class="hero-meta-value"><span class="accent">$139</span>–$384</span>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Sub price · US</div>
+        <div class="hero-stat-value"><span class="accent">$71.20</span></div>
+        <div class="hero-stat-sub">/ 3 місяці · 33% off · cancel anytime</div>
       </div>
-      <div class="hero-meta-item">
-        <span class="hero-meta-label">Bundle / upsell</span>
-        <span class="hero-meta-value" style="font-size:15px">✓ <span style="font-family:'DM Mono',monospace;font-style:normal;font-size:12px;color:rgba(245,242,236,0.6)">Free TMG €39</span></span>
+      <div class="hero-stat">
+        <div class="hero-stat-label">One-time · US</div>
+        <div class="hero-stat-value">$89</div>
+        <div class="hero-stat-sub">–18% за sub · reg $109</div>
       </div>
-    </div>
-    <div class="hero-adlib">
-      <div class="hero-adlib-cell">
-        <span class="hero-meta-label">Активних оголошень</span>
-        <span class="hero-meta-value" style="font-size:20px">—</span>
-      </div>
-      <div class="hero-adlib-cell">
-        <span class="hero-meta-label">Найстаріше оголошення</span>
-        <span class="hero-meta-value" style="font-size:20px">—</span>
-      </div>
-      <div class="hero-adlib-cell link">
-        <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=123812149532445" target="_blank">Ad Library</a>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Bundle / Upsell</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">✓</span> Free TMG Powder <span style="font-size:14px;color:var(--gray)">$44 (US) / €39 (EU)</span></div>
+        <div class="hero-stat-sub">
+          <span class="tag">з кожним NMN</span>Автоматично додається до замовлення — не треба додавати вручну. На EU лімітований (next 300 orders) — soft scarcity. На US включений в обидва варіанти покупки (sub і OTP) + free shipping на підписці. TMG синергує з NMN по метилюванню — бренд це пояснює в copy, перетворюючи gift на механізм а не просто бонус.
+        </div>
       </div>
     </div>
   </div>
