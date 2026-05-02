@@ -821,6 +821,78 @@
   }
   .econ-note { font-size: 11px; color: var(--gray); line-height: 1.55; }
 
+  /* BENCHMARK TABLE */
+  .bench-grid {
+    border: 1px solid var(--border);
+    background: var(--border);
+    display: flex; flex-direction: column; gap: 1px;
+    margin-top: 1rem;
+  }
+  .bench-row {
+    background: var(--black);
+    display: grid;
+    grid-template-columns: 1fr 140px 130px 130px;
+    align-items: center;
+  }
+  .bench-row.header {
+    background: rgba(255,255,255,0.02);
+    font-size: 10px; color: var(--gray);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .bench-row > span { padding: 0.85rem 1.25rem; border-right: 1px solid var(--border); font-size: 13px; }
+  .bench-row > span:last-child { border-right: none; }
+  .bench-name { color: rgba(245,242,236,0.85); }
+  .bench-good { color: var(--good); font-family: 'Instrument Serif', serif; font-style: italic; font-size: 16px !important; }
+  .bench-ok { color: var(--warn); font-size: 12px !important; }
+  .bench-kill { color: var(--bad); font-size: 12px !important; }
+  @media (max-width: 700px) {
+    .bench-row { grid-template-columns: 1fr 1fr; }
+    .bench-row .bench-ok, .bench-row .bench-kill { display: none; }
+  }
+
+  /* PROJECTION */
+  .proj-wrap {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+  @media (max-width: 700px) { .proj-wrap { grid-template-columns: 1fr; } }
+  .proj-col { background: var(--black); padding: 1.5rem; }
+  .proj-col-title {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+  }
+  .proj-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .proj-row:last-child { border-bottom: none; }
+  .proj-key { color: var(--gray); font-size: 12px; }
+  .proj-val { color: var(--white); font-family: 'Instrument Serif', serif; font-style: italic; font-size: 17px; }
+  .proj-val.good { color: var(--good); }
+  .proj-val.warn { color: var(--warn); }
+
+  /* TEST PHASES */
+  .test-phases {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+  @media (max-width: 700px) { .test-phases { grid-template-columns: 1fr; } }
+  .test-phase { background: var(--black); padding: 1.5rem; }
+  .test-phase-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .test-phase-budget { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 32px; margin-bottom: 0.75rem; }
+  .test-phase h5 { font-size: 13px; margin-bottom: 0.75rem; color: rgba(245,242,236,0.9); font-weight: 400; }
+  .test-phase ul { list-style: none; }
+  .test-phase li {
+    font-size: 12px; color: rgba(245,242,236,0.65);
+    padding: 0.35rem 0; border-bottom: 1px solid var(--border);
+    line-height: 1.55; display: flex; gap: 8px; align-items: flex-start;
+  }
+  .test-phase li:last-child { border-bottom: none; }
+  .test-phase li::before { content: '→'; color: var(--accent); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+
   /* SOURCES */
   .sources {
     border-top: 1px solid var(--border);
@@ -970,9 +1042,183 @@
   </div>
 </section>
 
-<!-- 02 — Offer anatomy -->
+<!-- 02 — Economics & Projections -->
 <section class="s">
-  <div class="s-num">02 — Offer anatomy</div>
+  <div class="s-num">02 — Economics &amp; Projections</div>
+  <h2 class="s-title">Бізнес <em>математика</em></h2>
+  <div class="econ-grid">
+    <div class="econ-cell">
+      <div class="econ-label">COGS estimate</div>
+      <div class="econ-value">~$25–40</div>
+      <div class="econ-note">NMN bulk powder ≥99% / 100g. Вище при MOQ &lt; 10kg.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Gross margin</div>
+      <div class="econ-value accent-text">70–82%</div>
+      <div class="econ-note">Типово для supplement DTC. Залишає хороший CAC-буфер.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Break-even ROAS</div>
+      <div class="econ-value">1.2–1.4×</div>
+      <div class="econ-note">На рівні першої покупки ($139). Sub-model дозволяє low first-order ROAS.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Estimated LTV</div>
+      <div class="econ-value accent-text">$278–418</div>
+      <div class="econ-note">2-3 reorders при 50-60% retention на 3-місячній підписці.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Max CAC (3:1 LTV)</div>
+      <div class="econ-value">$90–140</div>
+      <div class="econ-note">При LTV $278–418 і LTV:CAC = 3:1. Реально для Adv+.</div>
+    </div>
+    <div class="econ-cell">
+      <div class="econ-label">Chargeback risk</div>
+      <div class="econ-value warn-text">5–12%</div>
+      <div class="econ-note">Типово для supplement subscription. Потрібен HK/processor setup.</div>
+    </div>
+  </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1rem">Facebook benchmarks · цілі для $139 offer</div>
+  <div class="bench-grid">
+    <div class="bench-row header">
+      <span>Метрика</span><span>Ціль (добре)</span><span>Прийнятно</span><span>Kill threshold</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">CPP · Cost Per Purchase</span>
+      <span class="bench-good">$35–55</span>
+      <span class="bench-ok">$56–80</span>
+      <span class="bench-kill">&gt;$100</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">CPC · link click</span>
+      <span class="bench-good">$0.80–1.50</span>
+      <span class="bench-ok">$1.51–2.50</span>
+      <span class="bench-kill">&gt;$3.00</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">CTR · link click rate</span>
+      <span class="bench-good">&gt;2.5%</span>
+      <span class="bench-ok">1.5–2.5%</span>
+      <span class="bench-kill">&lt;1%</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">CVR · landing → purchase</span>
+      <span class="bench-good">&gt;3%</span>
+      <span class="bench-ok">2–3%</span>
+      <span class="bench-kill">&lt;1.5%</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">ROAS · перша покупка</span>
+      <span class="bench-good">&gt;2.5×</span>
+      <span class="bench-ok">1.8–2.5×</span>
+      <span class="bench-kill">&lt;1.5×</span>
+    </div>
+    <div class="bench-row">
+      <span class="bench-name">Frequency · до creative burnout</span>
+      <span class="bench-good">1.5–2.5</span>
+      <span class="bench-ok">2.6–3.5</span>
+      <span class="bench-kill">&gt;4.0</span>
+    </div>
+  </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1rem">Базовий сценарій · $1,000 тест-бюджет</div>
+  <div class="proj-wrap">
+    <div class="proj-col">
+      <div class="proj-col-title">Місяць 1 · Cold traffic test</div>
+      <div class="proj-row"><span class="proj-key">Рекламний бюджет</span><span class="proj-val">$1,000</span></div>
+      <div class="proj-row"><span class="proj-key">Avg CPC (прогноз Meta)</span><span class="proj-val">~$1.50</span></div>
+      <div class="proj-row"><span class="proj-key">Кліків</span><span class="proj-val">~667</span></div>
+      <div class="proj-row"><span class="proj-key">CVR (прогноз)</span><span class="proj-val">2.5%</span></div>
+      <div class="proj-row"><span class="proj-key">Покупок</span><span class="proj-val">~17</span></div>
+      <div class="proj-row"><span class="proj-key">Revenue (AOV $139)</span><span class="proj-val">~$2,363</span></div>
+      <div class="proj-row"><span class="proj-key">ROAS</span><span class="proj-val good">2.36×</span></div>
+      <div class="proj-row"><span class="proj-key">Gross profit (75%)</span><span class="proj-val">~$1,772</span></div>
+      <div class="proj-row"><span class="proj-key">CPP (avg)</span><span class="proj-val warn">~$59</span></div>
+      <div class="proj-row"><span class="proj-key">Profit після ad spend</span><span class="proj-val good">+$772</span></div>
+    </div>
+    <div class="proj-col">
+      <div class="proj-col-title">Місяць 2 · Subscription retention</div>
+      <div class="proj-row"><span class="proj-key">Рекламний бюджет</span><span class="proj-val">$0</span></div>
+      <div class="proj-row"><span class="proj-key">Retention rate (3-mo sub)</span><span class="proj-val">~50%</span></div>
+      <div class="proj-row"><span class="proj-key">Reorders (з 17 покупців)</span><span class="proj-val">~8–9</span></div>
+      <div class="proj-row"><span class="proj-key">Additional revenue</span><span class="proj-val good">+$1,112</span></div>
+      <div class="proj-row"><span class="proj-key">Gross profit (75%)</span><span class="proj-val good">+$834</span></div>
+      <div class="proj-row"><span class="proj-key">Cumul. 2-month profit</span><span class="proj-val good">+$1,606</span></div>
+      <div class="proj-row"><span class="proj-key">Effective LTV:CAC</span><span class="proj-val good">~2.6×</span></div>
+      <div class="proj-row" style="padding-top:0.65rem"><span class="proj-key" style="font-size:11px;color:rgba(245,242,236,0.4)">Якщо 50% продовжують ще раз (9-mo cycle): ще +$554 без нових витрат на рекламу</span><span></span></div>
+    </div>
+  </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1rem">Як тестувати · розподіл $1,000</div>
+  <div class="test-phases">
+    <div class="test-phase">
+      <div class="test-phase-label">Phase 1 · Дні 1–4</div>
+      <div class="test-phase-budget">$300</div>
+      <h5>Тест креативів</h5>
+      <ul>
+        <li>3 ad sets × $100: A1 Anti-aging, A2 Energy, A6 Skeptic</li>
+        <li>Targeting: Broad / Advantage+, жінки 35–65, всі плейсменти</li>
+        <li>Kill правило: $80 spend і немає покупки → пауза</li>
+        <li>Мета: знайти winning angle</li>
+      </ul>
+    </div>
+    <div class="test-phase">
+      <div class="test-phase-label">Phase 2 · Дні 5–8</div>
+      <div class="test-phase-budget">$400</div>
+      <h5>Тест аудиторій</h5>
+      <ul>
+        <li>Winning angle × 2 audiences: Broad vs Wellness interests</li>
+        <li>$200 кожен, 3–4 дні</li>
+        <li>Kill якщо ROAS &lt;1.5× після $150 spend</li>
+        <li>Мета: знайти winning audience combo</li>
+      </ul>
+    </div>
+    <div class="test-phase">
+      <div class="test-phase-label">Phase 3 · Дні 9–12</div>
+      <div class="test-phase-budget">$300</div>
+      <h5>Scale &amp; validate</h5>
+      <ul>
+        <li>Winning angle + winning audience combo</li>
+        <li>+1 new hook variant того самого angle</li>
+        <li>Budget cap $100/day, підіймати не частіше ніж раз на 72h</li>
+        <li>Мета: підтвердити profitable unit economics перед scale</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="s-num" style="margin-top:3rem;margin-bottom:1.5rem">Чи варто тестувати</div>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Pros</div>
+      <ul>
+        <li>Високий AOV ($139–384) — менше тестів треба щоб окупити CAC</li>
+        <li>Subscription-first модель — безпосередньо те що треба для LTV Gang</li>
+        <li>Bundle hook ($70 free) — перевірена механіка, легко копіювати</li>
+        <li>Категорія longevity росте 20-30% YoY, не насичена new entrants</li>
+        <li>Маржа 70-85% — економіка прощає невдалі тести</li>
+        <li>Ad library наповнена — вчимось на перевірених креативах</li>
+        <li>UGC pipeline (Natasha &amp; Co) — можна найняти через FullSend/Insense</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Cons / risks</div>
+      <ul>
+        <li><strong>FDA NMN status в US</strong> — у 2022 FDA сказала що NMN не supplement (NDIN issue). US-market ризикований.</li>
+        <li>Compliance — supplement claims тригерять Meta ad review, треба disclaimer'и</li>
+        <li>3rd-party testing — $800-2000/batch, без цього немає trust signals</li>
+        <li>Висока конкуренція — Tru Niagen, ProHealth, DoNotAge вже встановлені</li>
+        <li>Trust barrier на cold traffic — потрібно reviews, lab certs, possibly press</li>
+        <li>Subscription chargebacks 5-12% — потрібен HK setup готовий</li>
+        <li>Inventory cost — pure NMN ≥99% $100-200/100g оптом, потрібен MOQ закуп</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">03 — Offer anatomy</div>
   <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
   <div class="s-body">
     <p>Value = (Dream Outcome × Likelihood) / (Time Delay × Effort). Чим вища перша частина і нижча друга — тим сильніший offer. Simply Nootropics оптимізує всі 4 ліфти одночасно.</p>
@@ -1009,9 +1255,9 @@
   </div>
 </section>
 
-<!-- 03 — Audience + JTBD -->
+<!-- 04 — Audience + JTBD -->
 <section class="s">
-  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <div class="s-num">04 — Цільова аудиторія + JTBD</div>
   <h2 class="s-title">Хто <em>купує</em> і навіщо</h2>
   <div class="tier-list">
     <div class="tier-cell">
@@ -1053,9 +1299,9 @@
   </div>
 </section>
 
-<!-- 04 — Pains + Amplification -->
+<!-- 05 — Pains + Amplification -->
 <section class="s">
-  <div class="s-num">04 — Болі + Amplification</div>
+  <div class="s-num">05 — Болі + Amplification</div>
   <h2 class="s-title">На що <em>давлять</em> і як підсилюють</h2>
   <div class="tier-list">
     <div class="tier-cell">
@@ -1097,9 +1343,9 @@
   </div>
 </section>
 
-<!-- 05 — Funnel intelligence + Landing audit -->
+<!-- 06 — Funnel intelligence -->
 <section class="s">
-  <div class="s-num">05 — Funnel intelligence + Landing audit</div>
+  <div class="s-num">06 — Funnel intelligence</div>
   <h2 class="s-title">Що видно з <em>UTM-розшифровки</em></h2>
   <div class="s-body">
     <p>Лінк на продукт прийшов з utm-параметрами, які розкривають внутрішній naming-convention їх ad-ops. Це дорогий сигнал — означає що це не один-фрілансер запускає Meta-ads, а команда з трекінговим стандартом.</p>
@@ -1118,59 +1364,11 @@
     <p>Funnel простий: ad → product page (без advertorial-проміжку), price-anchor через subscription tiers (3/6/9 міс), upsell через bundle (free TMG).</p>
   </div>
 
-  <div class="s-num" style="margin-top:3rem;margin-bottom:1rem">Landing page audit · DR checklist</div>
-  <div class="audit-grid">
-    <div class="audit-row pass">
-      <span class="audit-step">01</span><span class="audit-check">✓</span>
-      <span class="audit-name">Attention / Hook</span>
-      <span class="audit-note">Hero headline "Ageless NMN" + product shot above fold. Клін преміум візуал зупиняє скрол.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">02</span><span class="audit-check">✓</span>
-      <span class="audit-name">Pain stated</span>
-      <span class="audit-note">"NAD+ levels drop 50% by age 40" — конкретна статистика болю першою секцією.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">03</span><span class="audit-check">✓</span>
-      <span class="audit-name">Amplification</span>
-      <span class="audit-note">Aging narrative + cellular decline framework. Проблема робиться worse before promising solution.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">04</span><span class="audit-check">✓</span>
-      <span class="audit-name">Promise</span>
-      <span class="audit-note">"Feel the difference in 2–3 weeks" — специфічний таймфрейм і outcome.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">05</span><span class="audit-check">✓</span>
-      <span class="audit-name">Mechanism</span>
-      <span class="audit-note">NAD+ precursor → клітинна енергетика. Не магія, а псевдо-наукова механіка.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">06</span><span class="audit-check">✓</span>
-      <span class="audit-name">Social proof</span>
-      <span class="audit-note">Trustpilot 4.7★, Women's Weekly editorial, lab certificate images. Triple-layer proof.</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">07</span><span class="audit-check">✓</span>
-      <span class="audit-name">Offer presentation</span>
-      <span class="audit-note">3 subscription tiers + free TMG bundle. Ціни відображають value descending (9-month best value).</span>
-    </div>
-    <div class="audit-row pass">
-      <span class="audit-step">08</span><span class="audit-check">✓</span>
-      <span class="audit-name">Risk reversal</span>
-      <span class="audit-note">90-day money-back guarantee + free TMG ($70 value). Психологічна ціна = $69, не $139.</span>
-    </div>
-    <div class="audit-row fail">
-      <span class="audit-step">09</span><span class="audit-check">✗</span>
-      <span class="audit-name">Continuity / Scarcity</span>
-      <span class="audit-note">Немає таймера або countdown на сторінці. "Limited time" обіцяється тільки в рекламі — на лендингу urgency втрачається.</span>
-    </div>
-  </div>
 </section>
 
-<!-- 06 — Sales angles + DR structure -->
+<!-- 07 — Sales angles -->
 <section class="s">
-  <div class="s-num">06 — Sales angles</div>
+  <div class="s-num">07 — Sales angles</div>
   <h2 class="s-title">Кути для <em>креативів</em></h2>
   <div class="angle-grid">
     <div class="angle">
@@ -1266,9 +1464,9 @@
   </div>
 </section>
 
-<!-- 07 — Creatives + trigger audit -->
+<!-- 08 — Creatives + trigger audit -->
 <section class="s">
-  <div class="s-num">07 — Розбір креативів</div>
+  <div class="s-num">08 — Розбір креативів</div>
   <h2 class="s-title">Топ <em>ads</em></h2>
   <div class="s-body">
     <p>Поки в матеріалі — 1 креатив, який дав ти. Як скинеш ще 3-4 з Ad Library у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">screenshots/</code> або відео в <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/</code> — додам блоки з аналізом і фреймами.</p>
@@ -1371,72 +1569,6 @@
           <div class="creative-block-text">Найкраще — взяти 3-4 креативи що активні в Ad Library найдовше (не вимикають = працюють). Звертай увагу на UGC-формат, "Natasha"-серії, problem/solution структуру.</div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- 08 — Economics + Pros/Cons -->
-<section class="s">
-  <div class="s-num">08 — Economics + Чи варто тестувати</div>
-  <h2 class="s-title">Бізнес <em>математика</em></h2>
-  <div class="econ-grid">
-    <div class="econ-cell">
-      <div class="econ-label">COGS estimate</div>
-      <div class="econ-value">~$25–40</div>
-      <div class="econ-note">NMN bulk powder ≥99% / 100g. Вище при MOQ &lt; 10kg.</div>
-    </div>
-    <div class="econ-cell">
-      <div class="econ-label">Gross margin</div>
-      <div class="econ-value accent-text">70–82%</div>
-      <div class="econ-note">Типово для supplement DTC. Залишає хороший CAC-буфер.</div>
-    </div>
-    <div class="econ-cell">
-      <div class="econ-label">Break-even ROAS</div>
-      <div class="econ-value">1.2–1.4×</div>
-      <div class="econ-note">На рівні першої покупки (3-month sub $139). Sub-model дозволяє low first-order ROAS.</div>
-    </div>
-    <div class="econ-cell">
-      <div class="econ-label">Estimated LTV</div>
-      <div class="econ-value accent-text">$278–418</div>
-      <div class="econ-note">2-3 reorders при 50-60% retention на 3-місячній підписці.</div>
-    </div>
-    <div class="econ-cell">
-      <div class="econ-label">Max CAC (3:1 LTV)</div>
-      <div class="econ-value">$90–140</div>
-      <div class="econ-note">При LTV $278–418 і LTV:CAC = 3:1. Агресивно але реально для Adv+.</div>
-    </div>
-    <div class="econ-cell">
-      <div class="econ-label">Chargeback risk</div>
-      <div class="econ-value warn-text">5–12%</div>
-      <div class="econ-note">Типово для supplement subscription. Потрібен HK/processor setup.</div>
-    </div>
-  </div>
-
-  <div class="s-num" style="margin-top:3rem;margin-bottom:1.5rem">Чи варто тестувати</div>
-  <div class="pc-grid">
-    <div class="pc-col pros">
-      <div class="pc-col-title pros">Pros</div>
-      <ul>
-        <li>Високий AOV ($139–384) — менше тестів треба щоб окупити CAC</li>
-        <li>Subscription-first модель — безпосередньо те що треба для LTV Gang</li>
-        <li>Bundle hook ($70 free) — перевірена механіка, легко копіювати</li>
-        <li>Категорія longevity росте 20-30% YoY, не насичена new entrants</li>
-        <li>Маржа 70-85% — економіка прощає невдалі тести</li>
-        <li>Ad library наповнена — вчимось на перевірених креативах</li>
-        <li>UGC pipeline (Natasha &amp; Co) — можна найняти через FullSend/Insense</li>
-      </ul>
-    </div>
-    <div class="pc-col cons">
-      <div class="pc-col-title cons">Cons / risks</div>
-      <ul>
-        <li><strong>FDA NMN status в US</strong> — у 2022 FDA сказала що NMN не supplement (NDIN issue). US-market ризикований.</li>
-        <li>Compliance — supplement claims тригерять Meta ad review, треба disclaimer'и</li>
-        <li>3rd-party testing — $800-2000/batch, без цього немає trust signals</li>
-        <li>Висока конкуренція — Tru Niagen, ProHealth, DoNotAge вже встановлені</li>
-        <li>Trust barrier на cold traffic — потрібно reviews, lab certs, possibly press</li>
-        <li>Subscription chargebacks 5-12% — потрібен HK setup готовий</li>
-        <li>Inventory cost — pure NMN ≥99% $100-200/100g оптом, потрібен MOQ закуп</li>
-      </ul>
     </div>
   </div>
 </section>
