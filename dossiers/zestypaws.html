@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zesty Paws — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-back {
+    font-size: 11px; color: var(--gray);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--white);
+  }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gray); text-decoration: none;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 12px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 2px;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 150px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 200;
+    flex-direction: column;
+  }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option {
+    padding: 0.65rem 1rem;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gray);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover,
+  .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover,
+  .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover,
+  .status-option[data-status="pass"].active { color: var(--bad); }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 4rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+  }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .hero-product-desc-label {
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem;
+  }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 8vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag {
+    max-width: 540px; font-size: 16px;
+    color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem;
+  }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; max-width: 560px;
+  }
+  .hero-stat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.1rem 1.1rem;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label {
+    font-size: 9px; color: var(--gray);
+    letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .hero-stat-value {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white);
+  }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag {
+    display: inline-block;
+    background: rgba(200,255,0,0.12); color: var(--accent);
+    font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 2px; margin-right: 4px;
+  }
+  .hero-image {
+    background: linear-gradient(135deg, #e8f4e8 0%, #c8e6c8 100%);
+    aspect-ratio: 3/4; max-height: 420px; border-radius: 3px;
+    display: flex; flex-direction: column; align-items: stretch; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-image img {
+    width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0;
+  }
+  .hero-image-label {
+    background: rgba(10,10,10,0.72); backdrop-filter: blur(8px);
+    padding: 0.65rem 1rem; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(245,242,236,0.75);
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+  }
+  .hero-image-label strong {
+    font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px;
+    font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none;
+  }
+  .hero-image-empty {
+    text-align: center; color: rgba(10,10,10,0.5); padding: 2rem; font-size: 13px;
+  }
+
+  /* SECTION */
+  section.s {
+    padding: 5rem 2rem; border-top: 1px solid var(--border);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem;
+  }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  /* OFFER GRID */
+  .offer-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem;
+  }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label {
+    font-size: 10px; color: var(--gray);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .offer-cell-value {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2;
+  }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  /* VALUE EQUATION */
+  .value-eq-grid {
+    border: 1px solid var(--border); background: var(--border);
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .value-eq-row {
+    background: var(--black); display: grid;
+    grid-template-columns: 160px 1fr 110px; align-items: center;
+  }
+  .value-eq-row.header {
+    background: rgba(255,255,255,0.02); font-size: 10px;
+    color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  @media (max-width: 700px) {
+    .value-eq-row { grid-template-columns: 1fr; }
+    .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); }
+    .value-eq-row > span:last-child { border-bottom: none; }
+  }
+
+  /* TIERED LIST */
+  .tier-list {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 22px; margin-bottom: 0.5rem;
+  }
+  .tier-cell-tag {
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+
+  /* JTBD */
+  .jtbd-block {
+    margin-top: 1rem; padding: 0.75rem 1rem;
+    background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  /* ANGLES */
+  .angle-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: 22px; margin-bottom: 0.75rem;
+  }
+  .angle-hook {
+    font-size: 14px; color: var(--white); line-height: 1.6;
+    padding: 1rem; background: rgba(200,255,0,0.04);
+    border-left: 2px solid var(--accent); margin-top: 1rem;
+  }
+  .angle-hook-label {
+    font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block;
+  }
+
+  /* CREATIVES */
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative {
+    border: 1px solid var(--border); background: rgba(255,255,255,0.015);
+    padding: 1.5rem; border-radius: 3px;
+    display: grid; grid-template-columns: 280px 1fr; gap: 2rem;
+  }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media {
+    background: linear-gradient(135deg, #e8f4e8 0%, #c8e6c8 100%);
+    border-radius: 3px; overflow: hidden; aspect-ratio: 9/16;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .creative-media img, .creative-media video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .creative-media-empty {
+    text-align: center; padding: 1rem; font-size: 11px;
+    color: rgba(10,10,10,0.55); line-height: 1.5;
+  }
+  .creative-media-empty code {
+    background: rgba(10,10,10,0.1); padding: 2px 5px;
+    border-radius: 2px; color: rgba(10,10,10,0.75); font-size: 10px;
+  }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; padding: 4px 10px; border: 1px solid var(--border);
+    color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px;
+  }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 {
+    font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2;
+  }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label {
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+  .creative-quote {
+    font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px;
+    color: var(--white); padding: 0.75rem 1rem;
+    background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 0.5rem;
+  }
+
+  /* PROS / CONS */
+  .pc-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li {
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+    font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px;
+  }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  /* VERDICT */
+  .verdict {
+    background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%);
+    border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px;
+    display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start;
+  }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+
+  /* FUNNEL */
+  .funnel {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+    padding: 1.5rem; border-radius: 3px; font-family: 'DM Mono', monospace;
+    font-size: 12px; margin-bottom: 2rem; overflow-x: auto;
+  }
+  .funnel-row {
+    display: grid; grid-template-columns: 120px 1fr; gap: 1rem;
+    padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+  }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  /* SOURCES */
+  .sources {
+    border-top: 1px solid var(--border); padding: 3rem 2rem;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 3rem 2rem;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase;
+    flex-wrap: wrap; gap: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Zesty Paws</div>
+  <div class="nav-links">
+    <a href="https://zestypaws.com/products/calming-soft-chews-for-dogs" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=1569189553363588" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="zestypaws">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Pet supplements / Dog health</div>
+    <h1>Zesty<br><em>Paws</em></h1>
+    <p class="hero-tag">US-бренд з 380k+ відгуками що побудував домінуючу позицію в pet supplements через масований social proof і функціональний асортимент. Hero product — Calming Bites для собак: м'які жувальні ласощі з Suntheanine® проти тривожності. Продає через емоцію господаря, а не раціональний аргумент. NASC + B-Corp certified — credibility що відрізняє від китайського дропшипінгу.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://zestypaws.com/products/calming-soft-chews-for-dogs" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+      <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=1569189553363588" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value">Calming <span class="accent">Bites</span></div>
+        <div class="hero-stat-sub">Soft chews для тривожних собак · 50 / 90 / 180 ct</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Entry price</div>
+        <div class="hero-stat-value"><span class="accent">$24.97</span></div>
+        <div class="hero-stat-sub">50 ct · $0.50/chew · Subscribe & Save доступний</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Social proof</div>
+        <div class="hero-stat-value"><span class="accent">380k+</span></div>
+        <div class="hero-stat-sub">★★★★★ відгуків · NASC cert · B-Corp · 100% guarantee</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Product ecosystem / Upsell</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">8+</span> категорій supplements для собак і котів</div>
+        <div class="hero-stat-sub">
+          <span class="tag">cross-sell</span>Calming → Hip &amp; Joint → Multivitamin → Probiotic → Allergy — кожна наступна покупка природна якщо перша спрацювала. Free shipping від $60 штучно підвищує AOV. Subscribe &amp; Save + Rewards програма замикають покупця на повторних замовленнях без додаткової реклами.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://zestypaws.com/cdn/shop/products/calming-bites-dogs.png"
+           alt="Zesty Paws — Calming Bites"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none">Додай фото продукту<br><code>screenshots/hero.jpg</code></div>
+      <div class="hero-image-label">
+        <strong>Calming Bites for Dogs</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Ключові інгредієнти</div>
+      <p>Suntheanine® (клінічно досліджена форма L-Theanine), Ashwagandha, Chamomile, Valerian Root, L-Tryptophan, Hemp Seed, Passionflower, Magnesium Citrate. Смак: Peanut Butter або Turkey.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Calming <span class="accent">Bites</span></div>
+      <div class="offer-cell-note">Soft chews проти тривожності собак — грози, феєрверки, подорожі, сепарація</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing tiers</div>
+      <div class="offer-cell-value">$24.97 / <span class="accent">$35</span> / $63</div>
+      <div class="offer-cell-note">50 ct ($0.50/ea) · 90 ct ($0.39/ea) · 180 ct ($0.35/ea) "Best Value"</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Subscribe & Save</div>
+      <div class="offer-cell-value"><span class="accent">Auto-ship</span></div>
+      <div class="offer-cell-note">Recurring delivery + Rewards програма — повторні покупки без ремаркетингу</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">AOV lever</div>
+      <div class="offer-cell-value">Free ship <span class="accent">$60+</span></div>
+      <div class="offer-cell-note">Поріг free shipping підштовхує до 90ct або multi-product кошика</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Trust signals</div>
+      <div class="offer-cell-value"><span class="accent">NASC</span> · B-Corp</div>
+      <div class="offer-cell-note">Industry-certified якість + 100% satisfaction guarantee "We won't bark back"</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Positioning</div>
+      <div class="offer-cell-value">"Led by <span class="accent">Science</span>"</div>
+      <div class="offer-cell-note">Proprietary ingredients (Suntheanine®, OptiMSM®) відділяють від private-label конкурентів</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="s-body">
+    <p>Value = (Dream Outcome × Likelihood) / (Time Delay × Effort). Zesty Paws грає на емоції господаря — не на здоров'я собаки як таке, а на вину і безпорадність хазяїна який не може допомогти своєму улюбленцю.</p>
+  </div>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Спокійний, щасливий пес під час грози, феєрверків, подорожі. Господар перестає відчувати вину і безпорадність. "Peace of mind for pet and owner"</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">380,000+ 5-star reviews, NASC certified, Suntheanine® (clinically studied), B-Corp — triple-layer credibility. Ніхто інший в ніші не має такого масштабу доказів</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">Calming ефект в межах 30–60 хвилин для гострих ситуацій. Не "результат через 3 місяці" — а before-the-storm hook що дає негайний результат</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">М'який жувальний ласощ — собаки їдять самостійно, не треба ховати в їжу або силою давати таблетку. "Dogs love the taste" знімає останнє тертя</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">100% Satisfaction Guarantee — "Not happy? We won't bark back." Clever copy знижує сприйняту ризиковість першої покупки і одночасно підсилює brand personality</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Audience + JTBD -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Емоційні pet parents, 28–50</h4>
+      <p>Собака = член сім'ї. Коли пес страждає — хазяїн відчуває провину і безпорадність. Купують не supplement, а "спокій". Реагують на UGC від таких самих господарів, before/after відео. Жінки 30–45 домінують по об'єму.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Захистити собаку від стресу і перестати відчувати себе безпорадним господарем</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · high-intent</div>
+      <h4>Проблемні кейси: separation anxiety</h4>
+      <p>Собака руйнує речі, гавкає, не може залишатись сама. Господар шукає рішення активно, висока intent. Конвертуються на конкретні проблемні хуки ("destroys everything when I leave"). Готові до регулярної покупки якщо допомагає.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Вирішити конкретну поведінкову проблему — не "покращити здоров'я", а зупинити руйнування і гавкіт</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03 · ltv</div>
+      <h4>Активні / великі породи, 35–60</h4>
+      <p>Власники лабрадорів, голденів, бордер-коллі — суглоби і рухливість актуальні після 5–6 років. Купують Hip & Joint. Лояльні, рідше шукають альтернативи якщо бренд працює. Cross-sell між Calming і Joint природний.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Продовжити активність і комфорт пса на довгі роки — профілактика, не лікування</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04 · acquisition</div>
+      <h4>Нові власники щенят, 22–35</h4>
+      <p>Перший пес, перші проблеми. Активно гуглять і дивляться TikTok. Формують звички купівлі. Низький LTV на старті але якщо придбати їх зараз — ростуть разом з потребами пса (calming → joint → multivitamin).</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Бути "хорошим господарем" — зробити все правильно з самого початку</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Болі / заперечення -->
+<section class="s">
+  <div class="s-num">04 — Болі / заперечення</div>
+  <h2 class="s-title">На що <em>давлять</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 01</div>
+      <h4>Пес панікує під час грози</h4>
+      <p>Трясеться, ховається, скавучить. Господар не може нічого зробити — відчуття повної безпорадності. Сезонний тригер (4 липня, Новий рік) з передбачуваним піком попиту.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 02</div>
+      <h4>Separation anxiety — руйнування і гавкіт</h4>
+      <p>Сусіди скаржаться, меблі пошкоджені, господар боїться йти на роботу. Конкретна практична проблема з щоденним впливом на якість життя — сильний pull для першої покупки.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 01</div>
+      <h4>"Це просто седатив?"</h4>
+      <p>Страх що supplement "вимикає" особистість пса або шкодить здоров'ю. Контр: Suntheanine® не седативний, клінічно досліджений, підтримує природне розслаблення без сонливості. NASC cert підкріплює.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 02</div>
+      <h4>"Буде їсти?"</h4>
+      <p>Багато власників мали досвід з ліками що пес відмовлявся їсти. Контр: soft chew зі смаком Peanut Butter чи Turkey — собаки сприймають як ласощі, не як ліки. "Dogs love the taste" — ключовий claim.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Funnel intelligence -->
+<section class="s">
+  <div class="s-num">05 — Funnel intelligence</div>
+  <h2 class="s-title">Що видно з <em>трафіку</em></h2>
+  <div class="s-body">
+    <p>URL продукту прийшов через Google Shopping (srsltid параметр) — не через Facebook UTM. Це означає або що бренд активно веде PPC через Google Shopping, або що лінк поширювався органічно. FB рекламу вони точно ведуть — сторінка активна в Ad Library.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row"><span class="funnel-key">Attribution</span><span class="funnel-val">srsltid — Google Shopping / Surface attribution</span></div>
+    <div class="funnel-row"><span class="funnel-key">Landing</span><span class="funnel-val">Прямо на product page — без advertorial проміжку</span></div>
+    <div class="funnel-row"><span class="funnel-key">AOV push</span><span class="funnel-val">Free shipping від $60 → заохочує перехід з 50ct на 90ct або додавання другого продукту</span></div>
+    <div class="funnel-row"><span class="funnel-key">LTV механізм</span><span class="funnel-val">Subscribe & Save + Rewards програма "Get Zesty, Get Rewarded"</span></div>
+    <div class="funnel-row"><span class="funnel-key">Cross-sell</span><span class="funnel-val">Product finder quiz + 8+ категорій — природний upsell після першої покупки</span></div>
+    <div class="funnel-row"><span class="funnel-key">FB Page ID</span><span class="funnel-val">1569189553363588 — активна реклама, відсортована по impressions</span></div>
+  </div>
+  <div class="s-body">
+    <p><strong>Висновок:</strong> класична multi-channel стратегія — Google Shopping для intent-based трафіку (хтось вже шукає "calming chews for dogs"), Facebook для awareness і cold traffic через емоційні відео. Product page оптимізована під конверсію — tier pricing + free shipping threshold + social proof counter (380k reviews).</p>
+  </div>
+</section>
+
+<!-- 06 — Sales angles -->
+<section class="s">
+  <div class="s-num">06 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Panic / Storm</div>
+      <h4>Він трясеться кожного разу</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Сезонний кут — 4 липня, Новий рік, гроза. Запускати превентивно за 2–3 тижні до події. Емоція — провина господаря + полегшення після рішення.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Минулий Новий рік мій пес ховався під ліжком 4 години. Цього разу він спав у своєму кошику поки я дивилась феєрверки.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Separation Anxiety</div>
+      <h4>Сусіди знову скаржились</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Конкретна, щоденна проблема. Господар відчуває сором і стрес. Before/after формат — "раніше / тепер". Найсильніший кут для конверсії.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я боялась йти на роботу бо знала що він буде гавкати і гризти меблі. Два тижні на цих treats — і сусіди вперше не скаржились.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Science / Ingredient</div>
+      <h4>Не просто "заспокоїти" — Suntheanine®</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Скептики які вже пробували "заспокоюючі" засоби і розчарувались. Диференціація через клінічно досліджений інгредієнт vs generic supplements.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Більшість calming treats містять generic L-Theanine. В цих — Suntheanine®, єдина клінічно досліджена форма. Різниця відчутна з першого дня.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · Vet / Authority</div>
+      <h4>Що ветеринар рекомендує першим</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Credibility через медичний авторитет. Власники часто питають ветеринарів і довіряють їх думці більше ніж рекламі.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я запитала ветеринара що безпечно давати перед феєрверками. Перше що він назвав — Zesty Paws Calming Bites. Ось чому.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A5 · Taste / Easy</div>
+      <h4>Він думає що це ласощі</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Знімає заперечення "собака не буде їсти таблетки". Легкість прийому — головне тертя в pet supplements. Cute/funny формат для FB/TikTok.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Мій пес прибігає до мене сам коли бачить жовту пачку. Він думає що це treat. Я не буду його розчаровувати.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A6 · Social Proof Scale</div>
+      <h4>380,000 власників не можуть помилятись</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Масштаб відгуків сам по собі є аргументом. Warm audience і retargeting — коли людина вже бачила продукт але не купила.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        380,000 п'ятизіркових відгуків. Я теж спочатку не вірила. Потім спробувала. Тепер я один з цих 380 тисяч.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Розбір креативів -->
+<section class="s">
+  <div class="s-num">07 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Відсортовано по Impressions в FB Ad Library. Збережи скріни через Adspo → <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/zestypaws/screenshots/0X.jpg</code>. Відео → <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/zestypaws/creatives/0X.mp4</code>.</p>
+  </div>
+  <div class="creatives">
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/zestypaws/screenshots/01.jpg" alt="Creative 01"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          Збережи скрін<br><code>screenshots/01.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag accent">топ за impressions</span>
+          <span class="tag">статика або відео</span>
+        </div>
+        <h3>Creative 01 — додати після скріну</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Аналіз</div>
+          <div class="creative-block-text">Завантаж скріни з Ad Library і я розберу кожен — хук, механіку, чому працює і як адаптувати.</div>
+        </div>
+      </div>
+    </div>
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/zestypaws/screenshots/02.jpg" alt="Creative 02"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          Збережи скрін<br><code>screenshots/02.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">статика або відео</span>
+        </div>
+        <h3>Creative 02 — додати після скріну</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Аналіз</div>
+          <div class="creative-block-text">Завантаж скріни з Ad Library і я розберу кожен — хук, механіку, чому працює і як адаптувати.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — Verdict -->
+<section class="s">
+  <div class="s-num">08 — Вердикт</div>
+  <h2 class="s-title">Що <em>виносимо</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">★</div>
+    <div>
+      <div class="verdict-title">Сильний бренд, складний для прямого копіювання — вчити playbook</div>
+      <div class="verdict-text">
+        <p>Zesty Paws — зрілий бренд з масованим social proof (380k відгуків) який важко конкурентно відтворити. Пряма конкуренція з ними по calming ніші — складна задача для нового бренду без такого ж proof volume.</p>
+        <p>Що можна запозичити: <strong>емоційний кут "господар-який-страждає"</strong> замість "здоров'я собаки". Вина і безпорадність — сильніші тригери ніж wellness. Before/after структура з конкретними кейсами (сусіди, феєрверки, робота) конвертує краще ніж загальні claims.</p>
+        <p>Продуктова стратегія: entry product з низькою ціною ($24.97) → free shipping threshold що піднімає AOV → Subscribe & Save для LTV → product ecosystem для cross-sell. Кожен елемент посилює наступний.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <div class="pc-grid">
+      <div class="pc-col pros">
+        <div class="pc-col-title pros">Сильні сторони</div>
+        <ul>
+          <li>380k+ reviews — непереборна соціальна домінація в ніші</li>
+          <li>Proprietary ingredients (Suntheanine®) дають defensible differentiation</li>
+          <li>Emotional angle (власник, а не пес) — широша аудиторія</li>
+          <li>Product ecosystem: один клієнт = кілька категорій</li>
+          <li>NASC + B-Corp — credibility недоступний без реальних інвестицій</li>
+          <li>Acute use case (грози, феєрверки) + хронічний (щоденна тривожність) = два окремих хуки</li>
+        </ul>
+      </div>
+      <div class="pc-col cons">
+        <div class="pc-col-title cons">Слабкі сторони / ризики</div>
+        <ul>
+          <li>Висока конкуренція в pet supplements — Amazon переповнений аналогами</li>
+          <li>Subscription % і точна LTV не публічні — складно моделювати</li>
+          <li>Сезонність: пік попиту навколо 4 липня / Нового року може спотворювати ROAS</li>
+          <li>Ветеринарні claim обмежені — не можна рекламувати як "лікування"</li>
+          <li>Proprietary ingredients підвищують COGS vs generic формули конкурентів</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://zestypaws.com/products/calming-soft-chews-for-dogs" target="_blank">Zesty Paws — Calming Bites product page</a></li>
+    <li><a href="https://zestypaws.com/collections/shop-hip-joint/products/mobility-bites" target="_blank">Zesty Paws — Hip &amp; Joint Bites product page</a></li>
+    <li><a href="https://zestypaws.com" target="_blank">Zesty Paws — homepage</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=1569189553363588" target="_blank">FB Ad Library — Zesty Paws page</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Zesty Paws</span>
+  <span id="footerStatus">Status: Researching</span>
+  <span>Updated: 2026-05-03</span>
+</footer>
+
+<script>
+(() => {
+  const colors = {
+    researching: 'var(--accent)',
+    testing:     'var(--warn)',
+    win:         'var(--good)',
+    pass:        'var(--bad)',
+  };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const opts   = document.querySelectorAll('.status-option');
+  const key    = 'dossier-status-' + wrap.dataset.dossier;
+
+  function setStatus(val) {
+    const c = colors[val] || colors.researching;
+    btn.style.color = c;
+    btn.style.borderColor = c;
+    label.textContent = labels[val] || val;
+    footer.textContent = 'Status: ' + labels[val];
+    opts.forEach(o => o.classList.toggle('active', o.dataset.status === val));
+    localStorage.setItem(key, val);
+  }
+
+  const saved = localStorage.getItem(key);
+  if (saved) setStatus(saved);
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  opts.forEach(o => o.addEventListener('click', () => { setStatus(o.dataset.status); wrap.classList.remove('open'); }));
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+})();
+</script>
+
+</body>
+</html>
