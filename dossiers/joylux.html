@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joylux vFit — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+  }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-image { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-image-empty { text-align: center; color: rgba(245,242,236,0.3); padding: 2rem; font-size: 13px; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  .callout { background: rgba(200,255,0,0.04); border: 1px solid rgba(200,255,0,0.2); border-radius: 3px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+  .callout-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .callout p { font-size: 14px; color: rgba(245,242,236,0.85); line-height: 1.7; }
+
+  .value-eq-grid { border: 1px solid var(--border); background: var(--border); display: flex; flex-direction: column; gap: 1px; }
+  .value-eq-row { background: var(--black); display: grid; grid-template-columns: 160px 1fr 110px; align-items: center; }
+  .value-eq-row.header { background: rgba(255,255,255,0.02); font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  @media (max-width: 700px) { .value-eq-row { grid-template-columns: 1fr; } .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); } .value-eq-row > span:last-child { border-bottom: none; } }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle-desc { font-size: 12px; color: var(--gray); line-height: 1.6; margin-bottom: 0.5rem; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative { border: 1px solid var(--border); background: rgba(255,255,255,0.015); padding: 1.5rem; border-radius: 3px; display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 3px; overflow: hidden; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; position: relative; }
+  .creative-media img, .creative-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .creative-media-empty { text-align: center; padding: 1rem; font-size: 11px; color: rgba(245,242,236,0.3); line-height: 1.5; }
+  .creative-media-empty code { background: rgba(255,255,255,0.05); padding: 2px 5px; border-radius: 2px; color: var(--accent); font-size: 10px; }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2; }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; overflow-x: auto; }
+  .funnel-row { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Joylux vFit®</div>
+  <div class="nav-links">
+    <a href="https://joylux.com/products/vfit" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?ad_type=all&country=ALL&source=page-transparency-widget&view_all_page_id=337842033294658" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="joylux">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Beauty device / Women's intimate wellness</div>
+    <h1>Joylux<br><em>vFit®</em></h1>
+    <p class="hero-tag">Red light + heat + sonic vibration для відновлення інтимного здоров'я жінок після пологів і в менопаузі. Розроблений OB-GYN, рекомендований 1,000+ лікарів. Ключова фішка — безкоштовна апка + платна підписка membHERship: апка синхронізує пристрій, трекає прогрес, дає доступ до куратованих продуктів. Dual-ecosystem: ecom device + recurring subscription.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://joylux.com/products/vfit" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+      <a href="https://www.facebook.com/ads/library/?ad_type=all&country=ALL&source=page-transparency-widget&view_all_page_id=337842033294658" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">OTP (device only)</div>
+        <div class="hero-stat-value"><span class="accent">$395</span></div>
+        <div class="hero-stat-sub">Starter Kit $411 (+ Photonic Gel + Wipes) · sale від $433</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">membHERship</div>
+        <div class="hero-stat-value"><span class="accent">$169</span> → <span class="accent">$39</span></div>
+        <div class="hero-stat-sub">Міс. 1: $169 (девайс в розстрочку) → міс. 2–6: $69/міс → після 6 міс: $39/міс</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Endorsement</div>
+        <div class="hero-stat-value"><span class="accent">1,000+</span></div>
+        <div class="hero-stat-sub">Медичних спеціалістів · OB-GYN designed · Vogue · Goop · Forbes</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Екосистема</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">Безкоштовна апка</span> + <span class="accent">membHERship</span> підписка</div>
+        <div class="hero-stat-sub">
+          <span class="tag">dual revenue</span>Joylux App (iOS + Android): трекінг сесій і симптомів, прогрес, синхронізація з девайсом. membHERship додає щомісячні куратовані набори продуктів для менопаузи зі знижкою 25%. 6-міс мінімальний контракт — вбудований LTV.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://joylux.com/cdn/shop/files/vfit-device-350891.jpg?v=1768599664&width=600"
+           alt="Joylux vFit Device"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none"></div>
+      <div class="hero-image-label">
+        <strong>vFit® Device</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Що це</div>
+      <p>Інтимний wellness-пристрій на основі червоного світла (662nm LED), м'якого тепла і звукової вібрації. Вставляється вагінально, 6–10 хвилин 3 рази на тиждень. Покращує природне зволоження, тонус і чутливість тканин без гормонів. Клінічна технологія вдома — розроблена гінекологами для жінок після пологів і під час менопаузи.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">vFit® <span class="accent">Device</span></div>
+      <div class="offer-cell-note">Red light 662nm + тепло + sonic vibration · medical-grade silicone · 6-10 хв сесії</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Starter Kit (рекомендований)</div>
+      <div class="offer-cell-value"><span class="accent">$411</span></div>
+      <div class="offer-cell-note">vFit + Photonic Gel (45% більше потужності) + Photonic Wipes · sale від $433</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">membHERship (підписка)</div>
+      <div class="offer-cell-value">$169 → <span class="accent">$39/міс</span></div>
+      <div class="offer-cell-note">Девайс "безкоштовно" в розстрочку + куратовані набори + 25% знижка · 6-міс мінімум</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Апка (безкоштовно)</div>
+      <div class="offer-cell-value">Joylux <span class="accent">App</span></div>
+      <div class="offer-cell-note">iOS + Android · трекінг сесій і симптомів · прогрес · синхронізація пристрою</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Authority</div>
+      <div class="offer-cell-value"><span class="accent">1,000+</span> лікарів</div>
+      <div class="offer-cell-note">OB-GYN designed · рекомендовано медичними спеціалістами · Vogue, Goop, Forbes, Daily Mail</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Risk reversal</div>
+      <div class="offer-cell-value"><span class="accent">60</span>-day return</div>
+      <div class="offer-cell-note">Повернення unopened + limited warranty при реєстрації продукту</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:2rem;">
+    <div class="callout-label">Ключова особливість моделі</div>
+    <p>Joylux продає не просто пристрій — продає <strong>екосистему</strong>. Безкоштовна апка знижує бар'єр входу і створює habit loop. membHERship перетворює одноразову покупку на recurring revenue: девайс "в подарунок" в рамках підписки + щомісячні куратовані продукти. Це класичний playbook об'єднання ecom і SaaS-подібної підписки в одному продуктовому бренді.</p>
+  </div>
+</section>
+
+<!-- 02 — Value Equation -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="s-body">
+    <p>Joylux продає не пристрій — продає право "відчути себе жінкою знову". Сексуальна впевненість, природне зволоження, близькість у стосунках після пологів або в менопаузі. Це не медичний девайс — це identity-level трансформація в люксовій обгортці.</p>
+  </div>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Відчути "себе" знову — природне зволоження, тонус, сексуальна чутливість і впевненість. "My vagina feels at least 20 years younger" — реальний відгук клієнтки. Non-hormonal, privacy at home.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">Розроблений гінекологами. Рекомендований 1,000+ медичних спеціалістів. 662nm червоне світло — конкретна клінічна довідка. Vogue, Goop, Forbes, New Beauty, Daily Mail. Апка з трекінгом прогресу підтримує commitment.</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Time to result</span>
+      <span class="value-eq-desc">6–10 хвилин 3 рази на тиждень. Сесії вдома, без лікаря, без розкладу. Апка нагадує і трекає — знижує бар'єр регулярності. Результати позиціонуються як "within weeks".</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort & Sacrifice</span>
+      <span class="value-eq-desc">Пасивна процедура — жодних вправ, жодних гормонів, жодних лікарів. Робиш своє — пристрій робить роботу. Privacy — ніхто не знає. Головний бар'єр: ціна $395 OTP відносно висока для імпульсної покупки.</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Аудиторія -->
+<section class="s">
+  <div class="s-num">03 — Аудиторія</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент A</div>
+      <h4>Жінки після пологів</h4>
+      <p>30–42 роки. Тіло змінилось після народження дитини — втрачений тонус, сухість, дискомфорт при близькості. Хочуть відновитися природньо без гормонів, без лікарів, вдома. Не готові обговорювати це публічно. Девайс — приватне рішення для реальної проблеми.</p>
+      <div class="jtbd-block">
+        <div class="jtbd-label">Jobs to be done</div>
+        <div class="jtbd-text">"Хочу почувати себе як раніше — тілесно і в стосунках — але не хочу йти до лікаря з цим."</div>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент B</div>
+      <h4>Жінки в менопаузі</h4>
+      <p>45–62 роки. Гормональні зміни, вагінальна сухість, зниження чутливості. Не хочуть гормональну терапію — шукають non-hormonal альтернативу. Чутливі до авторитетів (лікарські рекомендації, медіа — Vogue, Goop). Готові платити за якість і дискретність.</p>
+      <div class="jtbd-block">
+        <div class="jtbd-label">Jobs to be done</div>
+        <div class="jtbd-text">"Хочу відчувати себе жінкою і в 55 — без гормонів, без компромісів."</div>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент C</div>
+      <h4>Жінки з проблемами тазового дна</h4>
+      <p>35–55 роки. Підтікання при сміху, чханні або фізичних навантаженнях. Знають про проблему, соромно говорити вголос. Пробували кегелі — не справляється з регулярністю або не знають чи правильно роблять. Шукають щось що "просто працює" автоматично.</p>
+      <div class="jtbd-block">
+        <div class="jtbd-label">Jobs to be done</div>
+        <div class="jtbd-text">"Хочу жити без страху — не думати чи підтікатиму під час тренування або хихотіння."</div>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент D</div>
+      <h4>Wellness-орієнтовані жінки</h4>
+      <p>30–50 роки. Активно інвестують у здоров'я і self-care. Слідкують за Vogue, Goop, New Beauty. Для них vFit — це наступний крок після йоги, медитації і органічних добавок. Сприймають intimate wellness як частину загального wellness routineу. Купують апку і підписку як lifestyle.</p>
+      <div class="jtbd-block">
+        <div class="jtbd-label">Jobs to be done</div>
+        <div class="jtbd-text">"Хочу мати повний контроль над своїм тілом — і intimate wellness як частину мого ритуалу."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Болі -->
+<section class="s">
+  <div class="s-num">04 — На що давлять</div>
+  <h2 class="s-title">Болі і <em>заперечення</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль #1</div>
+      <h4>Тіло змінилось — і вже не те</h4>
+      <p>Після пологів або в менопаузі жінка відчуває що "щось не так". Сухість, знижена чутливість, відчуття слабкості. Це безмовна проблема — говорити соромно навіть з лікарем. Joylux відповідає: рішення вдома, приватно, без розмов.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль #2</div>
+      <h4>Гормонотерапія — страшно або не хочу</h4>
+      <p>Значна частина аудиторії відмовляється від HRT через страх побічних ефектів або принципово. "Non-hormonal" — не просто перевага, це зняття величезного заперечення. vFit = клінічна альтернатива без фармакології.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль #3</div>
+      <h4>Кегелі не працюють / не роблю правильно</h4>
+      <p>Більшість жінок знають що треба робити вправи для тазового дна — але або роблять неправильно, або не регулярно. Апка + пристрій = "кегелі на автопілоті". Не потрібна воля — потрібно просто вставити і чекати 8 хвилин.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль #4</div>
+      <h4>Близькість погіршилась — пара страждає</h4>
+      <p>Вагінальна сухість і зниження чутливості впливає на стосунки. Але обговорити це — ще важче ніж проблему зі здоров'ям. vFit дозволяє вирішити проблему самостійно і конфіденційно — апка нагадає, пристрій зробить роботу, ніхто не дізнається.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Funnel -->
+<section class="s">
+  <div class="s-num">05 — Funnel</div>
+  <h2 class="s-title">Як виглядає <em>воронка</em></h2>
+  <div class="funnel">
+    <div class="funnel-row">
+      <div class="funnel-key">Трафік</div>
+      <div class="funnel-val">Facebook/Instagram ads → прямо на product page або homepage. Окремого лендингу немає — сайт = воронка.</div>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-key">Product page</div>
+      <div class="funnel-val">joylux.com/products/vfit — повний storytelling: social proof, медичні ендорсменти, порівняння vFit vs vFit Plus, FAQ, гарантії. Апка і membHERship інтегровані як частина оффера.</div>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-key">Upsell в кошику</div>
+      <div class="funnel-val">Photonic Gel рекомендується для "45% підсилення ефекту" — очевидний upsell. Starter Kit ($411) позиціонується як more popular ніж просто девайс ($395).</div>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-key">membHERship</div>
+      <div class="funnel-val">Після покупки девайса — онбординг у підписку. $169 перший місяць = девайс "included". Потім $69/міс × 5 місяців → $39/міс безстроково. 6-місячний мінімальний контракт вбудовує LTV.</div>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-key">Апка → ретеншн</div>
+      <div class="funnel-val">Безкоштовна Joylux App: щоденні нагадування, трекінг симптомів і прогресу, синхронізація девайса. Створює habit loop і знижує churn підписки.</div>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-key">Email / Re-engagement</div>
+      <div class="funnel-val">Продуктова лінійка для cross-sell: LET'S SPIN® Gel $45, reliefHER™ Melts $25, revitalizHER™ Serum $49. Бренд = intimate wellness ecosystem, не один девайс.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 — Кути для креативів -->
+<section class="s">
+  <div class="s-num">06 — Кути для креативів</div>
+  <h2 class="s-title">Sales <em>Angles</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>Після пологів — повернути себе</h4>
+      <p class="angle-desc">Identity-кут для нових мам. Тіло змінилось — і є рішення яке не потребує лікарів і гормонів. 8 хвилин вдома.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "I had my baby 2 years ago. Nothing felt the same. Until I tried this."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>Менопауза — не кінець, а початок</h4>
+      <p class="angle-desc">Reframe менопаузи як часу для себе, а не втрати. vFit = інструмент щоб почуватись "на 20 років молодше" без гормонів.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "My doctor told me dryness was 'just part of aging.' She was wrong — there's an at-home fix."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>Кегелі не працюють — є краще</h4>
+      <p class="angle-desc">Атакує відомий але неефективний поведінковий патерн. vFit = "автоматичні кегелі" через червоне світло і вібрацію — пасивний результат без вольових зусиль.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "I was doing kegels wrong for 3 years. This device does it for me — 8 minutes, 3x a week."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>Лікарська рекомендація без лікаря</h4>
+      <p class="angle-desc">Довіра через endorsement. OB-GYN created + 1,000+ медичних спеціалістів = клінічне рішення яке можна використовувати приватно вдома.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "1,000+ OB-GYNs recommend it. Your insurance doesn't cover it. But at $395 — you don't need them to."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 05</div>
+      <h4>Апка + підписка = програма, не гаджет</h4>
+      <p class="angle-desc">Відрізняє vFit від "ще одного девайса". Апка відстежує прогрес, підписка дає продукти — це система догляду, а не одноразова покупка.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "It's not just a device. The app tracks every session, every symptom, every win. Your intimate wellness, finally on autopilot."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 06</div>
+      <h4>Близькість повернулась — пара щаслива</h4>
+      <p class="angle-desc">Relationship-кут: vFit вирішує intimate проблему яку соромно обговорювати навіть з партнером. Результат = відновлені стосунки без незручних розмов.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Хук</span>
+        "I didn't tell my husband I was using it. I just let him notice the difference."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Creatives -->
+<section class="s">
+  <div class="s-num">07 — Креативи</div>
+  <h2 class="s-title">Ad <em>Library</em></h2>
+  <div class="s-body">
+    <p>Скріншоти і відео з Facebook Ad Library. Додай файли до <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:2px;font-size:12px;">_assets/joylux/</code></p>
+  </div>
+  <div class="creatives">
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/joylux/screenshots/01.jpg"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+             alt="Ad screenshot 1">
+        <div class="creative-media-empty" style="display:none">
+          <p>Скріншот #1</p>
+          <p><code>_assets/joylux/screenshots/01.jpg</code></p>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag accent">топ ad</span>
+          <span class="tag">static</span>
+          <span class="tag">postpartum</span>
+        </div>
+        <h3>Testimonial / Before-After</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Формат</div>
+          <div class="creative-block-text">Жіночий UGC або testimonial: "Після пологів все змінилось. vFit повернув мені мене." Статика з відгуком або short-form video зі щирою розповіддю.</div>
+        </div>
+        <div class="creative-block">
+          <div class="creative-block-label">Кут</div>
+          <div class="creative-block-text">Postpartum recovery + identity. Емоційна трансформація — не технологія.</div>
+        </div>
+      </div>
+    </div>
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/joylux/screenshots/02.jpg"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+             alt="Ad screenshot 2">
+        <div class="creative-media-empty" style="display:none">
+          <p>Скріншот #2</p>
+          <p><code>_assets/joylux/screenshots/02.jpg</code></p>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">video</span>
+          <span class="tag">menopause</span>
+          <span class="tag">authority</span>
+        </div>
+        <h3>Doctor / Science-backed</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Формат</div>
+          <div class="creative-block-text">Лікар або медичний авторитет пояснює механізм червоного світла і чому традиційні підходи (кегелі, HRT) недостатні. Credibility + education.</div>
+        </div>
+        <div class="creative-block">
+          <div class="creative-block-label">Кут</div>
+          <div class="creative-block-text">Authority + menopause reframe. "1,000+ doctors recommend it" — соціальний доказ від лікарів, не від подруг.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — Verdict -->
+<section class="s">
+  <div class="s-num">08 — Висновок</div>
+  <h2 class="s-title">Вердикт</h2>
+  <div class="pc-grid" style="margin-bottom:2rem;">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Сильні сторони</div>
+      <ul>
+        <li>Dual ecosystem: ecom device + recurring app/subscription — вбудований LTV і багаторазовий revenue stream</li>
+        <li>Люксовий positioning (Vogue, Goop) знімає massmaret відчуття — жінка купує "преміум self-care"</li>
+        <li>1,000+ медичних ендорсментів + OB-GYN designed = неперевершена clinical credibility</li>
+        <li>Non-hormonal USP закриває величезний сегмент жінок які відмовляються від HRT</li>
+        <li>Апка створює habit loop і retention — знижує refund і churn membHERship</li>
+        <li>Унікальна технологія (red light + heat + vibration) — важко commoditize</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Ризики / Виклики</div>
+      <ul>
+        <li>$395 OTP — висока ціна для холодного трафіку, довга воронка прогріву</li>
+        <li>Табуйована ніша — intimate wellness важче таргетувати на FB/IG через policy restrictions</li>
+        <li>60-day return тільки на unopened — знижує perceived risk reversal vs конкурентів</li>
+        <li>membHERship з 6-місячним контрактом і штрафом за скасування може відлякати обережних покупців</li>
+        <li>Конкуренти з нижчою ціною (Tryvenu $129 EMS) атакують той же сегмент</li>
+      </ul>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="verdict-badge">A</div>
+    <div>
+      <div class="verdict-title">Унікальний playbook: еком + підписка в intimate wellness</div>
+      <div class="verdict-text">
+        <p>Joylux — рідкісний приклад бренду який правильно побудував dual-revenue модель у фізичному продукті. Девайс відкриває двері, апка будує звичку, membHERship монетизує ретеншн. Це не просто "ще один intimate wellness гаджет" — це SaaS-логіка в ecom упаковці.</p>
+        <p>Основний виклик для тестування — висока початкова ціна і чутливість ніші для рекламних платформ. Але якщо правильно зайти через testimonial/authority кути і побудувати прогрів через education-контент, LTV у цього продукту один з найвищих у ніші жіночого wellness.</p>
+        <p>Моя думка зі таблиці: <em>тут прикольно що є апка по підписці, ваша тема, можна об'єднати еком і апки.</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://joylux.com/products/vfit" target="_blank">joylux.com/products/vfit — product page</a></li>
+    <li><a href="https://joylux.com/pages/membership" target="_blank">joylux.com/pages/membership — membHERship details</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?ad_type=all&country=ALL&source=page-transparency-widget&view_all_page_id=337842033294658" target="_blank">Facebook Ad Library — Joylux page 337842033294658</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossier</span>
+  <span>Joylux vFit® · Beauty device · Women's intimate wellness</span>
+  <span>2026</span>
+</footer>
+
+<script>
+  const DOSSIER_KEY = 'dossier-status-joylux';
+  const wrap = document.getElementById('statusWrap');
+  const btn = document.getElementById('statusBtn');
+  const label = document.getElementById('statusLabel');
+  const options = document.querySelectorAll('.status-option');
+  const STATUS_LABELS = { researching: 'Researching', testing: 'Testing', win: 'Win ✓', pass: 'Pass' };
+
+  function applyStatus(s) {
+    label.textContent = STATUS_LABELS[s] || 'Researching';
+    options.forEach(o => o.classList.toggle('active', o.dataset.status === s));
+    btn.style.borderColor = s === 'win' ? 'var(--good)' : s === 'pass' ? 'var(--bad)' : s === 'testing' ? 'var(--warn)' : 'var(--accent)';
+    btn.style.color = s === 'win' ? 'var(--good)' : s === 'pass' ? 'var(--bad)' : s === 'testing' ? 'var(--warn)' : 'var(--accent)';
+  }
+  applyStatus(localStorage.getItem(DOSSIER_KEY) || 'researching');
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+  options.forEach(o => o.addEventListener('click', () => {
+    const s = o.dataset.status;
+    localStorage.setItem(DOSSIER_KEY, s);
+    applyStatus(s);
+    wrap.classList.remove('open');
+  }));
+</script>
+</body>
+</html>
