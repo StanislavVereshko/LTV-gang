@@ -185,6 +185,12 @@
   .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
   .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
+  .trend-chart-wrap { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-chart-wrap iframe { display: block; }
+  .trend-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; flex-wrap: wrap; gap: 0.5rem; }
+  .trend-meta a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .trend-meta a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
   footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
 </style>
 </head>
@@ -261,6 +267,29 @@
       <div class="hero-product-desc-label">Що це</div>
       <p>Інтимний wellness-пристрій на основі червоного світла (662nm LED), м'якого тепла і звукової вібрації. Вставляється вагінально, 6–10 хвилин 3 рази на тиждень. Покращує природне зволоження, тонус і чутливість тканин без гормонів. Клінічна технологія вдома — розроблена гінекологами для жінок після пологів і під час менопаузи.</p>
     </div>
+  </div>
+</section>
+
+<!-- 00 — Ринковий тренд -->
+<section class="s">
+  <div class="s-num">00 — Ринковий тренд</div>
+  <h2 class="s-title">Попит <em>зростає</em></h2>
+  <div class="s-body">
+    <p>Google Trends, Worldwide, останні 5 років. «Intimate wellness» показує стабільне зростання — menopause awareness wave + destigmatization жіночого intimate health. Попит на non-hormonal рішення росте кожен рік.</p>
+  </div>
+  <div class="trend-chart-wrap">
+    <iframe
+      title="Google Trends — intimate wellness"
+      src="https://trends.google.com/trends/embed/explore/TIMESERIES?req=%7B%22comparisonItem%22%3A%5B%7B%22keyword%22%3A%22intimate%20wellness%22%2C%22geo%22%3A%22%22%2C%22time%22%3A%22today%205-y%22%7D%5D%2C%22category%22%3A0%2C%22property%22%3A%22%22%7D&tz=0"
+      width="100%"
+      height="420"
+      frameborder="0"
+      scrolling="0"
+    ></iframe>
+  </div>
+  <div class="trend-meta">
+    <span>Google Trends · Worldwide · 5 years · "intimate wellness"</span>
+    <a href="https://trends.google.com/trends/explore?date=today%205-y&q=intimate%20wellness" target="_blank">відкрити в Google Trends ↗</a>
   </div>
 </section>
 
