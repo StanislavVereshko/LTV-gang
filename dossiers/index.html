@@ -218,6 +218,7 @@
     position: relative;
     min-height: 260px;
     z-index: 1;
+    cursor: grab;
   }
   .card:hover { background: rgba(200,255,0,0.03); z-index: 20; }
   .card::before {
@@ -330,6 +331,9 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
+  .card--ghost { opacity: 0.35; background: rgba(200,255,0,0.04) !important; border: 1px dashed rgba(200,255,0,0.3); }
+  .card--chosen { cursor: grabbing; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .card--drag { cursor: grabbing; opacity: 0.9; }
 </style>
 </head>
 <body>
@@ -440,6 +444,7 @@
   <span id="clock">—</span>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
 (() => {
   const searchEl   = document.getElementById('search');
@@ -514,6 +519,38 @@
   });
 
   searchEl.addEventListener('input', applyFilters);
+
+  // Drag-and-drop order
+  const ORDER_KEY = 'ltv-card-order';
+
+  function saveOrder() {
+    const order = getCards().map(c => c.getAttribute('href'));
+    localStorage.setItem(ORDER_KEY, JSON.stringify(order));
+  }
+
+  function restoreOrder() {
+    try {
+      const order = JSON.parse(localStorage.getItem(ORDER_KEY) || '[]');
+      if (!order.length) return;
+      const anchor = document.getElementById('emptyState');
+      order.forEach(href => {
+        const card = gallery.querySelector(`.card[href="${href}"]`);
+        if (card) gallery.insertBefore(card, anchor);
+      });
+    } catch(e) {}
+  }
+
+  restoreOrder();
+
+  Sortable.create(gallery, {
+    animation: 150,
+    filter: '#emptyState, .empty',
+    ghostClass: 'card--ghost',
+    chosenClass: 'card--chosen',
+    dragClass: 'card--drag',
+    delay: 120,
+    onEnd: saveOrder,
+  });
 
   updateNicheCounts();
   applyFilters();
