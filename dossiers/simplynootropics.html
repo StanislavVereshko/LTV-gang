@@ -936,6 +936,9 @@
   .trend-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; flex-wrap: wrap; gap: 0.5rem; }
   .trend-meta a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
   .trend-meta a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .trend-fallback-msg { padding: 2.5rem; text-align: center; font-size: 12px; color: var(--gray); }
+  .trend-fallback-msg a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .trend-fallback-msg a:hover { border-bottom-color: var(--accent); }
 
   footer {
     border-top: 1px solid var(--border);
@@ -1035,14 +1038,7 @@
     <p>Google Trends, Worldwide, останні 5 років. «NMN supplement» показує різкий старт у 2021–2022 на хвилі longevity buzz (David Sinclair, Peter Attia) і продовжує зростати. Anti-aging supplements — одна з найбільш зростаючих категорій в ecom.</p>
   </div>
   <div class="trend-chart-wrap">
-    <iframe
-      title="Google Trends — nmn supplement"
-      src="https://trends.google.com/trends/embed/explore/TIMESERIES?req=%7B%22comparisonItem%22%3A%5B%7B%22keyword%22%3A%22nmn%20supplement%22%2C%22geo%22%3A%22%22%2C%22time%22%3A%22today%205-y%22%7D%5D%2C%22category%22%3A0%2C%22property%22%3A%22%22%7D&tz=0"
-      width="100%"
-      height="420"
-      frameborder="0"
-      scrolling="0"
-    ></iframe>
+    <div id="gt-widget" style="min-height:420px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
   </div>
   <div class="trend-meta">
     <span>Google Trends · Worldwide · 5 years · "nmn supplement"</span>
@@ -1497,6 +1493,36 @@
 </footer>
 
 <script>
+  // Google Trends widget loader
+  (function() {
+    var KW = 'nmn supplement';
+    var Q  = 'date=today%205-y&q=nmn%20supplement';
+    var el = document.getElementById('gt-widget');
+    if (!el) return;
+    var versions = ['4400_RC01','4360_RC01','4320_RC01','4280_RC01','4240_RC01','4200_RC01','4160_RC01','4120_RC01','4080_RC01','4040_RC01','4000_RC01','3960_RC01','3940_RC01'];
+    var i = 0, done = false;
+    function next() {
+      if (done || i >= versions.length) { if (!done) fallback(); return; }
+      var s = document.createElement('script');
+      s.src = 'https://ssl.gstatic.com/trends_nrtr/' + versions[i++] + '/embed_loader.js';
+      s.onload = function() {
+        if (done) return;
+        if (typeof trends !== 'undefined' && trends.embed) {
+          done = true;
+          trends.embed.renderExploreWidgetTo(el, 'TIMESERIES',
+            {"comparisonItem":[{"keyword":KW,"geo":"","time":"today 5-y"}],"category":0,"property":""},
+            {"exploreQuery":Q+"&tz=0","guestPath":"https://trends.google.com:443/trends/embed/"});
+        } else { next(); }
+      };
+      s.onerror = next;
+      document.head.appendChild(s);
+    }
+    function fallback() {
+      el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=nmn%20supplement" target="_blank">Відкрити Google Trends ↗</a></div>';
+    }
+    next();
+  })();
+
 (() => {
   const colors = {
     researching: 'var(--accent)',
