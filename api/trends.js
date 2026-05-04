@@ -1,5 +1,15 @@
 const googleTrends = require('google-trends-api');
 
+const TIER_COUNTRIES = new Set([
+  'US','GB','CA','AU','NZ','IE',
+  'DE','FR','NL','SE','NO','CH','AT','BE','DK','FI',
+  'ES','IT','PT','PL','CZ','SK','HU','RO',
+  'JP','KR','SG','HK','TW',
+  'AE','IL','SA',
+  'BR','MX','AR','CL','CO',
+  'ZA',
+]);
+
 module.exports = async (req, res) => {
   const q = (req.query.q || 'pelvic floor').trim();
 
@@ -10,27 +20,37 @@ module.exports = async (req, res) => {
     const startTime = new Date();
     startTime.setFullYear(startTime.getFullYear() - 5);
 
-    const raw = await googleTrends.interestOverTime({
-      keyword: q,
-      startTime,
-      geo: '',
-    });
+    const [rawTime, rawRegion] = await Promise.all([
+      googleTrends.interestOverTime({ keyword: q, startTime, geo: '' }),
+      googleTrends.interestByRegion({ keyword: q, startTime, geo: '', resolution: 'COUNTRY' }),
+    ]);
 
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(rawTime);
     const timeline = parsed.default.timelineData;
 
     if (!timeline || !timeline.length) {
       return res.status(404).json({ error: 'No data returned' });
     }
 
-    // Return one point per ~4 weeks to keep payload small
     const step = Math.max(1, Math.floor(timeline.length / 60));
     const filtered = timeline.filter((_, i) => i % step === 0);
+
+    let countries = [];
+    try {
+      const parsedRegion = JSON.parse(rawRegion);
+      const geoData = parsedRegion.default.geoMapData || [];
+      countries = geoData
+        .filter(d => TIER_COUNTRIES.has(d.geoCode) && d.value && d.value[0] > 0)
+        .sort((a, b) => b.value[0] - a.value[0])
+        .slice(0, 12)
+        .map(d => ({ code: d.geoCode, name: d.geoName, value: d.value[0] }));
+    } catch (_) {}
 
     res.json({
       keyword: q,
       labels: filtered.map(d => d.formattedAxisTime || d.formattedTime),
       values: filtered.map(d => d.value[0]),
+      countries,
     });
   } catch (err) {
     res.status(500).json({ error: String(err) });

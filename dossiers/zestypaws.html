@@ -446,11 +446,22 @@
   .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
   .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
-  .trend-chart-wrap { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
-  .trend-chart-wrap iframe { display: block; }
-  .trend-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; flex-wrap: wrap; gap: 0.5rem; }
-  .trend-meta a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
-  .trend-meta a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-countries-loading { padding: 1.5rem 1rem; font-size: 11px; color: var(--gray); text-align: center; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
   .trend-fallback-msg { padding: 2.5rem; text-align: center; font-size: 12px; color: var(--gray); }
   .trend-fallback-msg a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
   .trend-fallback-msg a:hover { border-bottom-color: var(--accent); }
@@ -560,13 +571,20 @@
   <div class="s-body">
     <p>«Dog supplements» показує помірне і нединамічне зростання — без яскравих стрибків. Ринок реальний, але сам термін росте повільно, без ознак вибуху. Якщо шукати гостріший сигнал — «dog anxiety» або «dog probiotics» рухаються активніше. Dog supplements — це зріла стабільна категорія з поступовим зростанням, а не гаряча ніша що росте x2 щороку. Заходити можна, але на вибуховий органічний попит не розраховуй.</p>
   </div>
-  <div class="trend-chart-wrap">
-    <div id="gt-widget" style="min-height:420px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <div id="gt-widget" style="min-height:320px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ ринки</div>
+      <div id="gt-countries"><div class="trend-countries-loading">Завантаження…</div></div>
+    </div>
   </div>
-  <div class="trend-meta">
-    <span>Google Trends · Worldwide · 5 years · "dog supplements"</span>
-    <a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank">відкрити в Google Trends ↗</a>
-  </div>
+  <div class="trend-meta">Google Trends · Worldwide · 5 years · "dog supplements"</div>
+  <a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank" class="trend-cta">
+    Перейти в Google Trends ↗
+    <span class="trend-cta-sub">повна аналітика та деталі по країнах</span>
+  </a>
 </section>
 
 <!-- 01 — Offer / USP -->
@@ -914,14 +932,29 @@
   (function() {
     var KW = 'dog supplements';
     var el = document.getElementById('gt-widget');
+    var ctEl = document.getElementById('gt-countries');
     if (!el) return;
 
     function fallback() {
       el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank">Відкрити Google Trends ↗</a></div>';
     }
 
+    function renderCountries(countries) {
+      if (!ctEl || !countries || !countries.length) return;
+      var max = countries[0].value;
+      ctEl.innerHTML = countries.map(function(c) {
+        var pct = Math.round(c.value / max * 100);
+        return '<div class="trend-country-row">' +
+          '<span class="trend-country-name">' + c.name + '</span>' +
+          '<div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="trend-country-val">' + c.value + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
     function renderChart(data) {
       if (!data.values || !data.values.length) { fallback(); return; }
+      renderCountries(data.countries);
       el.removeAttribute('style');
       el.style.position = 'relative';
       el.style.height = '320px';
