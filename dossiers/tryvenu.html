@@ -638,9 +638,13 @@
         if (done) return;
         if (typeof trends !== 'undefined' && trends.embed) {
           done = true;
+          el.removeAttribute('style');
+          el.style.minHeight = '420px';
+          el.textContent = '';
           trends.embed.renderExploreWidgetTo(el, 'TIMESERIES',
             {"comparisonItem":[{"keyword":KW,"geo":"","time":"today 5-y"}],"category":0,"property":""},
-            {"exploreQuery":Q+"&tz=0","guestPath":"https://trends.google.com:443/trends/embed/"});
+            {"exploreQuery":Q,"guestPath":"https://trends.google.com:443/trends/embed/"});
+          [300,800,1800].forEach(function(d){setTimeout(function(){window.dispatchEvent(new Event('resize'));},d);});
         } else { next(); }
       };
       s.onerror = next;
