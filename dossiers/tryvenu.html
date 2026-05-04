@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venu — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+  }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-image { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-image-empty { text-align: center; color: rgba(245,242,236,0.3); padding: 2rem; font-size: 13px; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  .value-eq-grid { border: 1px solid var(--border); background: var(--border); display: flex; flex-direction: column; gap: 1px; }
+  .value-eq-row { background: var(--black); display: grid; grid-template-columns: 160px 1fr 110px; align-items: center; }
+  .value-eq-row.header { background: rgba(255,255,255,0.02); font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  @media (max-width: 700px) { .value-eq-row { grid-template-columns: 1fr; } .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); } .value-eq-row > span:last-child { border-bottom: none; } }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative { border: 1px solid var(--border); background: rgba(255,255,255,0.015); padding: 1.5rem; border-radius: 3px; display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 3px; overflow: hidden; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; position: relative; }
+  .creative-media img, .creative-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .creative-media-empty { text-align: center; padding: 1rem; font-size: 11px; color: rgba(245,242,236,0.3); line-height: 1.5; }
+  .creative-media-empty code { background: rgba(255,255,255,0.05); padding: 2px 5px; border-radius: 2px; color: var(--accent); font-size: 10px; }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2; }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; overflow-x: auto; }
+  .funnel-row { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Venu® PelviTone Pro</div>
+  <div class="nav-links">
+    <a href="https://tryvenu.com/products/venu" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=996161223577116" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="tryvenu">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Women's health / Beauty device</div>
+    <h1>Venu®<br><em>PelviTone</em></h1>
+    <p class="hero-tag">At-home EMS пристрій для зміцнення м'язів тазового дна. Позиціонується як клінічна технологія вдома — 30,000 скорочень за 10 хвилин без жодних зусиль. Б'є по емоції — не "здоров'я", а "контроль і впевненість" яких бракує після пологів або в менопаузі. Сильний оффер: $129, 60k+ клієнтів, 60-day MBG + 5-year warranty.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://tryvenu.com/products/venu" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+      <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=996161223577116" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Ціна</div>
+        <div class="hero-stat-value"><span class="accent">$129</span></div>
+        <div class="hero-stat-sub">OTP · було $279 · 54% off · free worldwide shipping</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Bundle (most popular)</div>
+        <div class="hero-stat-value"><span class="accent">$149</span></div>
+        <div class="hero-stat-sub">PelviTone Pro + Lube + Ebook · було $329</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Social proof</div>
+        <div class="hero-stat-value"><span class="accent">60k+</span></div>
+        <div class="hero-stat-sub">6,108 verified reviews · 4.8★ · 95% покращення в 6 тижнів</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Гарантії / Risk reversal</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">60-day MBG</span> + <span class="accent">5-year</span> warranty</div>
+        <div class="hero-stat-sub">
+          <span class="tag">no questions asked</span>"Not satisfied? Get a full refund" — 60 днів повернення + 5 років гарантії на пристрій. Для $129 продукту це виключає головне заперечення "а якщо не спрацює". Плюс Dr. Adriana live chat — реальний pelvic health specialist, "зазвичай відповідає за кілька хвилин".
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://tryvenu.com/cdn/shop/files/2.png?v=1768733281&width=600"
+           alt="Venu PelviTone Pro"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none"></div>
+      <div class="hero-image-label">
+        <strong>Venu® PelviTone Pro</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Що це</div>
+      <p>EMS-пристрій для м'язів тазового дна — вставний зонд + контролер. Доставляє до 30,000 м'язових скорочень за 10-хвилинну сесію. Клінічна технологія для домашнього використання: зменшує підтікання сечі, відновлює контроль і м'язовий тонус після пологів або в менопаузі.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Venu® <span class="accent">PelviTone</span> Pro</div>
+      <div class="offer-cell-note">EMS зонд + контролер · adjustable intensity · 10 хв/день</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing</div>
+      <div class="offer-cell-value">$129 / <span class="accent">$149</span> bundle</div>
+      <div class="offer-cell-note">Solo $129 (було $279) · Bundle + Lube + Ebook $149 (було $329) · free shipping</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Secondary product</div>
+      <div class="offer-cell-value">PelviGlow <span class="accent">Wand</span></div>
+      <div class="offer-cell-note">Red light therapy · $99 (було $169) · новинка в лінійці</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Risk reversal</div>
+      <div class="offer-cell-value"><span class="accent">60</span>-day MBG</div>
+      <div class="offer-cell-note">Full refund, no questions asked + 5-year device warranty</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Authority / Support</div>
+      <div class="offer-cell-value">Dr. <span class="accent">Adriana</span></div>
+      <div class="offer-cell-note">Pelvic health specialist в live chat — приватно, не зберігається, реальний лікар</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Urgency</div>
+      <div class="offer-cell-value">"Save up to <span class="accent">60%</span>"</div>
+      <div class="offer-cell-note">Limited time banner — постійна знижка як perceived deal, знижує price objection</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="s-body">
+    <p>Venu продає не пристрій — продає відчуття контролю. Головна емоція: жінка яка сміється, чхає або тренується без страху. Це identity-level трансформація, а не functional benefit.</p>
+  </div>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Сміятись, чхати, бігати — без страху. Впевненість в спальні. Відчути себе "собою" знову після пологів або менопаузи. "Stronger, more confident, fully in control"</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">60,500+ жінок, 6,108 verified reviews, 4.8★. "95% report improved bladder control within 6 weeks" + Journal of Women's Health 2025 citation. Medical-grade EMS = clinic credibility</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">"Feel it working from day one" — сенсорний feedback одразу. Видимі результати 3–6 тижнів. Конкретний таймфрейм знімає "треба чекати роками" заперечення</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">"30,000 precise contractions. No effort from you." 10 хвилин на день — пасивний протокол. Порівняння з кегелями які "не працюють" якщо робити неправильно. Zero skill required</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">60-day MBG "no questions asked" + 5-year warranty. Для інтимного девайсу за $129 це максимальне зняття ризику. Dr. Adriana chat додає людський елемент — не FAQ, а живий спеціаліст</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Audience + JTBD -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Postpartum жінки, 28–40</h4>
+      <p>Після пологів тіло змінилось. Підтікання при сміху або спорті — щоденне нагадування що "щось не так". Хочуть відновитись без клініки. Емоція: хочу повернути собі своє тіло. Найбільший сегмент, висока intent.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Відновити контроль над своїм тілом після пологів — без лікарів і незручних розмов</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · high-value</div>
+      <h4>Жінки в менопаузі, 45–62</h4>
+      <p>Гормональні зміни послаблюють м'язи тазового дна. Симптоми наростають поступово — чхання, кашель, активність. Стид заважає звертатись до лікаря. Конвертуються на "клінічне рішення вдома, приватно".</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Вирішити проблему яку соромно обговорювати — приватно, вдома, без візиту до лікаря</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03 · active</div>
+      <h4>Активні жінки, 30–50</h4>
+      <p>Спорт, біг, CrossFit — підтікання під час тренування заважає і соромить. Обмежує активність яку люблять. Конвертуються на performance кути — "тренуйся без обмежень". Готові платити за функціональне рішення.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Повернутись до спорту без сорому і без страху — без зміни активності</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04 · intimacy</div>
+      <h4>Жінки будь-якого віку · confidence</h4>
+      <p>Слабкість тазового дна впливає на сексуальне життя — чутливість, впевненість. Taboo тема яку не обговорюють публічно, але шукають рішення приватно онлайн. Dr. Adriana "private chat" прямо закриває цю потребу.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Відчути себе впевненіше в стосунках — через фізичне відновлення, не психологію</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Болі / заперечення -->
+<section class="s">
+  <div class="s-num">04 — Болі / заперечення</div>
+  <h2 class="s-title">На що <em>давлять</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 01</div>
+      <h4>Підтікання при сміху, чханні, спорті</h4>
+      <p>Щоденна незручність яка обмежує — перестаєш сміятись в повний голос, уникаєш спорту, плануєш туалети наперед. Identity-level удар: "я вже не та що раніше".</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 02</div>
+      <h4>Кегелі не допомагають</h4>
+      <p>95% жінок роблять кегелі неправильно — без відчутного результату місяцями. Розчарування і відчуття що "нічого не допоможе". Venu б'є по цьому прямо: "досягає м'язів яких кегелі не дістають".</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 01</div>
+      <h4>"Це безпечно і не боляче?"</h4>
+      <p>Інтимний девайс — природний страх дискомфорту або шкоди. Контр: adjustable intensity від мінімального, water-based lube, safety certified, + Dr. Adriana chat знімає питання в режимі реального часу.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 02</div>
+      <h4>"$129 — а якщо не спрацює?"</h4>
+      <p>Для невідомого бренду $129 — бар'єр. Контр: 60-day MBG "no questions asked" + 5-year warranty = один з найсильніших risk reversal комбо в direct response. Фактично покупець нічим не ризикує.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Funnel intelligence -->
+<section class="s">
+  <div class="s-num">05 — Funnel intelligence</div>
+  <h2 class="s-title">Що видно з <em>фаннелу</em></h2>
+  <div class="s-body">
+    <p>Прямий шлях ad → product page без advertorial. Але product page сама по собі є mini-VSL — довгий скрол з відео, before/after, step-by-step, Dr. Adriana chat, reviews. Весь "advertorial" вбудований в LP.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row"><span class="funnel-key">Структура</span><span class="funnel-val">Ad → Product page (long-form LP з вбудованим VSL-контентом)</span></div>
+    <div class="funnel-row"><span class="funnel-key">Urgency</span><span class="funnel-val">"LIMITED TIME: SAVE UP TO 60%" — header banner, постійний</span></div>
+    <div class="funnel-row"><span class="funnel-key">Bundle push</span><span class="funnel-val">Solo $129 vs Bundle $149 (+$20) → "MOST POPULAR" label штовхає до bundle</span></div>
+    <div class="funnel-row"><span class="funnel-key">Authority</span><span class="funnel-val">Dr. Adriana live chat — "Private. Not stored." знімає соціальний сором</span></div>
+    <div class="funnel-row"><span class="funnel-key">Proof</span><span class="funnel-val">6,108 reviews прямо на сторінці + "Journal of Women's Health 2025" citation</span></div>
+    <div class="funnel-row"><span class="funnel-key">Payment</span><span class="funnel-val">Stripe, PayPal, Apple Pay — максимум зручних методів</span></div>
+  </div>
+  <div class="s-body">
+    <p><strong>Висновок:</strong> класичний DR e-com funnel. Ціна $129 accessible для impulse — не потребує довгого прогріву. Bundle +$20 майже безтертєвий апсел (MOST POPULAR + логічне доповнення). 60-day MBG = достатньо часу щоб "помацати результат" і не повертати.</p>
+  </div>
+</section>
+
+<!-- 06 — Sales angles -->
+<section class="s">
+  <div class="s-num">06 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Laugh Without Leaking</div>
+      <h4>Сміятись без страху</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Найбільший больовий тригер — підтікання при сміху, чханні, кашлі. Конкретний, впізнаваний момент. UGC від жінок "ось що я більше не боюся робити".</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я перестала сміятись в повний голос два роки тому. Цього місяця я вперше пожартувала до сліз і нічого не сталося.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Kegels Don't Work</div>
+      <h4>Кегелі — це міф?</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Руйнує звичне рішення ("просто роби кегелі") і відкриває новий механізм. Audience яка вже намагалась і не отримала результату. High intent, frustrated.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я робила кегелі 6 місяців. Нічого не змінилось. Виявилось що 95% жінок роблять їх неправильно — і є м'язи яких кегелі взагалі не дістають.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Effortless / Passive</div>
+      <h4>30,000 скорочень поки ти відпочиваєш</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Lazy hook — найсильніший для cold traffic. "No effort from you" + клінічне обґрунтування. Порівняння з клінікою: те саме за $129 вдома.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Клініка робить це за $300 за сесію. Цей пристрій робить те саме за 10 хвилин вдома, поки ти читаєш або дивишся серіал.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · Postpartum Recovery</div>
+      <h4>Повернути своє тіло після пологів</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Identity hook — "я хочу себе назад". Сильний для мам 0–3 роки після пологів. Перед/після формат + конкретний таймфрейм (6 тижнів).</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Моєму сину 14 місяців. Лікар сказав "просто роби кегелі". Я знайшла краще рішення і через 5 тижнів відчула різницю.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A5 · Sport / Active</div>
+      <h4>Тренуйся без обмежень</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Активні жінки яких проблема "виганяє" з улюбленого спорту. Performance angle — не "здоров'я", а "повернись до того що любиш".</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я кинула бігати в 38. Не через коліна — через те що трапляється при кожному кілометрі. Через 4 тижні я пробігла 5K без єдиної думки про це.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A6 · Private / No Doctor</div>
+      <h4>Вирішити це без нікому не кажучи</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Табу-тема — жінки шукають рішення приватно. "Вдома, без незручних розмов" знімає бар'єр соціального сорому. Dr. Adriana private chat посилює.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я не розповідала про це нікому — ні партнеру, ні лікарю. Замовила онлайн, прийшла в непідписаній коробці, вирішила сама.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Розбір креативів -->
+<section class="s">
+  <div class="s-num">07 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Відсортовано по Impressions в FB Ad Library. Збережи скріни → <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/tryvenu/screenshots/0X.jpg</code>. Відео → <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/tryvenu/creatives/0X.mp4</code>.</p>
+  </div>
+  <div class="creatives">
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/tryvenu/screenshots/01.jpg" alt="Creative 01"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          Збережи скрін<br><code>screenshots/01.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag accent">топ за impressions</span>
+        </div>
+        <h3>Creative 01 — додати після скріну</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Аналіз</div>
+          <div class="creative-block-text">Завантаж скріни з Ad Library і я розберу кожен — хук, механіку, чому працює і як адаптувати.</div>
+        </div>
+      </div>
+    </div>
+    <div class="creative">
+      <div class="creative-media">
+        <img src="../_assets/tryvenu/screenshots/02.jpg" alt="Creative 02"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:none">
+          Збережи скрін<br><code>screenshots/02.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">статика або відео</span>
+        </div>
+        <h3>Creative 02 — додати після скріну</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Аналіз</div>
+          <div class="creative-block-text">Завантаж скріни з Ad Library і я розберу кожен — хук, механіку, чому працює і як адаптувати.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — Verdict -->
+<section class="s">
+  <div class="s-num">08 — Вердикт</div>
+  <h2 class="s-title">Що <em>виносимо</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">★</div>
+    <div>
+      <div class="verdict-title">Сильний оффер з перевіреними DR-механіками — варто тестувати</div>
+      <div class="verdict-text">
+        <p>Venu проходить по всім критеріям strong offer: висока perceived value ($279→$129), сильний risk reversal (60-day MBG + 5yr warranty), конкретний result claim (95% в 6 тижнів), passive mechanism ("no effort"). Entry price $129 — достатньо доступний для impulse але достатньо високий щоб margin дозволяла платний трафік.</p>
+        <p>Нiша women's health + pelvic floor — growing, underserved emotionally. Більшість конкурентів продають через clinical/medical angle. Venu б'є по identity і privacy — це правильно для Facebook/Instagram де жінки шукають рішення анонімно.</p>
+        <p>Головні кути для тесту: A1 (laugh without leaking), A2 (kegels don't work), A3 (effortless/clinic at home). UGC від реальних жінок конвертує краще ніж product demo — ця ніша продається через "я теж так само відчувала".</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:2rem;">
+    <div class="pc-grid">
+      <div class="pc-col pros">
+        <div class="pc-col-title pros">Сильні сторони</div>
+        <ul>
+          <li>60-day MBG + 5-year warranty — один з найсильніших risk reversal в ніші</li>
+          <li>$129 entry — accessible для impulse, достатньо для margin</li>
+          <li>Passive mechanism ("no effort") — universal hook для cold traffic</li>
+          <li>60k+ customers, 6k reviews — достатньо для social proof ads</li>
+          <li>Dr. Adriana live chat — знімає intimate taboo barrier</li>
+          <li>Bundle +$20 = легкий AOV підйом без friction</li>
+        </ul>
+      </div>
+      <div class="pc-col cons">
+        <div class="pc-col-title cons">Ризики / складнощі</div>
+        <ul>
+          <li>Intimate device — Facebook може обмежувати targeting і creative review</li>
+          <li>Insertable product — вищий поріг довіри для першої покупки</li>
+          <li>Конкуренція з Kegel8, Elvie та інші — ніша активно зростає</li>
+          <li>Claim "95% в 6 тижнів" — потребує обережності в ad copy (FDA/FTC)</li>
+          <li>Повернення можуть бути складнішими для інтимних продуктів (hygiene policy)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://tryvenu.com/products/venu" target="_blank">Venu® — PelviTone Pro product page</a></li>
+    <li><a href="https://tryvenu.com" target="_blank">Venu® — homepage</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=996161223577116" target="_blank">FB Ad Library — Venu page</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Venu® PelviTone Pro</span>
+  <span id="footerStatus">Status: Researching</span>
+  <span>Updated: 2026-05-04</span>
+</footer>
+
+<script>
+(() => {
+  const colors = { researching: 'var(--accent)', testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)' };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const opts   = document.querySelectorAll('.status-option');
+  const key    = 'dossier-status-' + wrap.dataset.dossier;
+  function setStatus(val) {
+    const c = colors[val] || colors.researching;
+    btn.style.color = c; btn.style.borderColor = c;
+    label.textContent = labels[val] || val;
+    footer.textContent = 'Status: ' + labels[val];
+    opts.forEach(o => o.classList.toggle('active', o.dataset.status === val));
+    localStorage.setItem(key, val);
+  }
+  const saved = localStorage.getItem(key);
+  if (saved) setStatus(saved);
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  opts.forEach(o => o.addEventListener('click', () => { setStatus(o.dataset.status); wrap.classList.remove('open'); }));
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+})();
+</script>
+
+</body>
+</html>
