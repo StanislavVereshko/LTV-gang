@@ -653,38 +653,57 @@
 </footer>
 
 <script>
-  // Google Trends widget loader
+  // Trends chart — Chart.js + /api/trends
   (function() {
     var KW = 'intimate wellness';
-    var Q  = 'date=today%205-y&q=intimate%20wellness';
     var el = document.getElementById('gt-widget');
     if (!el) return;
-    var versions = ['4400_RC01','4360_RC01','4320_RC01','4280_RC01','4240_RC01','4200_RC01','4160_RC01','4120_RC01','4080_RC01','4040_RC01','4000_RC01','3960_RC01','3940_RC01'];
-    var i = 0, done = false;
-    function next() {
-      if (done || i >= versions.length) { if (!done) fallback(); return; }
-      var s = document.createElement('script');
-      s.src = 'https://ssl.gstatic.com/trends_nrtr/' + versions[i++] + '/embed_loader.js';
-      s.onload = function() {
-        if (done) return;
-        if (typeof trends !== 'undefined' && trends.embed) {
-          done = true;
-          el.removeAttribute('style');
-          el.style.minHeight = '420px';
-          el.textContent = '';
-          trends.embed.renderExploreWidgetTo(el, 'TIMESERIES',
-            {"comparisonItem":[{"keyword":KW,"geo":"","time":"today 5-y"}],"category":0,"property":""},
-            {"exploreQuery":Q,"guestPath":"https://trends.google.com:443/trends/embed/"});
-          [300,800,1800].forEach(function(d){setTimeout(function(){window.dispatchEvent(new Event('resize'));},d);});
-        } else { next(); }
-      };
-      s.onerror = next;
-      document.head.appendChild(s);
-    }
+
     function fallback() {
       el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=intimate%20wellness" target="_blank">Відкрити Google Trends ↗</a></div>';
     }
-    next();
+
+    function renderChart(data) {
+      if (!data.values || !data.values.length) { fallback(); return; }
+      el.removeAttribute('style');
+      el.style.position = 'relative';
+      el.style.height = '320px';
+      el.textContent = '';
+      var canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{ data: data.values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,0.07)', fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#c8ff00', bodyColor: '#f5f2ec', padding: 10, callbacks: { label: function(c) { return c.parsed.y + ' / 100'; } } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, maxTicksLimit: 8, maxRotation: 0 }, border: { display: false } },
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, stepSize: 25 }, border: { display: false } }
+          }
+        }
+      });
+    }
+
+    function loadAndRender() {
+      fetch('/api/trends?q=' + encodeURIComponent(KW))
+        .then(function(r) { return r.json(); })
+        .then(renderChart)
+        .catch(fallback);
+    }
+
+    if (window.Chart) { loadAndRender(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+    s.onload = loadAndRender;
+    s.onerror = fallback;
+    document.head.appendChild(s);
   })();
 
   const DOSSIER_KEY = 'dossier-status-joylux';
