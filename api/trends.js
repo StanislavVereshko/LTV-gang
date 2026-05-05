@@ -10,6 +10,13 @@ const TIER_COUNTRIES = new Set([
   'ZA',
 ]);
 
+function withTimeout(p, ms) {
+  return Promise.race([
+    p,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+  ]);
+}
+
 module.exports = async (req, res) => {
   const q = (req.query.q || 'pelvic floor').trim();
 
@@ -20,8 +27,18 @@ module.exports = async (req, res) => {
     const startTime = new Date();
     startTime.setFullYear(startTime.getFullYear() - 5);
 
-    // Fetch time series first — this is required
-    const rawTime = await googleTrends.interestOverTime({ keyword: q, startTime, geo: '' });
+    // Both requests in parallel — faster, stays within function timeout.
+    // Region request failure is silently ignored (chart still renders without country table).
+    const [rawTime, rawRegion] = await Promise.all([
+      withTimeout(
+        googleTrends.interestOverTime({ keyword: q, startTime, geo: '' }),
+        22000
+      ),
+      withTimeout(
+        googleTrends.interestByRegion({ keyword: q, startTime, geo: '', resolution: 'COUNTRY' }),
+        22000
+      ).catch(() => null),
+    ]);
 
     const parsed = JSON.parse(rawTime);
     const timeline = parsed.default.timelineData;
@@ -33,22 +50,18 @@ module.exports = async (req, res) => {
     const step = Math.max(1, Math.floor(timeline.length / 60));
     const filtered = timeline.filter((_, i) => i % step === 0);
 
-    // Fetch country breakdown sequentially (optional — 5 s timeout, never blocks chart)
     let countries = [];
-    try {
-      const regionRace = Promise.race([
-        googleTrends.interestByRegion({ keyword: q, startTime, geo: '', resolution: 'COUNTRY' }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('region timeout')), 5000)),
-      ]);
-      const rawRegion = await regionRace;
-      const parsedRegion = JSON.parse(rawRegion);
-      const geoData = parsedRegion.default.geoMapData || [];
-      countries = geoData
-        .filter(d => TIER_COUNTRIES.has(d.geoCode) && d.value && d.value[0] > 0)
-        .sort((a, b) => b.value[0] - a.value[0])
-        .slice(0, 12)
-        .map(d => ({ code: d.geoCode, name: d.geoName, value: d.value[0] }));
-    } catch (_) {}
+    if (rawRegion) {
+      try {
+        const parsedRegion = JSON.parse(rawRegion);
+        const geoData = parsedRegion.default.geoMapData || [];
+        countries = geoData
+          .filter(d => TIER_COUNTRIES.has(d.geoCode) && d.value && d.value[0] > 0)
+          .sort((a, b) => b.value[0] - a.value[0])
+          .slice(0, 12)
+          .map(d => ({ code: d.geoCode, name: d.geoName, value: d.value[0] }));
+      } catch (_) {}
+    }
 
     res.json({
       keyword: q,

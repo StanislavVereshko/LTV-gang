@@ -694,8 +694,10 @@
     }
 
     function loadAndRender() {
-      fetch('/api/trends?q=' + encodeURIComponent(KW))
-        .then(function(r) { return r.json(); })
+      var ctrl = new AbortController();
+      var tid = setTimeout(function(){ ctrl.abort(); }, 25000);
+      fetch('/api/trends?q=' + encodeURIComponent(KW), { signal: ctrl.signal })
+        .then(function(r) { clearTimeout(tid); return r.json(); })
         .then(renderChart)
         .catch(fallback);
     }

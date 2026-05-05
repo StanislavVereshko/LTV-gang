@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/trends.js": { "maxDuration": 30 }
+  },
   "cleanUrls": true,
   "trailingSlash": true,
   "redirects": [
