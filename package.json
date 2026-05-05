@@ -1,5 +1,3 @@
 {
-  "dependencies": {
-    "google-trends-api": "^4.9.2"
-  }
+  "dependencies": {}
 }
