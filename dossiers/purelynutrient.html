@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purely Nutrient — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+  }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-image { background: linear-gradient(135deg, #1a1a0a 0%, #2a2a10 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-image-empty { text-align: center; color: rgba(245,242,236,0.25); padding: 2rem; font-size: 13px; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-countries-loading { padding: 1.5rem 1rem; font-size: 11px; color: var(--gray); text-align: center; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
+  .trend-fallback-msg { padding: 2.5rem; text-align: center; font-size: 12px; color: var(--gray); }
+  .trend-fallback-msg a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .trend-fallback-msg a:hover { border-bottom-color: var(--accent); }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 12px; margin-bottom: 2rem; overflow-x: auto; }
+  .funnel-row { display: grid; grid-template-columns: 100px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .value-eq-grid { border: 1px solid var(--border); background: var(--border); display: flex; flex-direction: column; gap: 1px; }
+  .value-eq-row { background: var(--black); display: grid; grid-template-columns: 160px 1fr 110px; align-items: center; }
+  .value-eq-row.header { background: rgba(255,255,255,0.02); font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  .warn-text { color: var(--warn); }
+  @media (max-width: 700px) { .value-eq-row { grid-template-columns: 1fr; } .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); } .value-eq-row > span:last-child { border-bottom: none; } }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative { border: 1px solid var(--border); background: rgba(255,255,255,0.015); padding: 1.5rem; border-radius: 3px; display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media { background: linear-gradient(135deg, #1a1a0a 0%, #2a2a10 100%); border-radius: 3px; overflow: hidden; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; position: relative; }
+  .creative-media img, .creative-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .creative-media-empty { text-align: center; padding: 1rem; font-size: 11px; color: rgba(245,242,236,0.25); line-height: 1.5; }
+  .creative-media-empty code { background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: 2px; color: var(--accent); font-size: 10px; }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2; }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+  .creative-quote { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px; color: var(--white); padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 0.5rem; }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Purely Nutrient</div>
+  <div class="nav-links">
+    <a href="https://purelynutrient.com/pages/home-page-pp-1" class="nav-link" target="_blank">лендінг ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&source=page-transparency-widget&view_all_page_id=1063317336845450" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="purelynutrient">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Supplements / Anti-inflammatory</div>
+    <h1>Purely<br><em>Nutrient</em></h1>
+    <p class="hero-tag">Single-SKU supplement бренд навколо Ethiopian Black Seed Oil. Агресивний "hidden invaders" hook — паразити і токсини як корінь хронічних симптомів. Диференціація через potency: 4.64% thymoquinone проти 0.7–1.2% у конкурентів. Є підписка, 90-day MBG, і social impact angle.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://purelynutrient.com/pages/home-page-pp-1" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">лендінг ↗</a>
+      <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&source=page-transparency-widget&view_all_page_id=1063317336845450" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value">Ethiopian <span class="accent">BSO</span></div>
+        <div class="hero-stat-sub">Black Seed Oil · softgels · 4.64% thymoquinone</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Ціна (base)</div>
+        <div class="hero-stat-value"><span class="accent">$29</span></div>
+        <div class="hero-stat-sub">Spring Sale до 80% off · підписка –10% · cancel anytime</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Social proof</div>
+        <div class="hero-stat-value"><span class="accent">4,463</span></div>
+        <div class="hero-stat-sub">4.8★ · on-site reviews · Trustpilot — є скарги на sub</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Гарантія + Social Impact</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">90-day MBG</span> + <span class="accent">4 meals</span> donated</div>
+        <div class="hero-stat-sub">
+          <span class="tag">feel better or free</span>90-денне повернення без питань + 4 прийоми їжі для дітей в Ефіопії з кожного замовлення. Два незалежних trust-сигнали: one removes purchase risk, other adds moral value.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://purelynutrient.com/cdn/shop/files/black-seed-oil-bottle.jpg"
+           alt="Purely Nutrient Ethiopian Black Seed Oil"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none">🌿<br><br>Ethiopian Black Seed Oil</div>
+      <div class="hero-image-label">
+        <strong>Ethiopian Black Seed Oil</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Мій коментар</div>
+      <p>Black seed oil новий тренд</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 — Ринковий тренд -->
+<section class="s">
+  <div class="s-num">00 — Ринковий тренд</div>
+  <h2 class="s-title">Попит <em>росте</em></h2>
+  <div class="s-body">
+    <p>«Black seed oil» — органічно зростаючий тренд без різкого hype-піку. На відміну від NMN (різкий стрибок 2021–2022 → плато), black seed oil росте повільно і стабільно з 2019-го. Причина — два незалежні двигуни: (1) Muslim diaspora в US/UK/AU/CA де Nigella sativa — традиційний продукт тисячолітньої медицини, (2) Western wellness тренд на anti-inflammatory і gut health добавки. <strong style="color:var(--accent)">Позитивний сигнал:</strong> тренд ще не перегрітий — конкуренція менша ніж в magnesium або fish oil, але попит реальний і зростає.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <div id="gt-widget" style="min-height:320px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ ринки</div>
+      <div id="gt-countries"><div class="trend-countries-loading">Завантаження…</div></div>
+    </div>
+  </div>
+  <div class="trend-meta">Google Trends · Worldwide · 5 years · "black seed oil"</div>
+  <a href="https://trends.google.com/trends/explore?date=today%205-y&q=black%20seed%20oil" target="_blank" class="trend-cta">
+    Перейти в Google Trends ↗
+    <span class="trend-cta-sub">повна аналітика та деталі по країнах</span>
+  </a>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Ethiopian <span class="accent">Black Seed Oil</span></div>
+      <div class="offer-cell-note">Softgels · Highland Ethiopia · 8,000 ft elevation · cold-pressed · no fillers</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Ключова потенція</div>
+      <div class="offer-cell-value"><span class="accent">4.64%</span> TQ</div>
+      <div class="offer-cell-note">Thymoquinone vs 0.7–1.2% у стандартного BSO — "9X more potent than regular black seed oil". Third-party tested.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing</div>
+      <div class="offer-cell-value">~$29 <span class="accent">OTP</span></div>
+      <div class="offer-cell-note">Spring Sale "до 80% off" активна — можлива вища порівняльна ціна. Підписка: –10%, cancel anytime.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Гарантія</div>
+      <div class="offer-cell-value"><span class="accent">90-day</span> MBG</div>
+      <div class="offer-cell-note">"Feel better or it's free" — повернення без питань протягом 90 днів від доставки.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Social impact</div>
+      <div class="offer-cell-value"><span class="accent">4 meals</span></div>
+      <div class="offer-cell-note">З кожного замовлення — 4 прийоми їжі для дітей в Ефіопії. Закриває петлю з sourcing (Ethiopian origin) — купуючи продукт ти повертаєш щось тій же країні.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Trust signals</div>
+      <div class="offer-cell-value"><span class="accent">3rd-party</span> tested</div>
+      <div class="offer-cell-note">Third-party lab verification TQ concentration. 4.8★ · 4,463 on-site reviews. Amazon listing (B0GFW5TRKY, B0GFD69NBZ).</div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem; padding:1rem 1.25rem; border:1px solid rgba(255,107,107,0.2); border-left: 3px solid var(--bad); background: rgba(255,107,107,0.03);">
+    <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--bad); margin-bottom:0.5rem;">Red flag · Trustpilot</div>
+    <p style="font-size:13px; line-height:1.7; color:rgba(245,242,236,0.75);">На Trustpilot є скарги на автоматичну підписку без явної згоди — клієнти помічають ребіл після першого замовлення. Це класична dark pattern: підписку оформлюють "за замовчуванням" або дуже непомітно. <strong>Для нас важливо:</strong> якщо будеш тестити цю механіку — робити явний opt-in + легке скасування, інакше це скалить репутацію.</p>
+  </div>
+</section>
+
+<!-- 02 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="s-body">
+    <p>Value = (Dream Outcome × Likelihood) / (Time Delay × Effort). Purely Nutrient б'є по трьох ліфтах одночасно — але є слабке місце.</p>
+  </div>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Позбутись прихованих "інвейдерів" (паразити, токсини, fungal overgrowth), відновити енергію, позбутись brain fog і bloating. Сильний емоційний образ: твій організм атаковано — є ліки.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">4.8★ · 4,463 on-site reviews, 3rd-party TQ testing, Ethiopian origin story, Amazon listing (credibility через marketplace). Але Trustpilot підриває довіру — треба перевірити загальний скор.</span>
+      <span class="value-eq-stars" style="color:var(--warn)">★★★☆☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">Copy обіцяє відчутний ефект — але конкретний таймфрейм не вказано. 90-day MBG імпліцитно говорить "90 днів достатньо щоб відчути різницю".</span>
+      <span class="value-eq-stars" style="color:var(--warn)">★★★☆☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">Softgels — мінімальне зусилля. Жодних змін в харчуванні, жодного режиму. "Just take daily" — максимально loweffort вхід.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">90-day MBG + 4 meals social impact. Перше знімає фінансовий ризик, друге дає моральне виправдання для покупки. $29 entry price — low-ticket, тому заперечення по ціні слабке.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Audience + JTBD -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Health-curious women, 32–55</h4>
+      <p>Мають хронічні симптоми — fatigue, bloating, brain fog, joint pain — які традиційна медицина "не пояснює". Шукають альтернативні пояснення і natural solutions. Купують через fear + hope. Конвертуються на "hidden invaders" hook.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Нарешті зрозуміти чому мені постійно погано і щось з цим зробити</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · cultural</div>
+      <h4>Muslim diaspora · UK/US/AU/CA</h4>
+      <p>Для яких Nigella sativa — це буквально "habbatus sauda" з хадісу ("ліки від усього, крім смерті"). Organic demand: продукт вже вбудований у культурну пам'ять. Не потребує переконання — потребує якісну версію. Конвертуються на potency (4.64% TQ) і sourcing (Ethiopia).</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Знайти якісний, чистий black seed oil без домішок</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03</div>
+      <h4>Gut health / detox seekers, 28–50</h4>
+      <p>Аудиторія probiotics, leaky gut, anti-inflammatory протоколів. "Hidden invaders" = паразити і candida — це їхня мова. Ймовірно вже купують gut health content, слідкують за натуропатами. Цей сегмент відгукується на science + fear комбо.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Прибрати запалення і відновити здоров'я кишечника натуральним шляхом</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04 · values</div>
+      <h4>Ethical consumers, 30–48</h4>
+      <p>"4 meals per order" та Ethiopian sourcing — цей сегмент купує якщо покупка = добра справа. Додаткова мотивація поверх health benefits. Overlap з сегментом 01, але рішення прискорюється moral layer.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Піклуватись про своє здоров'я і водночас робити добро</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Болі / заперечення -->
+<section class="s">
+  <div class="s-num">04 — Болі та заперечення</div>
+  <h2 class="s-title">На що <em>давлять</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 01 · primary</div>
+      <h4>Хронічна втома і brain fog</h4>
+      <p>"Прокидаюсь розбитим, постійний туман в голові, до вечора — нічого не лишається". Продукт позиціонується як те що прибирає корінь проблеми (паразити/токсини) а не симптом.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 02</div>
+      <h4>Bloating і digestive issues</h4>
+      <p>Здуття після їжі, непостійне травлення, відчуття важкості. "Hidden invaders" = fungal overgrowth і паразити в кишечнику — агресивне але дуже клікабельне пояснення.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Біль 03</div>
+      <h4>Слабкий імунітет</h4>
+      <p>Часті застуди, довге відновлення після хвороб. Anti-inflammatory + anti-parasitic angle TQ добре заходить як "repair your immune system from within".</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 01</div>
+      <h4>"Це просто шарлатанство"</h4>
+      <p>Контр: 3rd-party lab testing TQ concentration, Ethiopian sourcing з конкретною географією (8,000 ft highlands), наукові пояснення про thymoquinone як bioactive compound. Не "магія" — пояснений механізм.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 02</div>
+      <h4>"Я можу купити дешевше"</h4>
+      <p>Контр: "9X more potent" positioning. Конкуренти мають 0.7–1.2% TQ — ти купуєш 9 пляшок дешевого щоб отримати ефект від 1 нашої. Price-per-potency argument.</p>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Заперечення 03 · ризик</div>
+      <h4>"Що якщо не спрацює"</h4>
+      <p>90-day MBG + $29 entry point знімають ризик. Low-ticket first purchase = низький psychological barrier. Ризик першої покупки мінімальний — ціна двох кав.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Sales angles -->
+<section class="s">
+  <div class="s-num">05 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Fear / Hidden Threat</div>
+      <h4>Hidden invaders</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Найагресивніший кут. Паразити і токсини як невидима причина всіх симптомів. Максимальний scroll-stop, але Meta може restricting — залежить від формулювання.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Доктори називають їх "hidden invaders" — паразити і грибок в кишечнику, які роками крадуть твою енергію. Ось чому ти втомлений навіть після 8 годин сну.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Authority / Ancient Wisdom</div>
+      <h4>1,400-річна медицина</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Traditional medicine + modern science. Для аудиторії яка поважає натуральне і вікове. Менш агресивно — більший охват аудиторії, менший ризик обмежень.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Пророк Мухаммед (мир йому) сказав: "У чорному насінні є ліки від кожної хвороби, крім смерті". Сучасна наука знайшла причину — thymoquinone.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Potency / Comparison</div>
+      <h4>Чому інші BSO не працюють</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Education angle. Пояснює чому клієнт "пробував і не допомогло" — не продукт поганий, а була не та концентрація. Перебиває скептиків через механізм.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Я купувала black seed oil рік — без ефекту. Потім лікар показала мені аналіз: мій коштував $15 і мав 0.8% thymoquinone. Цей — 4.64%. Різниця в результатах — вражаюча.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · Social Impact</div>
+      <h4>Купуєш — годуєш дітей</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Emotional hook для ethical consumers. Sourcing з Ефіопії + донейшн дітям = замкнена петля. Добре для теплої аудиторії і retargeting.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Цей продукт зроблено в Ефіопії. Ваше замовлення — 4 прийоми їжі для дітей в тій самій країні. І він ще й найпотужніший black seed oil на ринку.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A5 · UGC / Transformation</div>
+      <h4>Скептик перетворюється</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Retargeting і warm audience. Класичний "я не вірив — тепер вірю" arc. Знімає останні заперечення через ідентифікацію.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        6 місяців тому я думала що supplements — це маркетинг. Потім почала брати чорне насіння. Тиждень 3 — зникло здуття. Тиждень 6 — мозковий туман. Тиждень 8 — перший раз за роки прокинулась з енергією.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A6 · Origin / Premium Sourcing</div>
+      <h4>8,000 футів над морем</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Для premium-сегменту. Geographic specificity як proxy for quality. Аналогічно як "single-origin coffee" або "highland olive oil" — деталь яка конвертує skeptics через credibility.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Більшість black seed oil — це дешеве насіння з великих ферм. Наше вирощують на висоті 8,000 футів в ефіопських горах. Саме тому TQ — 4.64% замість стандартних 0.8%.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 — Pros / Cons -->
+<section class="s">
+  <div class="s-num">06 — Pros / Cons</div>
+  <h2 class="s-title">Плюси та <em>мінуси</em></h2>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси</div>
+      <ul>
+        <li>Тренд, що ще не перегрівся — вікно для входу є</li>
+        <li>Low-ticket (~$29) = низький CAC-бар для breakeven</li>
+        <li>Чіткий диференціатор: 4.64% TQ vs 0.7–1.2%</li>
+        <li>Два незалежних аудиторних сегменти: Western wellness + Muslim diaspora</li>
+        <li>Single SKU — простота операцій і фокус copy</li>
+        <li>90-day MBG знімає purchase risk</li>
+        <li>Social impact angle додає моральний вимір</li>
+        <li>Subscription механіка є — LTV потенціал вище ніж OTP</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Мінуси</div>
+      <ul>
+        <li>"Hidden invaders / parasites" hook — вразливий до Meta policy restrictions</li>
+        <li>Trustpilot скарги на unauthorized subscription — репутаційний ризик при масштабуванні</li>
+        <li>$29 entry = низька маржа в абсолютному вираженні — треба LTV через sub</li>
+        <li>На Amazon є схожі listing (LANZF та інші) — commodity risk</li>
+        <li>Нема явних bundle-хуків або upsell products — обмежений AOV</li>
+        <li>Відсутні ключові influencer/authority endorsements</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Розбір креативів -->
+<section class="s">
+  <div class="s-num">07 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Перейди в FB Ad Library і відкрий сторінку по page_id=1063317336845450. Збережи топ-3 активних ads відсортованих по Impressions. Статику — у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/purelynutrient/screenshots/0X.jpg</code>. Відео — у <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">creatives/0X.mp4</code>.</p>
+  </div>
+  <div class="creatives">
+    <div class="creative" style="opacity:0.5;border-style:dashed">
+      <div class="creative-media">
+        <img src="_assets/purelynutrient/screenshots/01.jpg" alt="Creative 01" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%">
+          <div>збережи з Ad Library<br><br><code>screenshots/01.jpg</code></div>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">Очікує скрін</span>
+          <span class="tag">топ по impressions</span>
+        </div>
+        <h3>Creative 01 — завантаж скрін</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Що додати</div>
+          <div class="creative-block-text">Відкрий FB Ad Library → page_id 1063317336845450 → відсортуй по All time / Impressions → збережи топ-3 активних ads. Після завантаження скрінів — підготую повний trigger audit і hook analysis.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 — Verdict -->
+<section class="s">
+  <div class="s-num">08 — Verdict</div>
+  <h2 class="s-title">Що з <em>цим робити</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">↗</div>
+    <div>
+      <div class="verdict-title"><em style="color:var(--accent);font-style:italic">Цікавий кейс</em> — але треба замінити hook і підписку робити clean</div>
+      <div class="verdict-text">
+        <p>Purely Nutrient показує робочу механіку: єдиний продукт з чітким диференціатором (potency), низьким entry price ($29), і subscription для LTV. Тренд "black seed oil" реальний і ще не перегрітий — це вікно.</p>
+        <p>Головна проблема — "hidden invaders / parasites" hook дуже агресивний. Meta регулярно блокує такі клейми. Довша гра — перейти на тихіший anti-inflammatory / gut health / energy angle і залишити potency (4.64% TQ) як credibility, не як fear.</p>
+        <p>Subscription темна сторона (скарги на Trustpilot) — це не системна проблема продукту, а проблема UX на checkout. Якщо виправити (явний opt-in, easy cancel) — механіка залишається робочою.</p>
+        <p><strong>Playbook який тут можна вкрасти:</strong> single potent ingredient + geographic origin story + social impact layer + low-ticket entry + sub. Переноситься на десятки wellness-продуктів.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes-box">
+    Notes (твої коментарі): додай що думаєш — чи варто тестувати цей продукт або лише вкрасти механіку, які angles спробував би першими, і чи бачиш сенс в Muslim diaspora сегменті.
+  </div>
+</section>
+
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://purelynutrient.com/pages/home-page-pp-1" target="_blank">Purely Nutrient — Landing page</a></li>
+    <li><a href="https://purelynutrient.com" target="_blank">Purely Nutrient — Homepage</a></li>
+    <li><a href="https://www.trustpilot.com/review/purelynutrient.com" target="_blank">Trustpilot — Purely Nutrient reviews</a></li>
+    <li><a href="https://www.amazon.com/dp/B0GFW5TRKY" target="_blank">Amazon — Purely Nutrient 120 softgels (B0GFW5TRKY)</a></li>
+    <li><a href="https://www.amazon.com/dp/B0GFD69NBZ" target="_blank">Amazon — Purely Nutrient 60 softgels (B0GFD69NBZ)</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=ALL&view_all_page_id=1063317336845450" target="_blank">FB Ad Library — Purely Nutrient page</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=black%20seed%20oil" target="_blank">Google Trends — "black seed oil" worldwide 5 years</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Purely Nutrient</span>
+  <span id="footerStatus">Status: Researching</span>
+  <span>Updated: 2026-05-05</span>
+</footer>
+
+<script>
+  // Trends chart — Chart.js + /api/trends
+  (function() {
+    var KW = 'black seed oil';
+    var el = document.getElementById('gt-widget');
+    var ctEl = document.getElementById('gt-countries');
+    if (!el) return;
+
+    function fallback() {
+      el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=black%20seed%20oil" target="_blank">Відкрити Google Trends ↗</a></div>';
+    }
+
+    function renderCountries(countries) {
+      if (!ctEl || !countries || !countries.length) return;
+      var max = countries[0].value;
+      ctEl.innerHTML = countries.map(function(c) {
+        var pct = Math.round(c.value / max * 100);
+        return '<div class="trend-country-row">' +
+          '<span class="trend-country-name">' + c.name + '</span>' +
+          '<div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="trend-country-val">' + c.value + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderChart(data) {
+      if (!data.values || !data.values.length) { fallback(); return; }
+      renderCountries(data.countries);
+      el.removeAttribute('style');
+      el.style.position = 'relative';
+      el.style.height = '320px';
+      el.textContent = '';
+      var canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{ data: data.values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,0.07)', fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#c8ff00', bodyColor: '#f5f2ec', padding: 10, callbacks: { label: function(c) { return c.parsed.y + ' / 100'; } } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, maxTicksLimit: 8, maxRotation: 0 }, border: { display: false } },
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, stepSize: 25 }, border: { display: false } }
+          }
+        }
+      });
+    }
+
+    function loadAndRender() {
+      fetch('/api/trends?q=' + encodeURIComponent(KW))
+        .then(function(r) { return r.json(); })
+        .then(renderChart)
+        .catch(fallback);
+    }
+
+    if (window.Chart) { loadAndRender(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+    s.onload = loadAndRender;
+    s.onerror = fallback;
+    document.head.appendChild(s);
+  })();
+
+(() => {
+  const colors = { researching: 'var(--accent)', testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)' };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const KEY    = 'ltv-status-purelynutrient';
+
+  function applyStatus(s) {
+    label.textContent = labels[s] || s;
+    btn.style.borderColor = colors[s] || 'var(--accent)';
+    btn.style.color = colors[s] || 'var(--accent)';
+    if (footer) footer.textContent = 'Status: ' + (labels[s] || s);
+    wrap.querySelectorAll('.status-option').forEach(o => {
+      o.classList.toggle('active', o.dataset.status === s);
+    });
+  }
+
+  const saved = localStorage.getItem(KEY);
+  if (saved) applyStatus(saved);
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+  wrap.querySelectorAll('.status-option').forEach(o => {
+    o.addEventListener('click', () => {
+      applyStatus(o.dataset.status);
+      localStorage.setItem(KEY, o.dataset.status);
+      wrap.classList.remove('open');
+    });
+  });
+})();
+</script>
+</body>
+</html>
