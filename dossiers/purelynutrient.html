@@ -266,18 +266,18 @@
   </div>
   <div class="hero-right">
     <div class="hero-image">
-      <img src="https://purelynutrient.com/cdn/shop/files/black-seed-oil-bottle.jpg"
+      <img src="https://purelynutrient.com/cdn/shop/files/imgi_7_Purely_12.webp?v=1776693065"
            alt="Purely Nutrient Ethiopian Black Seed Oil"
            onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-      <div class="hero-image-empty" style="display:none">🌿<br><br>Ethiopian Black Seed Oil</div>
+      <div class="hero-image-empty" style="display:none">Ethiopian Black Seed Oil</div>
       <div class="hero-image-label">
         <strong>Ethiopian Black Seed Oil</strong>
         <span>Hero product</span>
       </div>
     </div>
     <div class="hero-product-desc">
-      <div class="hero-product-desc-label">Мій коментар</div>
-      <p>Black seed oil новий тренд</p>
+      <div class="hero-product-desc-label">Що це таке</div>
+      <p>Softgel із ефіопської нігели. Маркетингова ідея — "hidden invaders": паразити і токсини нібито атакують твій організм і спричиняють хронічну втому, bloating і brain fog. Ключовий диференціатор: 4.64% thymoquinone — у 9 разів більше ніж у стандартного BSO. Для Muslim diaspora це культурний продукт тисячоліть; для Western ринку — anti-inflammatory hero. $29 вхід і підписка = проста LTV-механіка. Тренд реальний і ще не перегрітий — є вікно.</p>
     </div>
   </div>
 </section>
@@ -688,8 +688,10 @@
     }
 
     function loadAndRender() {
-      fetch('/api/trends?q=' + encodeURIComponent(KW))
-        .then(function(r) { return r.json(); })
+      var ctrl = new AbortController();
+      var tid = setTimeout(function(){ ctrl.abort(); }, 12000);
+      fetch('/api/trends?q=' + encodeURIComponent(KW), { signal: ctrl.signal })
+        .then(function(r) { clearTimeout(tid); return r.json(); })
         .then(renderChart)
         .catch(fallback);
     }

@@ -254,10 +254,10 @@
   </div>
   <div class="hero-right">
     <div class="hero-image">
-      <img src="https://officialmusclemax.com/cdn/shop/files/MuscleMax-Shilajit-Gummies.jpg"
+      <img src="https://officialmusclemax.com/cdn/shop/files/1.1_Control.png?v=1763711987"
            alt="MuscleMax Shilajit Gummies"
            onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-      <div class="hero-image-empty" style="display:none">💪<br><br>MuscleMax™ Shilajit Gummies</div>
+      <div class="hero-image-empty" style="display:none">MuscleMax™ Shilajit Gummies</div>
       <div class="hero-image-label">
         <strong>Pure Shilajit Gummies</strong>
         <span>Hero product</span>
@@ -681,8 +681,10 @@
     }
 
     function loadAndRender() {
-      fetch('/api/trends?q=' + encodeURIComponent(KW))
-        .then(function(r) { return r.json(); })
+      var ctrl = new AbortController();
+      var tid = setTimeout(function(){ ctrl.abort(); }, 12000);
+      fetch('/api/trends?q=' + encodeURIComponent(KW), { signal: ctrl.signal })
+        .then(function(r) { clearTimeout(tid); return r.json(); })
         .then(renderChart)
         .catch(fallback);
     }
