@@ -20,10 +20,8 @@ module.exports = async (req, res) => {
     const startTime = new Date();
     startTime.setFullYear(startTime.getFullYear() - 5);
 
-    const [rawTime, rawRegion] = await Promise.all([
-      googleTrends.interestOverTime({ keyword: q, startTime, geo: '' }),
-      googleTrends.interestByRegion({ keyword: q, startTime, geo: '', resolution: 'COUNTRY' }),
-    ]);
+    // Fetch time series first — this is required
+    const rawTime = await googleTrends.interestOverTime({ keyword: q, startTime, geo: '' });
 
     const parsed = JSON.parse(rawTime);
     const timeline = parsed.default.timelineData;
@@ -35,8 +33,14 @@ module.exports = async (req, res) => {
     const step = Math.max(1, Math.floor(timeline.length / 60));
     const filtered = timeline.filter((_, i) => i % step === 0);
 
+    // Fetch country breakdown sequentially (optional — 5 s timeout, never blocks chart)
     let countries = [];
     try {
+      const regionRace = Promise.race([
+        googleTrends.interestByRegion({ keyword: q, startTime, geo: '', resolution: 'COUNTRY' }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('region timeout')), 5000)),
+      ]);
+      const rawRegion = await regionRace;
       const parsedRegion = JSON.parse(rawRegion);
       const geoData = parsedRegion.default.geoMapData || [];
       countries = geoData
