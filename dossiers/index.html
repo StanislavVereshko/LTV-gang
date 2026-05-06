@@ -96,6 +96,25 @@
   }
   .hero h1 em { color: var(--accent); font-style: italic; }
   .hero p { max-width: 520px; font-size: 15px; color: rgba(245,242,236,0.7); line-height: 1.75; }
+  .criteria-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--accent);
+    text-decoration: none;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.2s;
+    position: relative;
+    z-index: 2;
+  }
+  .criteria-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 
   /* NICHE BAR */
   .niche-bar {
@@ -348,6 +367,7 @@
   <div class="hero-eyebrow">Конкурентний аналіз</div>
   <h1>Dossiers<br><em>archive</em></h1>
   <p>Кожен бренд — окреме дозьє. Аналіз продукту, аудиторії, болів, кутів продажу і топ-креативів. Накопичувальна база яка з часом показує паттерни ніші.</p>
+  <a href="criteria.html" class="criteria-btn">Критерії відбору →</a>
 </section>
 
 <!-- NICHE BAR -->

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTV Gang — Критерії відбору</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo { font-family: 'Instrument Serif', serif; font-size: 18px; }
+  .nav-logo em { color: var(--accent); font-style: italic; }
+  .nav-back {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+
+  .hero {
+    padding: 5rem 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero p { max-width: 520px; font-size: 15px; color: rgba(245,242,236,0.7); line-height: 1.75; }
+
+  /* SCORE DASHBOARD */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 65px;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background-color: rgba(10,10,10,0.9);
+  }
+  .score-panel {
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .score-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+  .score-display {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .score-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 48px;
+    line-height: 1;
+    font-style: italic;
+    transition: color 0.4s;
+  }
+  .score-max { font-size: 18px; color: var(--gray); }
+  .score-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1), background 0.4s;
+    width: 0%;
+  }
+  .score-verdict {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.4s;
+    color: var(--gray);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    padding: 0;
+  }
+  @media (max-width: 900px) {
+    .dashboard { grid-template-columns: 1fr; }
+    .main { grid-template-columns: 1fr; }
+  }
+
+  /* SECTION */
+  .section {
+    padding: 3rem 2rem;
+    background: var(--black);
+    border-right: 1px solid var(--border);
+  }
+  .section:last-child { border-right: none; }
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-style: italic;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: rgba(245,242,236,0.5);
+    line-height: 1.7;
+    max-width: 380px;
+  }
+
+  /* CRITERION */
+  .criterion {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .criterion:last-child { border-bottom: none; }
+  .criterion-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .criterion-left { flex: 1; }
+  .criterion-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.01em;
+  }
+  .criterion-hint {
+    font-size: 11px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .criterion-hint strong { color: rgba(245,242,236,0.7); }
+
+  /* SELECT */
+  .c-select {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 2px;
+    cursor: pointer;
+    outline: none;
+    min-width: 130px;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .c-select:focus { border-color: var(--accent); }
+
+  /* SCORE TAG */
+  .score-tag {
+    font-size: 10px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    background: rgba(255,255,255,0.06);
+    color: var(--gray);
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+
+  /* DIVIDER */
+  .c-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  /* RESET BUTTON */
+  .reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2rem;
+    padding: 0.65rem 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  /* NOTES AREA */
+  .notes-section {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    background: var(--black);
+  }
+  .notes-section h3 {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    margin-bottom: 1rem;
+  }
+  .notes-box {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 1.25rem;
+    border-radius: 2px;
+    resize: vertical;
+    min-height: 140px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .notes-box:focus { border-color: var(--accent); }
+  .notes-box::placeholder { color: var(--gray); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 3.5rem 1.25rem 2rem; }
+    .section { padding: 2rem 1.25rem; }
+    .score-panel { padding: 1.25rem; }
+    .notes-section { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">LTV <em>Gang</em> · Критерії</div>
+  <a href="index.html" class="nav-back">Назад до дозьє</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">Product selection framework</div>
+  <h1>Критерії<br><em>відбору</em></h1>
+  <p>Два окремі скоркарди — One-shot і Subscription. Різна економіка, різні ваги. Обери варіанти для кожного критерію — скор рахується автоматично.</p>
+</section>
+
+<!-- STICKY DASHBOARD -->
+<div class="dashboard">
+  <div class="score-panel">
+    <div class="score-label">One-shot score</div>
+    <div class="score-display">
+      <span class="score-num" id="ots-num">0</span>
+      <span class="score-max">/ 65</span>
+    </div>
+    <div class="score-bar"><div class="score-fill" id="ots-fill"></div></div>
+    <div class="score-verdict" id="ots-verdict">— оціни критерії</div>
+  </div>
+  <div class="score-panel" style="border-left:1px solid var(--border)">
+    <div class="score-label">Subscription score</div>
+    <div class="score-display">
+      <span class="score-num" id="sub-num">0</span>
+      <span class="score-max">/ 90</span>
+    </div>
+    <div class="score-bar"><div class="score-fill" id="sub-fill"></div></div>
+    <div class="score-verdict" id="sub-verdict">— оціни критерії</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main">
+
+  <!-- ONE-SHOT -->
+  <div class="section" id="ots-section">
+    <div class="section-header">
+      <div class="section-eyebrow">Модель 01</div>
+      <div class="section-title">One-shot / OTP</div>
+      <p class="section-desc">Один продаж — один чек. CAC покривається з першої покупки. Фокус на маржі, wow-факторі і конвертованості трафіку.</p>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Маржа landed</div>
+          <div class="criterion-hint">COG + доставка + мита. <strong>≥3× — мінімум</strong> для прибуткового Media buying.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ &lt;2× — збиток</option>
+          <option value="5">⚠️ 2–3× — граничне</option>
+          <option value="10">✅ ≥3× — ок</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-0">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">AOV potential</div>
+          <div class="criterion-hint">Чи можна взяти <strong>≥$50</strong> з одного замовлення (bundle, upsell, ціна продукту)?</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="8" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ &lt;$30</option>
+          <option value="4">⚠️ $30–50</option>
+          <option value="8">✅ ≥$50</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-1">0 / 8 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Meta policy risk</div>
+          <div class="criterion-hint">Supplements/health = high. Beauty/grooming = med. Lifestyle/food = low.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">🔴 High — заборони, BAN</option>
+          <option value="5">🟡 Med — обмеження</option>
+          <option value="10">🟢 Low — вільно</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-2">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">FB Ad Library saturation</div>
+          <div class="criterion-hint">Dead = немає конкурентів (ніша не перевірена). Live = є гравці, але є місце. Hot = всі вже там.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="7" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="2">💀 Dead — ніша не перевірена</option>
+          <option value="7">🔥 Live — конкуренція є, місце є</option>
+          <option value="4">😤 Hot — всі вже там</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-3">0 / 7 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Wow-фактор для відео</div>
+          <div class="criterion-hint">1 = нічого цікавого на камері. 5 = сам по собі зупиняє скрол.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="2">1 — нічого</option>
+          <option value="4">2 — слабо</option>
+          <option value="6">3 — нормально</option>
+          <option value="8">4 — добре</option>
+          <option value="10">5 — зупиняє скрол</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-4">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">UGC-able</div>
+          <div class="criterion-hint">Клієнт природно знімає і ділиться? Знижує CPM, дає органіку.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="5" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ Ні — продукт невидимий</option>
+          <option value="5">✅ Так — є привід зняти</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-5">0 / 5 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Shippability</div>
+          <div class="criterion-hint">Вкладається в parcel <strong>≤30×30×15 см, ≤1 кг</strong>. Без DIM weight surcharges.</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="7" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ Габаритний — вб'є unit economics</option>
+          <option value="7">✅ Вкладається в parcel</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-6">0 / 7 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Perceived quality</div>
+          <div class="criterion-hint">Фото, упаковка, відчуття. Не соромно поставити на полицю?</div>
+        </div>
+        <select class="c-select" data-group="ots" data-max="8" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">💩 Шлак — не варто</option>
+          <option value="4">😐 Acceptable — зійде</option>
+          <option value="8">✨ Premium — виглядає дорого</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-ots-7">0 / 8 pts</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetGroup('ots')">↺ Скинути one-shot</button>
+  </div>
+
+  <!-- SUBSCRIPTION -->
+  <div class="section" id="sub-section" style="border-left:1px solid var(--border)">
+    <div class="section-header">
+      <div class="section-eyebrow">Модель 02</div>
+      <div class="section-title">Subscription / LTV</div>
+      <p class="section-desc">CAC → LTV → payback. Перший продаж може бути в нуль — монетизація на refill і retention. Інша математика, інші ризики.</p>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Consumability cycle</div>
+          <div class="criterion-hint">Як часто клієнт природно закінчує і замовляє знову? <strong>Monthly = золото.</strong></div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="2">💀 On-demand — немає циклу</option>
+          <option value="5">⚠️ Quarterly — довго чекати</option>
+          <option value="10">✅ Monthly — ідеально</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-0">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Gross margin</div>
+          <div class="criterion-hint"><strong>≥70%</strong> — мінімум для того щоб CAC payback склався. Нижче — підписка не виправдана.</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ &lt;60% — не складеться</option>
+          <option value="5">⚠️ 60–70% — граничне</option>
+          <option value="10">✅ ≥70% — ок</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-1">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">First-order hook</div>
+          <div class="criterion-hint">Чи є trial offer щоб зняти об'єкцію при першій покупці? $1 trial / free+shipping / перша коробка зі знижкою.</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="8" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ Full price одразу</option>
+          <option value="5">⚠️ Знижка на першу</option>
+          <option value="8">✅ Trial / free+shipping</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-2">0 / 8 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">CAC payback</div>
+          <div class="criterion-hint">За скільки місяців підписки окупається CAC? <strong>≤90 днів = 3 поставки max.</strong></div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ &gt;180 днів</option>
+          <option value="5">⚠️ 90–180 днів</option>
+          <option value="10">✅ ≤90 днів</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-3">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">LTV:CAC до M6</div>
+          <div class="criterion-hint">Projected LTV через 6 місяців проти CAC. <strong>≥3:1 — мінімум для масштабу.</strong></div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ &lt;2:1 — не масштабується</option>
+          <option value="5">⚠️ 2–3:1 — граничне</option>
+          <option value="10">✅ ≥3:1 — ок</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-4">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Habit fit</div>
+          <div class="criterion-hint">Продукт природно вбудовується в денну/тижневу рутину? Низький habit fit = "забув і скасував".</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ Ні — епізодичне</option>
+          <option value="5">⚠️ Частково</option>
+          <option value="10">✅ Так — щоденна рутина</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-5">0 / 10 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Regulatory risk</div>
+          <div class="criterion-hint">FDA labeling + COA для supplements. FTC click-to-cancel. EU subscription laws якщо плануєш туди.</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="8" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">🔴 High — supplements/health claims</option>
+          <option value="4">🟡 Med — beauty/food/pets</option>
+          <option value="8">🟢 Low — мінімальні вимоги</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-6">0 / 8 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Supply reliability</div>
+          <div class="criterion-hint">Чи можеш тримати стабільний інвентар під auto-ship? 1 постачальник = ризик стопу підписки.</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="7" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ 1 supplier — критичний ризик</option>
+          <option value="4">⚠️ 2 альтернативи</option>
+          <option value="7">✅ Стабільна лінія / власний склад</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-7">0 / 7 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Shippability</div>
+          <div class="criterion-hint">Кожна додаткова доставка в підписці — це hit по маржі. <strong>Flat-mailer = ідеально.</strong></div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="7" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">❌ Oversized — вб'є unit economics</option>
+          <option value="4">⚠️ Parcel — прийнятно</option>
+          <option value="7">✅ Flat-mailer — ідеально</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-8">0 / 7 pts</span>
+    </div>
+
+    <div class="criterion">
+      <div class="criterion-top">
+        <div class="criterion-left">
+          <div class="criterion-name">Perceived quality</div>
+          <div class="criterion-hint">Клієнт не соромиться тримати на видному місці. Це впливає на retention напряму — шлак не залишають.</div>
+        </div>
+        <select class="c-select" data-group="sub" data-max="10" onchange="recalc()">
+          <option value="0">— обери</option>
+          <option value="0">💩 Шлак — відписка гарантована</option>
+          <option value="5">😐 Acceptable — нейтрально</option>
+          <option value="10">✨ Premium — хочеться показати</option>
+        </select>
+      </div>
+      <span class="score-tag" id="tag-sub-9">0 / 10 pts</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetGroup('sub')">↺ Скинути subscription</button>
+  </div>
+
+</div>
+
+<!-- NOTES -->
+<div class="notes-section">
+  <h3>Нотатки по продукту</h3>
+  <textarea class="notes-box" placeholder="Назва бренду, посилання, коментар чому подобається або ні..."></textarea>
+</div>
+
+<script>
+  var OTS_MAX = 65;
+  var SUB_MAX = 90;
+
+  function recalc() {
+    var groups = { ots: 0, sub: 0 };
+    var selects = document.querySelectorAll('.c-select');
+    var tagIndex = { ots: 0, sub: 0 };
+
+    selects.forEach(function(sel) {
+      var group = sel.dataset.group;
+      var max = parseInt(sel.dataset.max);
+      var val = parseInt(sel.value) || 0;
+      groups[group] += val;
+
+      var idx = tagIndex[group]++;
+      var tag = document.getElementById('tag-' + group + '-' + idx);
+      if (tag) {
+        tag.textContent = val + ' / ' + max + ' pts';
+        tag.style.color = val === max ? 'var(--accent)' : val > 0 ? 'var(--warn)' : 'var(--gray)';
+        tag.style.background = val === max ? 'rgba(200,255,0,0.1)' : val > 0 ? 'rgba(255,184,77,0.08)' : 'rgba(255,255,255,0.06)';
+      }
+    });
+
+    updatePanel('ots', groups.ots, OTS_MAX);
+    updatePanel('sub', groups.sub, SUB_MAX);
+  }
+
+  function updatePanel(id, score, max) {
+    var pct = (score / max) * 100;
+    var numEl = document.getElementById(id + '-num');
+    var fillEl = document.getElementById(id + '-fill');
+    var verdictEl = document.getElementById(id + '-verdict');
+
+    numEl.textContent = score;
+
+    var color, verdict, bg;
+    if (score === 0) {
+      color = 'var(--gray)'; verdict = '— оціни критерії'; bg = 'rgba(255,255,255,0.15)';
+    } else if (pct >= 75) {
+      color = 'var(--accent)'; verdict = '✅ Сильний кандидат — варто глибше копати'; bg = 'var(--accent)';
+    } else if (pct >= 50) {
+      color = 'var(--warn)'; verdict = '⚠️ Є потенціал — перевір слабкі місця'; bg = 'var(--warn)';
+    } else {
+      color = 'var(--bad)'; verdict = '❌ Слабко — краще пропустити'; bg = 'var(--bad)';
+    }
+
+    numEl.style.color = color;
+    fillEl.style.width = pct + '%';
+    fillEl.style.background = bg;
+    verdictEl.textContent = verdict;
+    verdictEl.style.color = color;
+  }
+
+  function resetGroup(group) {
+    var selects = document.querySelectorAll('.c-select[data-group="' + group + '"]');
+    selects.forEach(function(sel) { sel.selectedIndex = 0; });
+    recalc();
+  }
+
+  recalc();
+</script>
+
+</body>
+</html>
