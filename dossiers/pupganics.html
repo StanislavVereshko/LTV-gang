@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pupganics™ — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a; --white: #f5f2ec; --accent: #c8ff00;
+    --gray: #888; --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d; --bad: #ff6b6b; --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-image { background: linear-gradient(135deg, #0a1018 0%, #142535 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-image-empty { text-align: center; color: rgba(245,242,236,0.25); padding: 2rem; font-size: 13px; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-countries-loading { padding: 1.5rem 1rem; font-size: 11px; color: var(--gray); text-align: center; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
+  .trend-fallback-msg { padding: 2.5rem; text-align: center; font-size: 12px; color: var(--gray); }
+  .trend-fallback-msg a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .trend-fallback-msg a:hover { border-bottom-color: var(--accent); }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .value-eq-grid { border: 1px solid var(--border); background: var(--border); display: flex; flex-direction: column; gap: 1px; }
+  .value-eq-row { background: var(--black); display: grid; grid-template-columns: 160px 1fr 110px; align-items: center; }
+  .value-eq-row.header { background: rgba(255,255,255,0.02); font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  .warn-text { color: var(--warn); }
+  @media (max-width: 700px) { .value-eq-row { grid-template-columns: 1fr; } .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); } .value-eq-row > span:last-child { border-bottom: none; } }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative { border: 1px solid var(--border); background: rgba(255,255,255,0.015); padding: 1.5rem; border-radius: 3px; display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media { background: linear-gradient(135deg, #0a1018 0%, #142535 100%); border-radius: 3px; overflow: hidden; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; }
+  .creative-media img, .creative-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .creative-media-empty { text-align: center; padding: 1rem; font-size: 11px; color: rgba(245,242,236,0.25); line-height: 1.5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+  .creative-media-empty code { background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: 2px; color: var(--accent); font-size: 10px; }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2; }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Pupganics™ — Skin &amp; Itch Chews</div>
+  <div class="nav-links">
+    <a href="https://pupganics.com" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=855408890978891" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="pupganics">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Pets Supply · Dog supplements</div>
+    <h1>Pup<br><em>ganics™</em></h1>
+    <p class="hero-tag">Мультивітамінні жувашки для собак проти свербіжу та проблем зі шкірою. Hook "Escape the $1,800/Year Apoquel Trap" — позиціонування проти дорогих рецептурних препаратів. 10,000+ клієнтів, 90-day MBG, subscription model.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://pupganics.com" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+      <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=855408890978891" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value">Skin &amp; <span class="accent">Itch</span> Chews</div>
+        <div class="hero-stat-sub">Advanced multivitamin · Peanut Butter flavor · Для собак з алергією/свербіжем</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Ціна</div>
+        <div class="hero-stat-value"><span class="accent">$42.99</span>/sub</div>
+        <div class="hero-stat-sub">$59.99 OTP або $42.99 subscription (28% savings). Recurring revenue model.</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Social proof</div>
+        <div class="hero-stat-value"><span class="accent">10k+</span></div>
+        <div class="hero-stat-sub">4.8★ · 10,000+ happy customers · 90-day MBG</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Hero Hook</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">Escape the $1,800/Year Apoquel Trap</span></div>
+        <div class="hero-stat-sub">
+          <span class="tag">vs Apoquel</span>Apoquel — prescription immunosuppressant для алергії собак. Коштує $1,800+/рік. Pupganics позиціонує себе як натуральну альтернативу за ~$516-720/рік. Сильний enemy framing — Apoquel = villain. Зрозумілий больовий мотиватор для власників.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://pupganics.com/cdn/shop/files/English_Peanut_Butter_Itch_19.png?v=1776775881"
+           alt="Pupganics Skin &amp; Itch Support Chews"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none">Pupganics™ · Skin &amp; Itch Chews</div>
+      <div class="hero-image-label">
+        <strong>Advanced Skin &amp; Itch Chews</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Що це таке</div>
+      <p>Жувашки для собак із проблемами шкіри та алергічним свербіжем. Формула мультивітамінів включає Omega-3, Biotin, Zinc та пробіотики для підтримки здоров'я шкіри зсередини. Позиціонується як доступна натуральна альтернатива дорогому prescription Apoquel ($1,800/рік). Смак — арахісове масло. Subscription-first модель із знижкою 28% — ключова механіка для LTV.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 — Ринковий тренд -->
+<section class="s">
+  <div class="s-num">00 — Ринковий тренд</div>
+  <h2 class="s-title">Pet supplements — <em>ринок зростає</em></h2>
+  <div class="s-body">
+    <p>Ринок pet supplements у США оцінюється у <strong style="color:var(--accent)">$1.7B+ (2024)</strong> і зростає на 6–8% CAGR. Власники домашніх тварин все більше антропоморфізують своїх улюбленців — витрати на health/wellness для тварин ростуть пропорційно до human wellness trends. Ключовий pain point: алергія у собак — одна з топ-3 причин відвідування ветеринара. Prescription Apoquel = $100–150/місяць. Ринок "природних альтернатив" prescription vet drugs — окрема і швидко зростаюча ніша. Pet supplement category benefits from: (1) emotional purchase (love for pet), (2) subscription-friendly (daily supplement), (3) high retention.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <div id="gt-widget" style="min-height:320px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ ринки</div>
+      <div id="gt-countries"><div class="trend-countries-loading">Завантаження…</div></div>
+    </div>
+  </div>
+  <div class="trend-meta">Google Trends · Worldwide · 5 years · "dog supplements"</div>
+  <a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank" class="trend-cta">
+    Перейти в Google Trends ↗
+    <span class="trend-cta-sub">повна аналітика та деталі по країнах</span>
+  </a>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Skin &amp; Itch <span class="accent">Chews</span></div>
+      <div class="offer-cell-note">Multivitamin chews з Omega-3, Biotin, Zinc, пробіотиками. Арахісовий смак. Для собак з алергією, свербіжем, проблемами шкіри та шерсті.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing</div>
+      <div class="offer-cell-value"><span class="accent">$42.99</span>/sub</div>
+      <div class="offer-cell-note">$59.99 OTP або $42.99/місяць підписка (-28%). Monthly renewal = strong recurring revenue. ~$516/рік vs $1,800 Apoquel.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Гарантія</div>
+      <div class="offer-cell-value"><span class="accent">90-day</span> MBG</div>
+      <div class="offer-cell-note">Industry-standard 90 днів. Довга гарантія = результати видно за 2-3 місяці, тож 90-day makes sense. Знімає головний страх "а раптом не допоможе?"</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Enemy framing</div>
+      <div class="offer-cell-value"><span style="color:var(--warn)">vs Apoquel</span></div>
+      <div class="offer-cell-note">"Escape the $1,800/Year Apoquel Trap" — Apoquel стає villain. Власники знають бренд і витрати. Comparison = instant context + high relevance.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Social proof</div>
+      <div class="offer-cell-value"><span class="accent">10k+</span> customers</div>
+      <div class="offer-cell-note">4.8★ · 10,000+ happy dog owners. Solid proof для ніші де trust критично важливий (здоров'я улюбленця).</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Format</div>
+      <div class="offer-cell-value">Soft <span class="accent">Chews</span></div>
+      <div class="offer-cell-note">Щоденний ритуал без зусиль. Собаки самі хочуть їсти (aromatized). Compliance rate набагато вищий ніж pills або liquid — важливо для результатів і retention.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Зупинити свербіж і страждання улюбленця + заощадити $1,000+/рік на ветеринарних препаратах. Подвійна мотивація: емоційна (не хочу бачити як собака страждає) + раціональна (економія грошей). Надзвичайно сильна комбінація.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">4.8★, 10,000+ customers — strong proof. Pet supplement ніша: власники уважні до results і готові давати feedback. 90-day MBG = implied confidence in results. Слабке місце — немає клінічних досліджень на продукті.</span>
+      <span class="value-eq-stars">★★★★☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">"Results visible within 4–6 weeks" — стандарт для skin/coat supplements. 90-day MBG означає мінімум 3 місяці тесту. Порівняно з Apoquel (працює швидше) — часова рамка є objection. Але "натуральне = slower but safer" framing знімає це.</span>
+      <span class="value-eq-stars" style="color:var(--warn)">★★★☆☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">Soft chew щодня = нульовий effort. Собаки їдять самостійно (смак арахісу). Subscription = auto-ship, без необхідності щомісячно замовляти. Максимальне зниження effort для власника.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">90-day MBG — один з найсильніших в ніші. "If your dog doesn't improve, full refund." Враховуючи emotional stakes (здоров'я улюбленця), довга гарантія є критичним trust signal. $42.99/міс = low enough для тесту.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Аудиторія -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Власники собак з алергією</h4>
+      <p>Вже знають про проблему, можливо вже платять за Apoquel. Дуже high-intent — активно шукають рішення. "Apoquel trap" hook б'є прямо в больову точку. Готові платити, якщо є результат.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Зупинити страждання собаки і перестати платити $150/місяць ветеринару</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · prevention</div>
+      <h4>Проактивні pet parents, 28–45</h4>
+      <p>Не мають гострої проблеми, але хочуть "зробити все правильно" для здоров'я собаки. Wellness-minded, читають склад корму. Конвертуються на prevention + optimal health angle, а не emergency fix.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Переконатися що роблю все для здоров'я свого собаки</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03 · post-vet</div>
+      <h4>Власники після ветеринарного діагнозу</h4>
+      <p>Ветеринар призначив Apoquel або іншу дорогу терапію. Шукають альтернативи онлайн. Дуже high intent, вже пройшли "освітній етап" через ветеринара. Порівнюють cost/benefit свідомо.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Знайти ефективну і доступну альтернативу prescription ліках</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04</div>
+      <h4>TikTok / community-driven buyers</h4>
+      <p>Відкривають через dog owner communities (Facebook groups, Reddit r/dogs, TikTok). Довіряють peer reviews більше ніж рекламі. "My dog had the same problem and this fixed it" = найвища конверсія UGC.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Спробувати те, що допомогло іншим собакам з тією ж проблемою</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Sales angles -->
+<section class="s">
+  <div class="s-num">04 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Enemy / Cost Comparison</div>
+      <h4>Apoquel Trap</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Головний кут бренду. Apoquel = villain, Pupganics = hero. $1,800 vs $516/рік = конкретна економія. Сильний для власників які вже "у системі".</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Мій ветеринар призначив Apoquel. $140 на місяць. Щомісяця. Назавжди. А потім я знайшла Pupganics. Зараз собака без свербіжу і я заощаджую $100 щомісяця. Ось що я зробила.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Emotional / Empathy</div>
+      <h4>Я не міг дивитись на це</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Емпатія до страждань собаки = емоційний тригер. Before/after трансформація coat/skin. Найсильніший кут для холодної аудиторії у соцмережах.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Він чесався цілу ніч. Я не спав. Дивився як мій пес страждає і не знав що робити. Через 6 тижнів Pupganics — він знову спить спокійно. І я теж.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Natural / Clean</div>
+      <h4>Без хімії для мого улюбленця</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Для wellness-oriented власників. "Natural, no harsh chemicals" — working with the body, not suppressing. Контраст до Apoquel (immunosuppressant). Добре для Facebook + Pinterest.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Apoquel пригнічує імунну систему. Читаєш список побічних ефектів — жахаєшся. Є кращий шлях. Натуральні ingredients що підтримують здоров'я шкіри зсередини, без компромісу.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · UGC / Social Proof</div>
+      <h4>10,000 щасливих собак</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Числа + конкретні stories. "If it worked for them, it'll work for mine." Retargeting angle. Compilation of before/after coat transformations + owner testimonials.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Більше 10,000 власників собак вже зробили switch з Apoquel на Pupganics. Ось 5 реальних трансформацій. Слайд 1: Макс, лабрадор, 4 роки. До і після 8 тижнів.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Pros / Cons -->
+<section class="s">
+  <div class="s-num">05 — Pros / Cons</div>
+  <h2 class="s-title">Плюси та <em>мінуси</em></h2>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси</div>
+      <ul>
+        <li>"Apoquel Trap" hook — один з найсильніших enemy framings у pet ніші</li>
+        <li>Subscription model з 28% знижкою = сильний recurring revenue</li>
+        <li>90-day MBG — відмінний risk reversal для subscription pet supplement</li>
+        <li>Емоційна покупка (love for pet) = висока готовність платити і низький churn</li>
+        <li>Pet supplements — одна з топ DTC niches за LTV і retention</li>
+        <li>4.8★ · 10,000+ customers — solid proof base</li>
+        <li>Soft chew format = high compliance (собаки їдять самі)</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Мінуси</div>
+      <ul>
+        <li>Time to results 4-8 тижнів — Apoquel діє швидше (1-2 дні)</li>
+        <li>Немає клінічних досліджень на продукті — "survey-based" evidence</li>
+        <li>Pet supplement ринок конкурентний (Zesty Paws, NaturVet, Vetri-Science)</li>
+        <li>Prescription vs supplement: серйозні алергії можуть потребувати справжнього лікування</li>
+        <li>Обмеження Meta щодо "medical claims" для тварин</li>
+        <li>Subscription churn якщо результати не видні за 4-6 тижнів</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 06 — Креативи -->
+<section class="s">
+  <div class="s-num">06 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Перейди в FB Ad Library → page_id <strong style="color:var(--accent)">855408890978891</strong> → сортуй по Impressions → збережи топ-3 активних. Статику — <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/pupganics/screenshots/0X.jpg</code>.</p>
+  </div>
+  <div class="creatives">
+    <div class="creative" style="opacity:0.5;border-style:dashed">
+      <div class="creative-media">
+        <img src="_assets/pupganics/screenshots/01.jpg" alt="Creative 01" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty">
+          збережи з Ad Library<br><br><code>screenshots/01.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">Очікує скрін</span>
+          <span class="tag">топ по impressions</span>
+        </div>
+        <h3>Creative 01 — завантаж скрін</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Що шукати</div>
+          <div class="creative-block-text">Pupganics майже напевно домінує через: (1) before/after coat transformation — фото/відео собаки з поганою шкірою → здоровою шерстю, (2) owner-to-camera testimonials від реальних людей ("my dog stopped scratching after..."), (3) "vs Apoquel" comparison cards або infographics з ціновим порівнянням. Найдовше активний = найбільш profitable. Pet UGC дуже добре конвертує — шукай найавтентичніший контент.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Verdict -->
+<section class="s">
+  <div class="s-num">07 — Verdict</div>
+  <h2 class="s-title">Що з <em>цим робити</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">★</div>
+    <div>
+      <div class="verdict-title"><em style="color:var(--accent)">Оффер топ</em> — enemy framing + subscription + emotional purchase</div>
+      <div class="verdict-text">
+        <p>Pupganics зібрали ідеальну комбінацію: зрозумілий ворог (Apoquel), конкретна економія ($1,000+/рік), емоційна мотивація (здоров'я улюбленця), subscription для LTV і 90-day MBG для конверсії.</p>
+        <p>"Escape the $1,800/Year Apoquel Trap" — це textbook enemy framing. Apoquel достатньо відомий серед dog owners щоб хук був зрозумілий без пояснень. Ціновий контраст ($1,800 vs $516) конкретний і переконливий.</p>
+        <p><strong>Що реально цінне в цьому дозьє:</strong> "vs expensive prescription" enemy framing — playbook який переноситься на будь-яку supplement нішу де є дорогий медичний конкурент. Знаходиш "villain" (prescription drug, clinic procedure) → показуєш конкретну економію → пропонуєш натуральну альтернативу. Subscription + 90-day MBG = стандарт для pet supplements.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes-box">
+    Мій коментар: вітаміни для собак, оффер топ — "Apoquel Trap" hook сильний, enemy framing з конкретними цифрами
+  </div>
+</section>
+
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://pupganics.com" target="_blank">Pupganics™ — Homepage</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=855408890978891" target="_blank">FB Ad Library — Pupganics™ page</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank">Google Trends — "dog supplements" worldwide 5 years</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Pupganics™</span>
+  <span id="footerStatus">Status: Researching</span>
+  <span>Updated: 2026-05-05</span>
+</footer>
+
+<script>
+  (function() {
+    var KW = 'dog supplements';
+    var el = document.getElementById('gt-widget');
+    var ctEl = document.getElementById('gt-countries');
+    if (!el) return;
+
+    function fallback() {
+      el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=dog%20supplements" target="_blank">Відкрити Google Trends ↗</a></div>';
+    }
+
+    function renderCountries(countries) {
+      if (!ctEl || !countries || !countries.length) return;
+      var max = countries[0].value;
+      ctEl.innerHTML = countries.map(function(c) {
+        var pct = Math.round(c.value / max * 100);
+        return '<div class="trend-country-row">' +
+          '<span class="trend-country-name">' + c.name + '</span>' +
+          '<div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="trend-country-val">' + c.value + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderChart(data) {
+      if (!data.values || !data.values.length) { fallback(); return; }
+      renderCountries(data.countries);
+      el.removeAttribute('style');
+      el.style.position = 'relative';
+      el.style.height = '320px';
+      el.textContent = '';
+      var canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{ data: data.values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,0.07)', fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#c8ff00', bodyColor: '#f5f2ec', padding: 10, callbacks: { label: function(c) { return c.parsed.y + ' / 100'; } } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, maxTicksLimit: 8, maxRotation: 0 }, border: { display: false } },
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, stepSize: 25 }, border: { display: false } }
+          }
+        }
+      });
+    }
+
+    function loadAndRender() {
+      var ctrl = new AbortController();
+      var tid = setTimeout(function(){ ctrl.abort(); }, 25000);
+      fetch('/api/trends?q=' + encodeURIComponent(KW), { signal: ctrl.signal })
+        .then(function(r) { clearTimeout(tid); return r.json(); })
+        .then(renderChart)
+        .catch(fallback);
+    }
+
+    if (window.Chart) { loadAndRender(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+    s.onload = loadAndRender;
+    s.onerror = fallback;
+    document.head.appendChild(s);
+  })();
+
+(() => {
+  const colors = { researching: 'var(--accent)', testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)' };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const KEY    = 'ltv-status-pupganics';
+
+  function applyStatus(s) {
+    label.textContent = labels[s] || s;
+    btn.style.borderColor = colors[s] || 'var(--accent)';
+    btn.style.color = colors[s] || 'var(--accent)';
+    if (footer) footer.textContent = 'Status: ' + (labels[s] || s);
+    wrap.querySelectorAll('.status-option').forEach(o => {
+      o.classList.toggle('active', o.dataset.status === s);
+    });
+  }
+
+  const saved = localStorage.getItem(KEY);
+  if (saved) applyStatus(saved);
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+  wrap.querySelectorAll('.status-option').forEach(o => {
+    o.addEventListener('click', () => {
+      applyStatus(o.dataset.status);
+      localStorage.setItem(KEY, o.dataset.status);
+      wrap.classList.remove('open');
+    });
+  });
+})();
+</script>
+</body>
+</html>

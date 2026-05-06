@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Nancy™ — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a; --white: #f5f2ec; --accent: #c8ff00;
+    --gray: #888; --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d; --bad: #ff6b6b; --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-image { background: linear-gradient(135deg, #1a0d17 0%, #28101f 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-image-empty { text-align: center; color: rgba(245,242,236,0.25); padding: 2rem; font-size: 13px; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-countries-loading { padding: 1.5rem 1rem; font-size: 11px; color: var(--gray); text-align: center; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
+  .trend-fallback-msg { padding: 2.5rem; text-align: center; font-size: 12px; color: var(--gray); }
+  .trend-fallback-msg a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .trend-fallback-msg a:hover { border-bottom-color: var(--accent); }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .value-eq-grid { border: 1px solid var(--border); background: var(--border); display: flex; flex-direction: column; gap: 1px; }
+  .value-eq-row { background: var(--black); display: grid; grid-template-columns: 160px 1fr 110px; align-items: center; }
+  .value-eq-row.header { background: rgba(255,255,255,0.02); font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+  .value-eq-row.highlight { background: rgba(200,255,0,0.025); }
+  .value-eq-row > span { padding: 0.9rem 1.25rem; font-size: 13px; border-right: 1px solid var(--border); }
+  .value-eq-row > span:last-child { border-right: none; }
+  .value-eq-label { font-size: 12px !important; }
+  .value-eq-desc { color: rgba(245,242,236,0.75); line-height: 1.6; }
+  .value-eq-stars { color: var(--accent); font-size: 15px !important; letter-spacing: 2px; text-align: center; }
+  .accent-text { color: var(--accent); }
+  .warn-text { color: var(--warn); }
+  @media (max-width: 700px) { .value-eq-row { grid-template-columns: 1fr; } .value-eq-row > span { border-right: none; border-bottom: 1px solid var(--border); } .value-eq-row > span:last-child { border-bottom: none; } }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .creatives { display: flex; flex-direction: column; gap: 2rem; }
+  .creative { border: 1px solid var(--border); background: rgba(255,255,255,0.015); padding: 1.5rem; border-radius: 3px; display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+  @media (max-width: 800px) { .creative { grid-template-columns: 1fr; } }
+  .creative-media { background: linear-gradient(135deg, #1a0d17 0%, #28101f 100%); border-radius: 3px; overflow: hidden; aspect-ratio: 9/16; display: flex; align-items: center; justify-content: center; }
+  .creative-media img, .creative-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .creative-media-empty { text-align: center; padding: 1rem; font-size: 11px; color: rgba(245,242,236,0.25); line-height: 1.5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+  .creative-media-empty code { background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: 2px; color: var(--accent); font-size: 10px; }
+  .creative-meta { display: flex; flex-direction: column; gap: 1rem; }
+  .creative-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .tag.accent { color: var(--accent); border-color: var(--accent); }
+  .creative h3 { font-family: 'Instrument Serif', serif; font-size: 24px; font-style: italic; line-height: 1.2; }
+  .creative-block { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .creative-block-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .creative-block-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.65; }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Hello Nancy™ — Lem Massager</div>
+  <div class="nav-links">
+    <a href="https://hellonancy.com/products/lem" class="nav-link" target="_blank">сайт ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=104131582317919" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="hellonancy">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Intimate wellness · Adult device</div>
+    <h1>Hello<br><em>Nancy™</em></h1>
+    <p class="hero-tag">Lem — клиторальний масажер у формі лимона. Зростаючий ринок intimate wellness ($33B до 2030), VSL-воронка з "Pleasure Guarantee". Продукт де категорія ще не перегріта, але Meta-обмеження потребують акуратного фреймінгу через wellness/health.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://hellonancy.com/products/lem" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+      <a href="https://unlock.hellonancy.com/lem" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">VSL funnel ↗</a>
+      <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&source=page-transparency-widget&view_all_page_id=104131582317919" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); text-decoration:none; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">fb ad library ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value">Lem™ <span class="accent">Massager</span></div>
+        <div class="hero-stat-sub">12 інтенсивностей · Medical-grade silicone · IPX7 waterproof · &lt;50dB</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Ціна</div>
+        <div class="hero-stat-value"><span class="accent">$89</span></div>
+        <div class="hero-stat-sub">Reg $159 → $70 знижки. Promo code LEM25 додатково -25%</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Social proof</div>
+        <div class="hero-stat-value"><span class="accent">1,000+</span></div>
+        <div class="hero-stat-sub">4.7★ · on-site reviews · Pleasure Guarantee</div>
+      </div>
+      <div class="hero-stat wide">
+        <div class="hero-stat-label">Гарантія + Funnel</div>
+        <div class="hero-stat-value" style="font-size:18px;margin-bottom:6px;"><span class="accent">30-day</span> MBG + <span class="accent">Pleasure Guarantee</span></div>
+        <div class="hero-stat-sub">
+          <span class="tag">VSL</span>Окремий конверсійний домен unlock.hellonancy.com/lem — VSL-воронка підігріває ліід перед покупкою. Pleasure Guarantee — нестандартний ризик-реверсал специфічний для категорії.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://hellonancy.com/cdn/shop/files/WhatsAppImage2023-11-18at14.19.19_2acc31e8.webp"
+           alt="Hello Nancy Lem Clitoral Massager"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+      <div class="hero-image-empty" style="display:none">Hello Nancy™ · Lem Massager</div>
+      <div class="hero-image-label">
+        <strong>Lem™ Clitoral Massager</strong>
+        <span>Hero product</span>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Що це таке</div>
+      <p>Lem — клиторальний масажер у формі лимона від Hello Nancy™. Використовує air-suction pulses + 12 рівнів інтенсивності для стимуляції. Медичний силікон, IPX7 водостійкість, тихий &lt;50dB мотор, 120 хвилин роботи від одного заряду (USB-C). Дискретний лимонний дизайн — виглядає як іграшка на полиці. Позиціонується в категорії intimate wellness / self-care, а не як adult toy — це ключово для рекламної стратегії.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 — Ринковий тренд -->
+<section class="s">
+  <div class="s-num">00 — Ринковий тренд</div>
+  <h2 class="s-title">Intimate wellness — <em>зростаючий ринок</em></h2>
+  <div class="s-body">
+    <p>Глобальний ринок intimate wellness devices оцінюється у <strong style="color:var(--accent)">$33B до 2030</strong> (CAGR ~8%). Категорія виходить з табу-зони: mainstream retailers (Target, Amazon) почали продавати devices, що означає нормалізацію аудиторії. Жіночий sexual wellness — один з найбільш недостатньо охоплених сегментів FemTech. Пошуковий попит стабільно зростає, особливо у Tier-1 ринках (US, UK, CA, AU). Ключова складність: реклама на Meta вимагає wellness/health фреймінгу замість прямого adult-контенту.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <div id="gt-widget" style="min-height:320px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);">Завантаження тренду…</div>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ ринки</div>
+      <div id="gt-countries"><div class="trend-countries-loading">Завантаження…</div></div>
+    </div>
+  </div>
+  <div class="trend-meta">Google Trends · Worldwide · 5 years · "clitoral massager"</div>
+  <a href="https://trends.google.com/trends/explore?date=today%205-y&q=clitoral%20massager" target="_blank" class="trend-cta">
+    Перейти в Google Trends ↗
+    <span class="trend-cta-sub">повна аналітика та деталі по країнах</span>
+  </a>
+</section>
+
+<!-- 01 — Offer / USP -->
+<section class="s">
+  <div class="s-num">01 — Оффер та USP</div>
+  <h2 class="s-title">Що саме <em>продають</em></h2>
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Hero product</div>
+      <div class="offer-cell-value">Lem™ <span class="accent">Massager</span></div>
+      <div class="offer-cell-note">Air-suction pulses + 12 рівнів. Medical silicone, IPX7, &lt;50dB. Лимонний дизайн — дискретний і shareworthy.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Pricing</div>
+      <div class="offer-cell-value"><span class="accent">$89</span> OTP</div>
+      <div class="offer-cell-note">Reg $159 (44% off). Promo LEM25 = -25% додатково. Pleasure Pouch add-on $9.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Гарантія</div>
+      <div class="offer-cell-value"><span class="accent">30-day</span> MBG</div>
+      <div class="offer-cell-note">"Pleasure Guarantee" — унікальний ризик-реверсал. "If you don't love it, we'll make it right." Знімає головний страх: "а раптом не підійде?"</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Воронка</div>
+      <div class="offer-cell-value"><span class="accent">VSL</span> funnel</div>
+      <div class="offer-cell-note">unlock.hellonancy.com/lem — окремий домен для конверсії. VSL підігріває ліід, пояснює технологію і знімає заперечення перед переходом на cart.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Subscription</div>
+      <div class="offer-cell-value"><span style="color:var(--gray)">OTP only</span></div>
+      <div class="offer-cell-note">Лише одноразова покупка. Немає subscription-моделі — LTV залежить від accessories і повторних покупок. Слабке місце.</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Упаковка + UX</div>
+      <div class="offer-cell-value"><span class="accent">Discreet</span></div>
+      <div class="offer-cell-note">Опція "Extra Discreet Packaging" за $3.99 — важлива для аудиторії яка турбується про privacy (доставка до спільного адресу тощо).</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — Offer anatomy -->
+<section class="s">
+  <div class="s-num">02 — Offer anatomy</div>
+  <h2 class="s-title">Hormozi Value <em>Equation</em></h2>
+  <div class="value-eq-grid">
+    <div class="value-eq-row header">
+      <span>Елемент</span><span>Як реалізовано</span><span>Сила</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Dream Outcome</span>
+      <span class="value-eq-desc">Сексуальне задоволення і wellness як самодогляд. Фреймінг: "ти заслуговуєш на це" + нормалізація через wellness. Емоційна ставка висока — intimate happiness безпосередньо впливає на self-esteem і стосунки. Дуже сильний мотиватор при правильному фреймінгу.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Likelihood</span>
+      <span class="value-eq-desc">1,000+ reviews 4.7★ + "Pleasure Guarantee". Верифікація через VSL і reviews. Обмеження — нема великого масштабу відгуків (vs 5k+ у конкурентів). "Medical-grade silicone" + технічні specs підвищують perceived credibility.</span>
+      <span class="value-eq-stars" style="color:var(--warn)">★★★☆☆</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Time Delay ↓</span>
+      <span class="value-eq-desc">Перший результат — при першому використанні. Немає "треба чекати 30 днів". Це один з найшвидших result loops серед усіх категорій. Повернення інвестицій миттєве.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row">
+      <span class="value-eq-label accent-text">Effort ↓</span>
+      <span class="value-eq-desc">Фізично простий у використанні. USB-C зарядка, waterproof — мінімум клопоту. 12 режимів = персоналізація без складності. Discreet design = немає тривоги щодо зберігання.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+    <div class="value-eq-row highlight">
+      <span class="value-eq-label accent-text">Risk Reversal</span>
+      <span class="value-eq-desc">"Pleasure Guarantee" — найсильніший елемент оферу. Знімає унікальне заперечення категорії: "а раптом не відчую нічого?". 30-day MBG стандартний, але Pleasure Guarantee з'єднує guarantee з specific outcome — психологічно набагато сильніше.</span>
+      <span class="value-eq-stars">★★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Аудиторія -->
+<section class="s">
+  <div class="s-num">03 — Цільова аудиторія + JTBD</div>
+  <h2 class="s-title">Хто <em>купує</em></h2>
+  <div class="tier-list">
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 01 · primary</div>
+      <h4>Self-care жінки, 25–40</h4>
+      <p>Активні споживачі wellness-контенту. Купують meditation apps, skincare, yoga gear. Розглядають intimate wellness як продовження self-care routine. Конвертуються через "you deserve this" і wellness нарратив. US/CA/UK.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Додати intimate wellness до self-care практики без сорому</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 02 · high intent</div>
+      <h4>Жінки після пологів / перименопауза</h4>
+      <p>Зміни в тілі після пологів або в перименопаузі впливають на сексуальність. Шукають рішення, але часто не говорять з лікарем. Medical-grade framing і wellness позиціонування знімають табу. Вища готовність платити.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Відновити сексуальний wellbeing після фізіологічних змін</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 03 · gift buyers</div>
+      <h4>Gift buyers (Valentine's, birthdays)</h4>
+      <p>Партнери які шукають intimate/нестандартний подарунок. Лимонний дизайн = giftwrappable, виглядає невинно. Gift angle добре конвертує на свята. Discreet брендинг знижує anxiety навколо покупки як подарунку.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Знайти незвичайний intimate подарунок який не виглядає awkward</span>
+      </div>
+    </div>
+    <div class="tier-cell">
+      <div class="tier-cell-tag">Сегмент 04</div>
+      <h4>TikTok / social discovery</h4>
+      <p>Відкривають через review-відео і "things I bought that changed my life" контент. Лимонний дизайн shareworthy на TikTok. Молодша аудиторія (18–30) менш stigmatized, відкритіша до impulse buy. Але конверсія нижча через менші бюджети.</p>
+      <div class="jtbd-block">
+        <span class="jtbd-label">JTBD</span>
+        <span class="jtbd-text">Спробувати продукт про який всі говорять в TikTok wellness space</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 — Sales angles -->
+<section class="s">
+  <div class="s-num">04 — Sales angles</div>
+  <h2 class="s-title">Кути для <em>креативів</em></h2>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">A1 · Self-care / Wellness</div>
+      <h4>You deserve this</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Фреймінг через wellness і self-care — безпечний для Meta. "Taking care of yourself includes ALL of you." Не adult toy, а wellness device. Ключовий кут для масштабу.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Ти витрачаєш гроші на масаж спини, на обличчя, на нігті. Але ніколи — на те, що насправді важливо. Lem — це твій перший справжній крок до intimate self-care.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A2 · Education / Taboo-breaking</div>
+      <h4>Про що ніхто не говорить</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Нормалізація теми через education. Дослідження, статистика, лікарі. Добре для жінок 35+. Побудова trust через expertise framing.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        80% жінок ніколи не досягали оргазму від пенетрації. Але цьому не вчать в школі. І більшість жінок думають що з ними щось не так. Ні. Просто потрібен правильний інструмент.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A3 · Gift / Partner</div>
+      <h4>Найкращий подарунок з яким не знаєш що робити</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Angle для partner buyers перед святами. Дискретна упаковка, виглядає як лимон — дарувати не соромно. Сильний seasonal кут для Valentine's Day, birthdays.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Хочеш подарувати їй щось справді особисте? Не парфуми знову. Lem виглядає як лимон, але змінює все. І вона скаже дякую кілька разів.
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">A4 · Tech / Specs</div>
+      <h4>12 налаштувань, 0 компромісів</h4>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:0.75rem;">Технічний кут для скептиків. Medical-grade specs підвищують credibility. Air-suction technology як differentiator. Добре для retargeting.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        Медичний силікон. IPX7 водостійкість. 12 режимів. Тихий мотор менше 50 децибел. 120 хвилин заряду. Lem — це не іграшка. Це wellness device зроблений з серйозними стандартами.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 — Pros / Cons -->
+<section class="s">
+  <div class="s-num">05 — Pros / Cons</div>
+  <h2 class="s-title">Плюси та <em>мінуси</em></h2>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси</div>
+      <ul>
+        <li>Intimate wellness — зростаючий недостатньо охоплений ринок ($33B до 2030)</li>
+        <li>"Pleasure Guarantee" — унікальний risk-reversal для категорії</li>
+        <li>VSL-воронка окремий домен — вищий conversion rate ніж прямий продукт page</li>
+        <li>Discreet лимонний дизайн — знижує purchase anxiety і підвищує shareability</li>
+        <li>Висока маржа (physical device ~$10-15 COGS vs $89 ціна)</li>
+        <li>Medical-grade specs = wellness фреймінг дозволяє рекламувати на Meta</li>
+        <li>Gift occasion potential — Valentine's Day, Birthday angle</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Мінуси</div>
+      <ul>
+        <li>Meta/Facebook мають жорсткі обмеження на adult content — потрібен wellness фреймінг</li>
+        <li>OTP тільки — немає subscription, LTV обмежений без accessories upsell</li>
+        <li>1,000+ reviews — відносно малий social proof для масштабування</li>
+        <li>Висока ціна входу $89 при discount — без subscription немає recurring revenue</li>
+        <li>Narrow targeting options — деякі paid audiences недоступні через ad policies</li>
+        <li>Конкуренти (Lelo, Womanizer) мають набагато більший brand recognition</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 06 — Креативи -->
+<section class="s">
+  <div class="s-num">06 — Розбір креативів</div>
+  <h2 class="s-title">Топ <em>ads</em></h2>
+  <div class="s-body">
+    <p>Перейди в FB Ad Library → page_id <strong style="color:var(--accent)">104131582317919</strong> → сортуй по Impressions → збережи топ-3 активних. Статику — <code style="background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:2px;color:var(--accent);font-size:12px">_assets/hellonancy/screenshots/0X.jpg</code>.</p>
+  </div>
+  <div class="creatives">
+    <div class="creative" style="opacity:0.5;border-style:dashed">
+      <div class="creative-media">
+        <img src="_assets/hellonancy/screenshots/01.jpg" alt="Creative 01" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="creative-media-empty">
+          збережи з Ad Library<br><br><code>screenshots/01.jpg</code>
+        </div>
+      </div>
+      <div class="creative-meta">
+        <div class="creative-tags">
+          <span class="tag">Очікує скрін</span>
+          <span class="tag">топ по impressions</span>
+        </div>
+        <h3>Creative 01 — завантаж скрін</h3>
+        <div class="creative-block">
+          <div class="creative-block-label">Що шукати</div>
+          <div class="creative-block-text">Hellonancy майже напевно використовує: (1) UGC-стиль — жінка to-camera говорить про self-care, не adult content, (2) product shots з лимонним дизайном у lifestyle context (bathroom, bedroom shelf), (3) "wellness routine" framing з testimonials. Найдовше активний = найбільш profitable. Зверни увагу на hook — перші 3 секунди визначають все.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 — Verdict -->
+<section class="s">
+  <div class="s-num">07 — Verdict</div>
+  <h2 class="s-title">Що з <em>цим робити</em></h2>
+  <div class="verdict">
+    <div class="verdict-badge">↗</div>
+    <div>
+      <div class="verdict-title"><em style="color:var(--accent)">Ринок реальний</em> — але вимагає акуратного підходу до реклами</div>
+      <div class="verdict-text">
+        <p>Hello Nancy™ знайшли правильну формулу: wellness фреймінг замість adult, дискретний лимонний дизайн, "Pleasure Guarantee" як унікальний risk-reversal, і VSL-воронка яка прогріває аудиторію перед покупкою.</p>
+        <p>Головне обмеження — Meta ad policies для adult-adjacent контенту. Потрібна постійна увага до фреймінгу: кожен creative має бути wellness/self-care, не explicit. Це вимагає тестування і може бути повільнішим шляхом до масштабу ніж ніші без таких обмежень.</p>
+        <p><strong>Що реально цінне в цьому дозьє:</strong> VSL-воронка з окремим конверсійним доменом + wellness фреймінг для adult-adjacent продукту — це playbook який масштабується. "Pleasure Guarantee" як category-specific risk reversal — взяти на озброєння для будь-якого продукту де є outcome uncertainty.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes-box">
+    Мій коментар: секс іграшка
+  </div>
+</section>
+
+<section class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://hellonancy.com/products/lem" target="_blank">Hello Nancy™ — Lem Clitoral Massager product page</a></li>
+    <li><a href="https://unlock.hellonancy.com/lem" target="_blank">Hello Nancy™ — VSL funnel</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=104131582317919" target="_blank">FB Ad Library — Hello Nancy™ page</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=clitoral%20massager" target="_blank">Google Trends — "clitoral massager" worldwide 5 years</a></li>
+  </ul>
+</section>
+
+<footer>
+  <span>LTV Gang · Dossier · Hello Nancy™</span>
+  <span id="footerStatus">Status: Researching</span>
+  <span>Updated: 2026-05-05</span>
+</footer>
+
+<script>
+  (function() {
+    var KW = 'clitoral massager';
+    var el = document.getElementById('gt-widget');
+    var ctEl = document.getElementById('gt-countries');
+    if (!el) return;
+
+    function fallback() {
+      el.innerHTML = '<div class="trend-fallback-msg">Графік недоступний. <a href="https://trends.google.com/trends/explore?date=today%205-y&q=clitoral%20massager" target="_blank">Відкрити Google Trends ↗</a></div>';
+    }
+
+    function renderCountries(countries) {
+      if (!ctEl || !countries || !countries.length) return;
+      var max = countries[0].value;
+      ctEl.innerHTML = countries.map(function(c) {
+        var pct = Math.round(c.value / max * 100);
+        return '<div class="trend-country-row">' +
+          '<span class="trend-country-name">' + c.name + '</span>' +
+          '<div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="trend-country-val">' + c.value + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderChart(data) {
+      if (!data.values || !data.values.length) { fallback(); return; }
+      renderCountries(data.countries);
+      el.removeAttribute('style');
+      el.style.position = 'relative';
+      el.style.height = '320px';
+      el.textContent = '';
+      var canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{ data: data.values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,0.07)', fill: true, tension: 0.35, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#c8ff00', bodyColor: '#f5f2ec', padding: 10, callbacks: { label: function(c) { return c.parsed.y + ' / 100'; } } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, maxTicksLimit: 8, maxRotation: 0 }, border: { display: false } },
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555', font: { family: "'DM Mono',monospace", size: 10 }, stepSize: 25 }, border: { display: false } }
+          }
+        }
+      });
+    }
+
+    function loadAndRender() {
+      var ctrl = new AbortController();
+      var tid = setTimeout(function(){ ctrl.abort(); }, 25000);
+      fetch('/api/trends?q=' + encodeURIComponent(KW), { signal: ctrl.signal })
+        .then(function(r) { clearTimeout(tid); return r.json(); })
+        .then(renderChart)
+        .catch(fallback);
+    }
+
+    if (window.Chart) { loadAndRender(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+    s.onload = loadAndRender;
+    s.onerror = fallback;
+    document.head.appendChild(s);
+  })();
+
+(() => {
+  const colors = { researching: 'var(--accent)', testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)' };
+  const labels = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  const wrap   = document.getElementById('statusWrap');
+  const btn    = document.getElementById('statusBtn');
+  const label  = document.getElementById('statusLabel');
+  const footer = document.getElementById('footerStatus');
+  const KEY    = 'ltv-status-hellonancy';
+
+  function applyStatus(s) {
+    label.textContent = labels[s] || s;
+    btn.style.borderColor = colors[s] || 'var(--accent)';
+    btn.style.color = colors[s] || 'var(--accent)';
+    if (footer) footer.textContent = 'Status: ' + (labels[s] || s);
+    wrap.querySelectorAll('.status-option').forEach(o => {
+      o.classList.toggle('active', o.dataset.status === s);
+    });
+  }
+
+  const saved = localStorage.getItem(KEY);
+  if (saved) applyStatus(saved);
+
+  btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', () => wrap.classList.remove('open'));
+  wrap.querySelectorAll('.status-option').forEach(o => {
+    o.addEventListener('click', () => {
+      applyStatus(o.dataset.status);
+      localStorage.setItem(KEY, o.dataset.status);
+      wrap.classList.remove('open');
+    });
+  });
+})();
+</script>
+</body>
+</html>
