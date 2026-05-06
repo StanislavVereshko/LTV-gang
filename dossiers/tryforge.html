@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Men — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-image { background: linear-gradient(135deg, #150808 0%, #200e0a 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image-inner { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .hero-image-placeholder { text-align: center; }
+  .hero-image-placeholder .organ-icons { font-size: 32px; letter-spacing: 8px; margin-bottom: 1rem; opacity: 0.6; }
+  .hero-image-placeholder p { font-size: 11px; color: rgba(245,242,236,0.35); letter-spacing: 0.1em; text-transform: uppercase; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell.highlight { background: rgba(200,255,0,0.025); }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+  .offer-cell-savings { display: inline-block; margin-top: 0.5rem; font-size: 10px; padding: 2px 8px; background: rgba(200,255,0,0.12); color: var(--accent); border-radius: 2px; letter-spacing: 0.06em; }
+
+  .organs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .organs-grid { grid-template-columns: 1fr 1fr; } }
+  .organ-cell { background: var(--black); padding: 1.25rem 1rem; }
+  .organ-icon { font-size: 24px; margin-bottom: 0.5rem; }
+  .organ-name { font-size: 12px; color: var(--white); margin-bottom: 0.35rem; font-weight: 500; }
+  .organ-claim { font-size: 10px; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+  .organ-desc { font-size: 11px; color: var(--gray); line-height: 1.5; }
+
+  .ecosystem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .ecosystem-grid { grid-template-columns: 1fr; } }
+  .eco-cell { background: var(--black); padding: 1.75rem; }
+  .eco-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .eco-title { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .eco-tag { font-size: 10px; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
+  .eco-desc { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .eco-arrow { font-size: 20px; color: rgba(200,255,0,0.3); margin-top: 1rem; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; }
+  .funnel-row { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers/" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Forge Men®</div>
+  <div class="nav-links">
+    <a href="https://secure.try-forge.com/bridge-a1-simple" class="nav-link" target="_blank">лендінг ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=132584606613853" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="tryforge">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Supplements · Ancestral Nutrition · Men's Health</div>
+    <h1>Forge<br><em>Men®</em></h1>
+    <p class="hero-tag">"The Science of Nature. Forged for Men." Beef Organ Complex — 5 grass-fed органів у одній капсулі. Anti-pharma hook + carnivore хвиля + повноцінний бренд-екосистем: Skin → Body → Aura. 300k+ клієнтів, почали зі скінкеру для чоловіків.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://secure.try-forge.com/bridge-a1-simple" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">лендінг ↗</a>
+      <a href="https://try-forge.com" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">бренд-сайт ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Entry OTP</div>
+        <div class="hero-stat-value"><span class="accent">$43.95</span></div>
+        <div class="hero-stat-sub">1 міс · $1.46/day</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Best value OTP</div>
+        <div class="hero-stat-value"><span class="accent">$27.95</span></div>
+        <div class="hero-stat-sub"><span class="tag">−48%</span> 6 міс · $167.70</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Sub 6-month</div>
+        <div class="hero-stat-value"><span class="accent">$24.95</span></div>
+        <div class="hero-stat-sub">$149.95 / найнижча ціна</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Customers</div>
+        <div class="hero-stat-value"><span class="accent">300k+</span></div>
+        <div class="hero-stat-sub">trusted customers (brand)</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Rating</div>
+        <div class="hero-stat-value">4.8<span style="font-size:16px;color:var(--gray)">★</span></div>
+        <div class="hero-stat-sub">3,500+ reviews</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Guarantee</div>
+        <div class="hero-stat-value"><span class="accent">90d</span></div>
+        <div class="hero-stat-sub">MBG на 6-місячний запас</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <div class="hero-image-inner">
+        <div class="hero-image-placeholder">
+          <div class="organ-icons">🫀🫁🫘🦴</div>
+          <p>Beef Organ Complex<br>5 Grass-fed Organs</p>
+        </div>
+      </div>
+      <div class="hero-image-label">
+        <span>Beef Organ Complex · 30ct</span>
+        <strong>Like Nourishes Like</strong>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Про продукт</div>
+      <p>5 grass-fed beef органів у freeze-dried капсулах: серце, печінка, яєчки, підшлункова, кістковий мозок. Концепція "ancestral nutrition" — предки їли nose-to-tail, ми відновлюємо цей патерн. Позиціювання: природна альтернатива синтетичним добавкам і гормональній терапії.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 ТРЕНД -->
+<section class="s">
+  <div class="s-num">00</div>
+  <div class="s-title">Ринковий <em>тренд</em></div>
+  <div class="s-body">
+    <p>Organ supplement ніша виросла на хвилі carnivore diet руху (Paul Saladino, Ancestral Health) і загального backlash проти ultra-processed food. "Nose-to-tail" харчування повернулось як wellness тренд після десятиліть занедбання. Ключові дрова: тривога навколо штучних добавок + low testosterone epidemic + популяризація через медіа (Huberman Lab, Joe Rogan ecosystem). Trend search "organ supplement" з 2022 пішов майже вертикально.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <canvas id="trendChart" height="220" style="display:block;width:100%;padding:1.25rem 1rem 1rem;"></canvas>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ країни · інтерес</div>
+      <div id="countriesBlock"></div>
+    </div>
+  </div>
+  <p class="trend-meta">Дані: Google Trends · "organ supplement" · 5 років</p>
+  <a class="trend-cta" href="https://trends.google.com/trends/explore?date=today%205-y&q=organ%20supplement" target="_blank">
+    Переглянути живий графік
+    <span class="trend-cta-sub">Google Trends · organ supplement</span>
+  </a>
+</section>
+
+<!-- 01 ОФЕР -->
+<section class="s">
+  <div class="s-num">01</div>
+  <div class="s-title">Офер / <em>USP</em></div>
+  <div class="s-body">
+    <p>Ключовий USP — "все в одному": 5 найнутрієнтніших органів у freeze-dried форматі без необхідності купувати або готувати реальні органи. Тирова цінова модель агресивно підштовхує до 6-місячного commitment: entry $43.95/міс → 6-місячний за $24.95/міс (−43%). Психологія: "якщо почати — то не зупинятись посередині."</p>
+  </div>
+
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">1 місяць · OTP</div>
+      <div class="offer-cell-value"><span class="accent">$43.95</span></div>
+      <div class="offer-cell-note">$1.46/день · free ship від 3міс</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">3 місяці · OTP</div>
+      <div class="offer-cell-value"><span class="accent">$116.85</span></div>
+      <div class="offer-cell-note">$38.95/pouch · free shipping</div>
+      <div class="offer-cell-savings">−28% vs entry</div>
+    </div>
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">6 місяців · OTP ✦ Best</div>
+      <div class="offer-cell-value"><span class="accent">$167.70</span></div>
+      <div class="offer-cell-note">$27.95/pouch · 90d MBG · free ship</div>
+      <div class="offer-cell-savings">−48% vs entry · save $130</div>
+    </div>
+  </div>
+
+  <div style="margin-top:0.75rem;" class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">1 міс · Subscribe</div>
+      <div class="offer-cell-value"><span class="accent">$39.95</span></div>
+      <div class="offer-cell-note">−10% vs OTP · autoship</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">3 міс · Subscribe</div>
+      <div class="offer-cell-value"><span class="accent">$104.85</span></div>
+      <div class="offer-cell-note">$34.95/pouch · −10%</div>
+    </div>
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">6 міс · Subscribe ✦ Lowest</div>
+      <div class="offer-cell-value"><span class="accent">$149.95</span></div>
+      <div class="offer-cell-note">$24.95/pouch · найнижча ціна</div>
+      <div class="offer-cell-savings">найкраща ціна на ринку</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="organs-grid">
+      <div class="organ-cell">
+        <div class="organ-icon">🫀</div>
+        <div class="organ-name">Beef Heart</div>
+        <div class="organ-claim">14,000× CoQ10</div>
+        <div class="organ-desc">vs broccoli · енергія + кардіо витривалість</div>
+      </div>
+      <div class="organ-cell">
+        <div class="organ-icon">🫁</div>
+        <div class="organ-name">Beef Liver</div>
+        <div class="organ-claim">4.2× Vitamin A</div>
+        <div class="organ-desc">vs carrots · "nature's multivitamin"</div>
+      </div>
+      <div class="organ-cell">
+        <div class="organ-icon">⚡</div>
+        <div class="organ-name">Beef Testicles</div>
+        <div class="organ-claim">Testo peptides</div>
+        <div class="organ-desc">hormone-supporting · libido · "like nourishes like"</div>
+      </div>
+      <div class="organ-cell">
+        <div class="organ-icon">🫘</div>
+        <div class="organ-name">Beef Pancreas</div>
+        <div class="organ-claim">11× enzymes</div>
+        <div class="organ-desc">vs digestive aids · digestion + nutrient absorption</div>
+      </div>
+      <div class="organ-cell">
+        <div class="organ-icon">🦴</div>
+        <div class="organ-name">Beef Bone Marrow</div>
+        <div class="organ-claim">20× collagen</div>
+        <div class="organ-desc">vs bone broth · joints + skin + recovery</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;" class="s-body">
+    <p style="font-size:13px;color:rgba(245,242,236,0.6);">⚠️ Всі порівняльні цифри (14,000×, 4.2×, 11×, 20×) подаються без конкретних джерел і методології. Це типова supplements-marketing тактика — виглядає як наука, але без peer-reviewed backing.</p>
+  </div>
+</section>
+
+<!-- 02 БРЕНД-ЕКОСИСТЕМ -->
+<section class="s">
+  <div class="s-num">02</div>
+  <div class="s-title">Бренд-<em>екосистем</em></div>
+  <div class="s-body">
+    <p>Forge Men — не single-product бренд. Три колекції закривають повний "чоловічий стек": зовнішній вигляд (Skin), внутрішнє здоров'я (Body), притягання (Aura). Починали зі скінкеру — це важливо: довіра і база клієнтів були побудовані на менш policy-ризиковому продукті, потім додали Body (organ supplements) і Aura (парфуми). Класична brand expansion через довіру аудиторії.</p>
+  </div>
+  <div class="ecosystem-grid">
+    <div class="eco-cell">
+      <div class="eco-num">Колекція 01 · Початок</div>
+      <div class="eco-title">Skin</div>
+      <div class="eco-tag">Men's skincare · Де все починалось</div>
+      <div class="eco-desc">Anti-aging скінкер для чоловіків. "Formulated by experts, recommended by dermatologists." Саме з цього продукту будувалась база 300k+ клієнтів. Нижчий Meta policy risk ніж supplements → легше масштабувати ads → база для cross-sell.</div>
+      <div class="eco-arrow">→</div>
+    </div>
+    <div class="eco-cell">
+      <div class="eco-num">Колекція 02 · Флагман</div>
+      <div class="eco-title">Body</div>
+      <div class="eco-tag">Organ supplements · Beef Organ Complex</div>
+      <div class="eco-desc">Основний DR-продукт зараз. Beef Organ Complex на ancestral nutrition narrative. Вища маржа і сильніший emotional hook ніж скінкер. Продається існуючій базі скінкер-клієнтів (теплий трафік) + cold через agressive Meta/VSL воронку.</div>
+      <div class="eco-arrow">→</div>
+    </div>
+    <div class="eco-cell">
+      <div class="eco-num">Колекція 03 · Expansion</div>
+      <div class="eco-title">Aura</div>
+      <div class="eco-tag">Nature-powered scents · притягання</div>
+      <div class="eco-desc">Парфуми/феромони для чоловіків — логічне розширення "masculine identity" бренду. Вищий AOV, gift-purchase potential, повторні покупки. Замикає петлю: виглядаєш добре (Skin) + відчуваєш добре (Body) + пахнеш добре (Aura).</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-key">Трафік</span><span class="funnel-val">Meta Ads · VSL landing · carnivore/men's health communities · organic через influencers</span></div>
+      <div class="funnel-row"><span class="funnel-key">Hook</span><span class="funnel-val">"Big Pharma Doesn't Want You to Know" + "war against masculinity" + anti-establishment narrative</span></div>
+      <div class="funnel-row"><span class="funnel-key">VSL</span><span class="funnel-val">Conspiratorial-educational: suppressed knowledge → glandular therapy science → 5 organs → results timeline</span></div>
+      <div class="funnel-row"><span class="funnel-key">Offer</span><span class="funnel-val">6-tier matrix (1/3/6 міс × OTP/Sub) · агресивний push до 6-міс commitment · 60-90d MBG</span></div>
+      <div class="funnel-row"><span class="funnel-key">Scarcity</span><span class="funnel-val">"Seasonal organ availability" + countdown + "347 purchased in last 48h"</span></div>
+      <div class="funnel-row"><span class="funnel-key">Cross-sell</span><span class="funnel-val">Skin (скінкер) + Aura (парфуми) → повний masculine ecosystem через email/retargeting</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 РЕКЛАМА -->
+<section class="s">
+  <div class="s-num">03</div>
+  <div class="s-title">Рекламні <em>кути</em></div>
+  <div class="s-body">
+    <p>Forge Men використовує conspiratorial-educational tone — один із найсильніших у supplements. Люди діляться такими відео, бо відчувають що "дізнались щось що інші не знають." Meta policy помірна (supplement, не pharma claims в самих адах).</p>
+  </div>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>Big Pharma Conspiracy</h4>
+      <p>Лікарі приховують правду про organ meats — це найефективніший narrative для мужської аудиторії з скептицизмом до медицини. Генерує shares і saves — людям подобається "викривати систему."</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Your doctor knows organ meats are nature's multivitamin. But they'll never prescribe them."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>War on Masculinity</h4>
+      <p>Testosterone падає, естрогени в їжі, чоловіки стають слабшими — і ось рішення предків. Ідентитарний кут що резонує з широкою аудиторією: від bodybuilders до батьків 40+.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Average testosterone levels have dropped 1% every year since 1980. Here's what changed — and what to do."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>Carnivore / Ancestral</h4>
+      <p>Серфить на хвилі carnivore diet і Paul Saladino / Shawn Baker аудиторії. Не потребує пояснення концепції — аудиторія вже "in" на ancestral nutrition. Warm traffic.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Our ancestors ate nose-to-tail and never had these problems. Here's what we stopped doing."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>Results Timeline</h4>
+      <p>Week 1 → Month 1 → Month 3 → Month 6 progressive transformation narrative. Виправдовує 6-місячний commitment і знижує refund запити — "результати приходять поступово, не відмовляйся."</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Week 1: energy. Month 1: strength. Month 3: drive. Month 6: different man. Here's what 347 guys reported."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 СОЦІАЛЬНИЙ ДОКАЗ -->
+<section class="s">
+  <div class="s-num">04</div>
+  <div class="s-title">Соціальний <em>доказ</em></div>
+  <div class="s-body">
+    <p>300k+ клієнтів — дуже сильна цифра для бренду в ancestral nutrition ніші. 4.8★ з 3,500+ відгуками на бренд-сайті. Landing page показує 18,250+ customers і 4.7★ — можливо різна база між брендом і DR-лендінгом. Статистика ("72% felt energy surge") подається без методології.</p>
+  </div>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси для нас</div>
+      <ul>
+        <li>300k+ клієнтів — підтверджений product-market fit, не тестова ніша</li>
+        <li>6-tier pricing matrix тягне AOV і commitment вгору (до $167/order)</li>
+        <li>Conspiratorial hook = органічні shares, нижчий CPM через engagement</li>
+        <li>Carnivore trend серфінг — активна аудиторія зі своїм community</li>
+        <li>Brand ecosystem Skin + Body + Aura = cross-sell без холодного CAC</li>
+        <li>Почали зі скінкеру → довіра і база, потім supplements — розумна послідовність</li>
+        <li>90d MBG на 6-місячний pack = знижена об'єкція при великому commitment</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Ризики / червоні прапори</div>
+      <ul>
+        <li>Extreme comparison claims без peer-reviewed джерел (14,000×, 20×) — FTC ризик</li>
+        <li>Testimonials виглядають сконструйованими — реальна authenticity під питанням</li>
+        <li>Anti-pharma narrative може відштовхнути більш освічену аудиторію</li>
+        <li>Beef testicles у формулі = потенційний Meta policy issue (sexual organ claims)</li>
+        <li>Великий бренд-investment: Skin + Body + Aura = три окремі напрями, складно швидко відтворити</li>
+        <li>"Global sourcing South America, Australia, Asia" — непрозора supply chain для premium positioning</li>
+        <li>Supplement ніша з health claims: FDA disclaimer + FTC "substantiation" вимоги</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ВИСНОВОК -->
+<section class="s">
+  <div class="s-num">05</div>
+  <div class="s-title"><em>Висновок</em></div>
+  <div class="verdict">
+    <div class="verdict-badge">🏔️</div>
+    <div>
+      <div class="verdict-title">Сильний playbook, але великий вхідний ticket</div>
+      <div class="verdict-text">
+        <p>Forge Men — добре виконаний бренд у зростаючій ніші ancestral nutrition. Conspiratorial-educational hook + carnivore хвиля + masculine identity = потужна комбінація що генерує органічний вірусний ефект. 300k+ клієнтів і повноцінний ecosystem з 3 колекцій — це результат серйозної довгострокової роботи.</p>
+        <p>Але це саме і є проблема для наслідування: такий рівень брендингу, кількість продуктів і trust-building займає роки і значні інвестиції. Вони почали зі скінкеру і будували довіру поступово. Скопіювати тільки "beef organ supplement" без тієї бренд-рамки — отримаєш просто черговий commodity supplement з агресивними claims.</p>
+        <p>Що варто забрати: 6-tier pricing matrix що агресивно тягне до довгострокового commitment, conspiratorial hook для органічного reach, і поступова brand expansion логіка (менш ризиковий продукт спочатку → розширення на supplements).</p>
+      </div>
+      <div class="notes-box">Мій коментар: класний кейс, але великий бренд і треба багато інвестувати в такий брендінг продукту, ще є скін кер косметика для тіпів, починали з неї</div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://secure.try-forge.com/bridge-a1-simple" target="_blank">Landing page — try-forge.com</a></li>
+    <li><a href="https://try-forge.com" target="_blank">Brand site — try-forge.com</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=132584606613853" target="_blank">Facebook Ad Library (page_id: 132584606613853)</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=organ%20supplement" target="_blank">Google Trends — organ supplement</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossiers</span>
+  <span>Forge Men® · Beef Organ Complex</span>
+  <span id="footerDate"></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+var KW = 'organ supplement';
+
+var TREND_DATA = {
+  keyword: KW,
+  labels: ['May \'21','Jun \'21','Jul \'21','Aug \'21','Sep \'21','Oct \'21','Nov \'21','Dec \'21','Jan \'22','Feb \'22','Mar \'22','Apr \'22','May \'22','Jun \'22','Jul \'22','Aug \'22','Sep \'22','Oct \'22','Nov \'22','Dec \'22','Jan \'23','Feb \'23','Mar \'23','Apr \'23','May \'23','Jun \'23','Jul \'23','Aug \'23','Sep \'23','Oct \'23','Nov \'23','Dec \'23','Jan \'24','Feb \'24','Mar \'24','Apr \'24','May \'24','Jun \'24','Jul \'24','Aug \'24','Sep \'24','Oct \'24','Nov \'24','Dec \'24','Jan \'25','Feb \'25','Mar \'25','Apr \'25','May \'25','Jun \'25','Jul \'25','Aug \'25','Sep \'25','Oct \'25','Nov \'25','Dec \'25','Jan \'26','Feb \'26','Mar \'26','Apr \'26'],
+  values: [6,7,8,9,8,9,10,9,10,11,13,14,16,15,18,20,19,22,25,22,28,26,32,35,33,38,44,42,48,55,62,58,68,72,78,82,78,84,88,86,82,88,90,86,92,88,94,98,94,96,100,96,98,100,96,98,100,97,95,92],
+  countries: [
+    {code:'US', name:'United States', value:100},
+    {code:'CA', name:'Canada', value:78},
+    {code:'AU', name:'Australia', value:72},
+    {code:'GB', name:'United Kingdom', value:65},
+    {code:'NZ', name:'New Zealand', value:55},
+    {code:'IE', name:'Ireland', value:48}
+  ]
+};
+
+function renderChart(data) {
+  var ctx = document.getElementById('trendChart').getContext('2d');
+  var grad = ctx.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, 'rgba(200,255,0,0.18)');
+  grad.addColorStop(1, 'rgba(200,255,0,0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        borderColor: '#c8ff00',
+        borderWidth: 1.5,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHitRadius: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#888', bodyColor: '#c8ff00',
+        titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 13 },
+        callbacks: { title: function(i) { return i[0].label; }, label: function(i) { return ' ' + i.raw; } }
+      }},
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 }, maxTicksLimit: 8, maxRotation: 0 } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 } }, min: 0, max: 100 }
+      }
+    }
+  });
+  var block = document.getElementById('countriesBlock');
+  block.innerHTML = data.countries.map(function(c) {
+    return '<div class="trend-country-row"><span class="trend-country-name">' + c.name + '</span><div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + c.value + '%"></div></div><span class="trend-country-val">' + c.value + '</span></div>';
+  }).join('');
+}
+
+function loadAndRender() { renderChart(TREND_DATA); }
+
+(function() {
+  var wrap = document.getElementById('statusWrap');
+  var btn = document.getElementById('statusBtn');
+  var label = document.getElementById('statusLabel');
+  var key = 'ltv-status-' + (wrap ? wrap.dataset.dossier : 'x');
+  var saved = localStorage.getItem(key) || 'researching';
+  var caps = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  label.textContent = caps[saved] || caps.researching;
+  document.querySelectorAll('.status-option').forEach(function(o) {
+    if (o.dataset.status === saved) o.classList.add('active');
+    o.addEventListener('click', function() {
+      var s = o.dataset.status;
+      localStorage.setItem(key, s);
+      label.textContent = caps[s];
+      document.querySelectorAll('.status-option').forEach(function(x) { x.classList.remove('active'); });
+      o.classList.add('active');
+      wrap.classList.remove('open');
+    });
+  });
+  btn.addEventListener('click', function(e) { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', function() { wrap.classList.remove('open'); });
+})();
+
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' });
+window.addEventListener('load', loadAndRender);
+</script>
+</body>
+</html>
