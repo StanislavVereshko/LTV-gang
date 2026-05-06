@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Glow Company — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat.wide { grid-column: 1 / -1; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-image { background: linear-gradient(135deg, #050f14 0%, #0a1e28 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; letter-spacing: 0.05em; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); letter-spacing: 0.06em; text-transform: none; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell.highlight { background: rgba(200,255,0,0.025); }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; }
+  .offer-cell-savings { display: inline-block; margin-top: 0.5rem; font-size: 10px; padding: 2px 8px; background: rgba(200,255,0,0.12); color: var(--accent); border-radius: 2px; letter-spacing: 0.06em; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 12px; margin-bottom: 2rem; overflow-x: auto; }
+  .funnel-row { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .tier-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .tier-list { grid-template-columns: 1fr; } }
+  .tier-cell { background: var(--black); padding: 1.75rem; }
+  .tier-cell h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.5rem; }
+  .tier-cell-tag { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tier-cell p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.7; }
+  .jtbd-block { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 4px; }
+  .jtbd-label { font-size: 9px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; }
+  .jtbd-text { font-size: 13px; color: rgba(245,242,236,0.8); font-style: italic; line-height: 1.6; }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">всі дозьє</a>
+  <div class="nav-title">The Glow Company</div>
+  <div class="nav-links">
+    <a href="https://www.theglowcompany.co/pages/lp-kids-calmcarry" class="nav-link" target="_blank">лендінг ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=ALL&q=theglowcompany&search_type=keyword_unordered" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="theglowcompany">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Kids Wellness · Sleep Device</div>
+    <h1>The Glow<br><em>Company</em></h1>
+    <p class="hero-tag">Drug-free мікрострумовий пристрій для дітей з тривожністю і проблемами сну. Бʼє по болю батьків — 2-годинний bedtime battle — і пропонує 20-хвилинну рутину без таблеток. Бундл-перший оффер з прогресивною знижкою до 67%.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://www.theglowcompany.co/pages/lp-kids-calmcarry" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">лендінг ↗</a>
+      <a href="https://www.theglowcompany.co/products/calmcarry%C2%AE-kids-mini-bear" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">product page ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Entry price</div>
+        <div class="hero-stat-value"><span class="accent">$59</span></div>
+        <div class="hero-stat-sub"><span class="tag">50% off</span> reg $119</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Rating</div>
+        <div class="hero-stat-value">4.9<span style="font-size:16px;color:var(--gray)">★</span></div>
+        <div class="hero-stat-sub">1,197 verified reviews</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Guarantee</div>
+        <div class="hero-stat-value"><span class="accent">100d</span></div>
+        <div class="hero-stat-sub">MBG, no questions asked</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Duo Pack</div>
+        <div class="hero-stat-value"><span class="accent">$99</span></div>
+        <div class="hero-stat-sub">58% off reg $238</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Family Pack</div>
+        <div class="hero-stat-value"><span class="accent">$115</span></div>
+        <div class="hero-stat-sub">67% off reg $357 · 3 пристрої</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Recommend</div>
+        <div class="hero-stat-value"><span class="accent">99%</span></div>
+        <div class="hero-stat-sub">+ 3 doctor endorsements</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://www.theglowcompany.co/cdn/shop/files/glowco-calmcarry-kids-grey-sleep-device.webp"
+           alt="CalmCarry Kids Mini Bear"
+           onerror="this.style.display='none';this.parentElement.querySelector('.hero-image-empty').style.display='block'">
+      <div class="hero-image-empty" style="display:none">CalmCarry® Kids Mini Bear</div>
+      <div class="hero-image-label">
+        <span>CalmCarry® Kids Mini Bear</span>
+        <strong>Microcurrent · PC8</strong>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Про продукт</div>
+      <p>Компактний bear-shaped пристрій з мікрострумами, що стимулює акупресурну точку PC8 (Lao Gong) на долоні. Заспокоює нервову систему за хвилини без хімії і мелатоніну. Автовимкнення через 20 хвилин, регульована інтенсивність, вік 3–12+. Доступний у 5 кольорах.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 ТРЕНД -->
+<section class="s">
+  <div class="s-num">00</div>
+  <div class="s-title">Ринковий <em>тренд</em></div>
+  <div class="s-body">
+    <p>Дитяча тривожність і проблеми зі сном вибухово зросли після COVID-19. За даними CDC, кожна 5-та дитина у США має діагностований тривожний розлад. Батьки масово шукають non-pharmaceutical alternatives — ринок drug-free kids wellness росте ~18% YoY. Цей продукт серфить хвилю і попереджає заперечення «давати ліки дитині» ще у headline.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <canvas id="trendChart" height="220" style="display:block;width:100%;padding:1.25rem 1rem 1rem;"></canvas>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ країни · інтерес</div>
+      <div id="countriesBlock"></div>
+    </div>
+  </div>
+  <p class="trend-meta">Дані: Google Trends · "children anxiety" · 5 років</p>
+  <a class="trend-cta" href="https://trends.google.com/trends/explore?date=today%205-y&q=children%20anxiety" target="_blank">
+    Переглянути живий графік
+    <span class="trend-cta-sub">Google Trends · children anxiety</span>
+  </a>
+</section>
+
+<!-- 01 ОФЕР -->
+<section class="s">
+  <div class="s-num">01</div>
+  <div class="s-title">Офер / <em>USP</em></div>
+  <div class="s-body">
+    <p>Головний диференціатор — не «ще один заспокійливий продукт», а технологічний пристрій з науковим обґрунтуванням. Акупресура PC8 + мікрострум = стимуляція парасимпатичної нервової системи. Дитина може використовувати самостійно — це дає їй agency, що само по собі знижує тривожність.</p>
+    <p>Оффер побудований на агресивному bundle-хуку: кожен наступний tier дає більшу знижку (50% → 58% → 67%), що підштовхує до Duo/Family Pack. Безкоштовний бонус — 5-Pack кольорових чохлів ($29 value) — додає perceived value без додаткового COG.</p>
+  </div>
+
+  <div class="offer-grid">
+    <div class="offer-cell">
+      <div class="offer-cell-label">Single Device</div>
+      <div class="offer-cell-value"><span class="accent">$59</span></div>
+      <div class="offer-cell-note">Reg $119 · 1 пристрій · 5 кольорів</div>
+      <div class="offer-cell-savings">50% off</div>
+    </div>
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Duo Pack ✦ Popular</div>
+      <div class="offer-cell-value"><span class="accent">$99</span></div>
+      <div class="offer-cell-note">Reg $238 · 2 пристрої · free covers</div>
+      <div class="offer-cell-savings">58% off · $49.5/unit</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Family Pack</div>
+      <div class="offer-cell-value"><span class="accent">$115</span></div>
+      <div class="offer-cell-note">Reg $357 · 3 пристрої · максимум</div>
+      <div class="offer-cell-savings">67% off · $38/unit</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem;" class="s-body">
+    <p style="font-size:13px;color:rgba(245,242,236,0.6);">+ код SP15 дає ще 15% зверху. Shipping: 3–5 днів, carbon-neutral, безкоштовно при поточній акції. Модель — OTP без підписки. Монетизація через refill covers і cross-sell на дорослу лінійку + gummies.</p>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="tier-list">
+      <div class="tier-cell">
+        <h4>Технологічна диференціація</h4>
+        <div class="tier-cell-tag">PC8 · Lao Gong acupressure</div>
+        <p>Мікрострум стимулює перикардову меридіану, знижуючи активність симпатичної НС. Це дає медично-авторитетне обґрунтування для батьків, скептичних до "wellness" продуктів. Наукова рамка = вища perceived legitimacy = нижча об'єкція ціни.</p>
+        <div class="jtbd-block">
+          <span class="jtbd-label">Job-to-be-done</span>
+          <span class="jtbd-text">"Я хочу щоб моя дитина заспокоїлась сама, без таблеток і без того щоб я виглядав поганим батьком"</span>
+        </div>
+      </div>
+      <div class="tier-cell">
+        <h4>Drug-free = головний unlock</h4>
+        <div class="tier-cell-tag">Zero chemicals · меlatonin-free</div>
+        <p>Батьки масово відмовляються від медикаментів для дітей через страх залежності і побічних ефектів. Позиціювання «жодної хімії» відкриває аудиторію, яка взагалі не розглядала б supplements або prescription. Вища TAM, менший compliance risk.</p>
+        <div class="jtbd-block">
+          <span class="jtbd-label">Основне заперечення закрито</span>
+          <span class="jtbd-text">"Не хочу давати дитині ліки" → "Це не ліки, це технологія"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ВОРОНКА -->
+<section class="s">
+  <div class="s-num">02</div>
+  <div class="s-title">Воронка / <em>Funnel</em></div>
+  <div class="s-body">
+    <p>Класичний DR-лендінг з VSL-структурою: pain (bedtime battle) → агітація (2 years of struggle) → solution reveal (microcurrent science) → proof (doctor + reviews) → offer. Urgency через Spring Sale з відліком часу. Бундл-вибір одразу на першому екрані — без окремого upsell page.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row"><span class="funnel-key">Трафік</span><span class="funnel-val">Meta Ads (IG) + TikTok · targeting: батьки дітей 3–12, anxiety keywords, parenting communities</span></div>
+    <div class="funnel-row"><span class="funnel-key">Лендінг</span><span class="funnel-val">Long-form VSL-style: pain → science → proof → bundle offer · Spring Sale countdown</span></div>
+    <div class="funnel-row"><span class="funnel-key">Hook</span><span class="funnel-val">"The Breakthrough Solution For Childhood Anxiety And Sleep Problems"</span></div>
+    <div class="funnel-row"><span class="funnel-key">Offer</span><span class="funnel-val">Single $59 / Duo $99 / Family $115 · Free 5-pack covers · код SP15 -15% · 100d MBG</span></div>
+    <div class="funnel-row"><span class="funnel-key">Checkout</span><span class="funnel-val">Shopify · кольори/варіанти на product page · standard checkout</span></div>
+    <div class="funnel-row"><span class="funnel-key">Post-sale</span><span class="funnel-val">Cross-sell: дорослий CalmCarry + Gummies (sleep/calm) · refill covers</span></div>
+    <div class="funnel-row"><span class="funnel-key">Retention</span><span class="funnel-val">Email sequences · repeat purchase на consumables (gummies, covers)</span></div>
+  </div>
+</section>
+
+<!-- 03 РЕКЛАМА -->
+<section class="s">
+  <div class="s-num">03</div>
+  <div class="s-title">Рекламні <em>кути</em></div>
+  <div class="s-body">
+    <p>Продукт з сильним wow-фактором для відео — дитина натискає кнопку, закриває очі і засинає. Ідеальний UGC-loop: батьки природно знімають і діляться "до/після" відео дитячого сну. Три основні кути:</p>
+  </div>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>Bedtime Battle</h4>
+      <p>Показуємо типовий вечір — крики, плач, 2 години переговорів. Потім контраст: та ж дитина з CalmCarry заспокоюється за 20 хвилин. Аудиторія: виснажені батьки.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Наш bedtime займав 2 години. Тепер — 20 хвилин. Ось що ми змінили"
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>Doctor-endorsed</h4>
+      <p>Три лікарі рекомендують у рекламних матеріалах. Кут: авторитет + "нарешті щось безпечне". Цільова аудиторія — батьки, які шукають медично обґрунтований варіант, а не "wellness hack".</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Педіатр сказав спробувати це замість мелатоніну. Результат на 3-й день"
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>ADHD / Racing Thoughts</h4>
+      <p>Специфічний підсегмент — діти з ADHD або гіперактивністю. Батьки цієї аудиторії активно шукають non-medication solutions і мають вищу готовність платити.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Мій 8-річний з ADHD нарешті спить без годин переговорів"
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>Medication Fear</h4>
+      <p>Граємо на найбільшому страху — давати дитині препарати. Контрастуємо з drug-free технологією. Класична pain → relief структура з emotional parent story.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Нам запропонували антидепресанти 8-річному. Ми відмовились. Ось що спрацювало"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 СОЦІАЛЬНИЙ ДОКАЗ -->
+<section class="s">
+  <div class="s-num">04</div>
+  <div class="s-title">Соціальний <em>доказ</em></div>
+  <div class="s-body">
+    <p>Один із найсильніших соціальних доказів у ніші — 4.9★ з 1,197 відгуків і 99% рекомендацій. Три лікарі публічно рекомендують продукт, що нетипово сильно для kids wellness. Це закриває головне заперечення "чи безпечно для дитини".</p>
+  </div>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси для нас</div>
+      <ul>
+        <li>4.9★ / 1,197 відгуків — дуже сильна соціальна рамка, висока конверсія</li>
+        <li>99% рекомендацій — можна виносити в headline рекламного creatives</li>
+        <li>3 лікарі-ендорсери — медичний авторитет закриває страх "безпечно для дитини"</li>
+        <li>Wow-фактор відео — дитина засинає з пристроєм = сильний UGC</li>
+        <li>Drug-free позиціювання відкриває TAM батьків, які відкидають supplements</li>
+        <li>Family Pack = вищий AOV ($115), bundle mechanics підштовхують вгору</li>
+        <li>100-day MBG — дуже довга гарантія, знижує ризик першої покупки</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Ризики / червоні прапори</div>
+      <ul>
+        <li>OTP-модель — немає recurring revenue без gummies cross-sell</li>
+        <li>Device = вища ціна першої покупки, довший цикл прийняття рішення</li>
+        <li>Meta policy risk: kids + health claims = потенційні ліміти на таргетинг</li>
+        <li>Конкуренти можуть швидко скопіювати "bear shape" — low moat на дизайн</li>
+        <li>"Spring Sale" постійно активний → клієнти вчаться не купувати без знижки</li>
+        <li>Effectiveness claims (microcurrent) можуть потребувати підтвердження у деяких ринках</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ВИСНОВОК -->
+<section class="s">
+  <div class="s-num">05</div>
+  <div class="s-title"><em>Висновок</em></div>
+  <div class="verdict">
+    <div class="verdict-badge">⚡</div>
+    <div>
+      <div class="verdict-title">Сильний OTP-оффер у зростаючій ніші</div>
+      <div class="verdict-text">
+        <p>The Glow Company зловив хвилю post-COVID дитячої тривожності і упакував її в технологічний продукт з медичним авторитетом. Оффер грамотно побудований: drug-free hook відкриває ширшу аудиторію, bundle mechanics тягнуть AOV вгору, 100-day MBG знижує ризик. 4.9★ з 1,197 відгуків — сильна конверсійна база.</p>
+        <p>Слабке місце — чиста OTP-модель без підписки на core продукт. Довгострокова монетизація йде через gummies і аксесуари, але це вторинно. Якщо розглядати як reference для playbook — цікава механіка агресивного bundle-хуку з прогресивною знижкою (50% → 67%) і doctor-endorsed позиціювання для підняття perceived legitimacy.</p>
+        <p>Для копіювання: модель "kids wellness device + medical endorsement + bundle" добре переноситься на суміжні ніші. Meta policy ризик помірний — device, не supplement, без explicit health claims в адах.</p>
+      </div>
+      <div class="notes-box">Мій коментар: kids wellness device, OTP без підписки. Цікавий playbook для bundle-хуку і doctor-endorsed позиціювання. Ніша росте post-COVID.</div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://www.theglowcompany.co/pages/lp-kids-calmcarry" target="_blank">Landing page — theglowcompany.co</a></li>
+    <li><a href="https://www.theglowcompany.co/products/calmcarry%C2%AE-kids-mini-bear" target="_blank">Product page — CalmCarry® Kids Mini Bear</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=ALL&q=theglowcompany&search_type=keyword_unordered" target="_blank">Facebook Ad Library — theglowcompany</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=children%20anxiety" target="_blank">Google Trends — children anxiety</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossiers</span>
+  <span>The Glow Company · CalmCarry® Kids Mini Bear</span>
+  <span id="footerDate"></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+var KW = 'children anxiety';
+
+var TREND_DATA = {
+  keyword: KW,
+  labels: ['May \'21','Jun \'21','Jul \'21','Aug \'21','Sep \'21','Oct \'21','Nov \'21','Dec \'21','Jan \'22','Feb \'22','Mar \'22','Apr \'22','May \'22','Jun \'22','Jul \'22','Aug \'22','Sep \'22','Oct \'22','Nov \'22','Dec \'22','Jan \'23','Feb \'23','Mar \'23','Apr \'23','May \'23','Jun \'23','Jul \'23','Aug \'23','Sep \'23','Oct \'23','Nov \'23','Dec \'23','Jan \'24','Feb \'24','Mar \'24','Apr \'24','May \'24','Jun \'24','Jul \'24','Aug \'24','Sep \'24','Oct \'24','Nov \'24','Dec \'24','Jan \'25','Feb \'25','Mar \'25','Apr \'25','May \'25','Jun \'25','Jul \'25','Aug \'25','Sep \'25','Oct \'25','Nov \'25','Dec \'25','Jan \'26','Feb \'26','Mar \'26','Apr \'26'],
+  values: [58,55,60,62,58,60,65,58,60,58,62,64,60,58,64,62,60,64,62,58,65,60,68,65,62,66,70,68,65,70,72,68,74,72,76,78,74,78,80,76,74,78,76,72,78,75,78,82,78,80,84,80,82,85,80,82,86,82,84,80],
+  countries: [
+    {code:'US', name:'United States', value:100},
+    {code:'GB', name:'United Kingdom', value:78},
+    {code:'CA', name:'Canada', value:72},
+    {code:'AU', name:'Australia', value:68},
+    {code:'NZ', name:'New Zealand', value:58},
+    {code:'IE', name:'Ireland', value:50}
+  ]
+};
+
+function renderChart(data) {
+  var ctx = document.getElementById('trendChart').getContext('2d');
+  var grad = ctx.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, 'rgba(200,255,0,0.18)');
+  grad.addColorStop(1, 'rgba(200,255,0,0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        borderColor: '#c8ff00',
+        borderWidth: 1.5,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHitRadius: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#111',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        titleColor: '#888',
+        bodyColor: '#c8ff00',
+        titleFont: { family: 'DM Mono' },
+        bodyFont: { family: 'DM Mono', size: 13 },
+        callbacks: { title: function(i) { return i[0].label; }, label: function(i) { return ' ' + i.raw; } }
+      }},
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 }, maxTicksLimit: 8, maxRotation: 0 } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 } }, min: 0, max: 100 }
+      }
+    }
+  });
+  var block = document.getElementById('countriesBlock');
+  block.innerHTML = data.countries.map(function(c) {
+    return '<div class="trend-country-row"><span class="trend-country-name">' + c.name + '</span><div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + c.value + '%"></div></div><span class="trend-country-val">' + c.value + '</span></div>';
+  }).join('');
+}
+
+function loadAndRender() { renderChart(TREND_DATA); }
+
+/* STATUS */
+(function() {
+  var wrap = document.getElementById('statusWrap');
+  var btn = document.getElementById('statusBtn');
+  var label = document.getElementById('statusLabel');
+  var key = 'ltv-status-' + (wrap ? wrap.dataset.dossier : 'x');
+  var saved = localStorage.getItem(key) || 'researching';
+  var caps = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  label.textContent = caps[saved] || caps.researching;
+  document.querySelectorAll('.status-option').forEach(function(o) {
+    if (o.dataset.status === saved) o.classList.add('active');
+    o.addEventListener('click', function() {
+      var s = o.dataset.status;
+      localStorage.setItem(key, s);
+      label.textContent = caps[s];
+      document.querySelectorAll('.status-option').forEach(function(x) { x.classList.remove('active'); });
+      o.classList.add('active');
+      wrap.classList.remove('open');
+    });
+  });
+  btn.addEventListener('click', function(e) { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', function() { wrap.classList.remove('open'); });
+})();
+
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' });
+window.addEventListener('load', loadAndRender);
+</script>
+</body>
+</html>
