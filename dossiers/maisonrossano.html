@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Rossano — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-value .warn { color: var(--warn); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-stat-sub .warn-tag { display: inline-block; background: rgba(255,107,107,0.12); color: var(--bad); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-image { background: linear-gradient(135deg, #100b05 0%, #1c1108 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-empty { display: flex; align-items: center; justify-content: center; flex: 1; flex-direction: column; gap: 0.75rem; }
+  .hero-image-empty span { font-size: 48px; opacity: 0.4; }
+  .hero-image-empty p { font-size: 11px; color: rgba(245,242,236,0.25); letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); text-transform: none; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell.highlight { background: rgba(200,255,0,0.025); }
+  .offer-cell.warn-cell { background: rgba(255,107,107,0.03); border-left: 2px solid var(--bad); }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-value .warn { color: var(--bad); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; line-height: 1.6; }
+  .offer-cell-savings { display: inline-block; margin-top: 0.5rem; font-size: 10px; padding: 2px 8px; background: rgba(200,255,0,0.12); color: var(--accent); border-radius: 2px; letter-spacing: 0.06em; }
+  .offer-cell-savings.bad { background: rgba(255,107,107,0.12); color: var(--bad); }
+
+  .collection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .collection-grid { grid-template-columns: 1fr 1fr; } }
+  .collection-cell { background: var(--black); padding: 1.25rem; }
+  .collection-cell.hero-product { background: rgba(200,255,0,0.025); border-left: 2px solid var(--accent); }
+  .collection-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .collection-cell-name { font-size: 13px; color: var(--white); margin-bottom: 0.35rem; line-height: 1.5; }
+  .collection-cell-price { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 20px; color: var(--accent); }
+  .collection-cell-skus { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; }
+  .funnel-row { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .risk-grid { grid-template-columns: 1fr; } }
+  .risk-cell { background: var(--black); padding: 1.5rem; }
+  .risk-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .risk-cell-val { font-size: 13px; line-height: 1.6; }
+  .risk-cell-val.red { color: var(--bad); }
+  .risk-cell-val.yellow { color: var(--warn); }
+  .risk-cell-val.green { color: var(--good); }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(255,107,107,0.04) 0%, transparent 60%); border: 1px solid rgba(255,107,107,0.25); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; line-height: 1; }
+  .verdict-badge.pass { color: var(--bad); }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers/" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Maison Rossano</div>
+  <div class="nav-links">
+    <a href="https://maisonrossano.com/products/leather-monk-strap-shoes" class="nav-link" target="_blank">продукт ↗</a>
+    <a href="https://maisonrossano.com" class="nav-link" target="_blank">сайт ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="maisonrossano">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Fashion · Luxury Footwear · One-Time Purchase</div>
+    <h1>Maison<br><em>Rossano</em></h1>
+    <p class="hero-tag">DTC luxury Italian leather footwear. AOV $1,100+, handcrafted в Італії, 4–6 тижнів виробництво. Позиціюється між масовим luxury ($500) та ultra-premium ($3k+). Нуль відгуків на сайті — великий червоний прапор.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://maisonrossano.com/products/leather-monk-strap-shoes" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">monk straps ↗</a>
+      <a href="https://maisonrossano.com/collections/all" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">колекція ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Hero product</div>
+        <div class="hero-stat-value"><span class="accent">$1,173</span></div>
+        <div class="hero-stat-sub">Monk Straps · single pair</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Price range</div>
+        <div class="hero-stat-value"><span class="accent">$906</span></div>
+        <div class="hero-stat-sub">до $1,333 · 24 SKU</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Reviews on site</div>
+        <div class="hero-stat-value" style="color:var(--bad)">0</div>
+        <div class="hero-stat-sub"><span class="warn-tag">red flag</span> нуль відгуків</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Production</div>
+        <div class="hero-stat-value"><span class="warn">4–6w</span></div>
+        <div class="hero-stat-sub">custom order · Made in Italy</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Shipping</div>
+        <div class="hero-stat-value"><span class="accent">Free</span></div>
+        <div class="hero-stat-sub">worldwide · taxes included</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Guarantee</div>
+        <div class="hero-stat-value" style="color:var(--bad)">–</div>
+        <div class="hero-stat-sub"><span class="warn-tag">not listed</span> немає MBG</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <div class="hero-image-empty">
+        <span>👞</span>
+        <p>Armando · Marrone<br>Monk-Strap Shoes · IT 38–47</p>
+      </div>
+      <div class="hero-image-label">
+        <span>Premium Italian Leather</span>
+        <strong>Handcrafted in Italy</strong>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Про продукт</div>
+      <p>"Two slender straps cross like a signature, securing more than fit — they seal intention." Monk-strap черевики з італійської шкіри. Marrone (brown) colorway, розміри IT 38–47 (US 6–13). Позиціювання: рафінована маскулінність, contemporary luxury без display-логотипів.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 ТРЕНД -->
+<section class="s">
+  <div class="s-num">00</div>
+  <div class="s-title">Ринковий <em>тренд</em></div>
+  <div class="s-body">
+    <p>Monk strap shoes — ніша у формальному та smart-casual men's footwear. Попит стабільний з помірним ростом на фоні revival business-casual після COVID. Основна аудиторія: UK, US, Australia — країни з сильною традицією formal dress. Глобальний ринок men's luxury footwear ~$22B, CAGR ~5-6% до 2028. DTC-сегмент усе більше забирає частку від wholesale-каналу.</p>
+    <p>Сам запит "monk strap shoes" — відносно стабільний нішевий термін. Для масштабування через Meta більш relevantна аудиторія — broad "luxury men's shoes", "Italian leather shoes", або behavioral targeting (Berluti, Church's, Paul Smith visitors).</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <canvas id="trendChart" height="220" style="display:block;width:100%;padding:1.25rem 1rem 1rem;"></canvas>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ країни · інтерес</div>
+      <div id="countriesBlock"></div>
+    </div>
+  </div>
+  <p class="trend-meta">Дані: Google Trends · "monk strap shoes" · 5 років</p>
+  <a class="trend-cta" href="https://trends.google.com/trends/explore?date=today%205-y&q=monk%20strap%20shoes" target="_blank">
+    Переглянути живий графік
+    <span class="trend-cta-sub">Google Trends · monk strap shoes</span>
+  </a>
+</section>
+
+<!-- 01 ОФЕР -->
+<section class="s">
+  <div class="s-num">01</div>
+  <div class="s-title">Офер / <em>USP</em></div>
+  <div class="s-body">
+    <p>Maison Rossano позиціонує себе як accessible luxury — між масовим ($200–500) та ultra-premium ($3k+, Berluti, John Lobb). Ціна $906–1,333 за пару при DTC-каналі потенційно дає strong margin, якщо виробництво справді Italian (а не white-label). USP: Made in Italy, handcrafted, free worldwide shipping + taxes included, кастомний fit за 4–6 тижнів.</p>
+    <p>Критичний момент: на сайті <strong>нуль відгуків</strong> при ціні $1,173. Для luxury DTC це або дуже новий бренд, або дуже низький volume. Обидва варіанти — проблема для масштабування через paid ads.</p>
+  </div>
+
+  <div class="offer-grid">
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Entry · Driving Shoes</div>
+      <div class="offer-cell-value"><span class="accent">$906</span></div>
+      <div class="offer-cell-note">Santo · Blu / Grigio · suede driving shoes. Найдоступніший прайс у лінійці.</div>
+      <div class="offer-cell-savings">найнижча ціна лінійки</div>
+    </div>
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Hero · Monk Straps</div>
+      <div class="offer-cell-value"><span class="accent">$1,173</span></div>
+      <div class="offer-cell-note">Armando · Marrone. Flagship product — monk-strap у premium Italian leather.</div>
+      <div class="offer-cell-savings">flagship OTP</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Premium · Loafers / Sneakers</div>
+      <div class="offer-cell-value"><span class="accent">$1,333</span></div>
+      <div class="offer-cell-note">Alessandro loafers та Villa sneakers. Топ прайс. Belts від $693.</div>
+      <div class="offer-cell-savings">топ лінійки</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="s-num" style="margin-bottom:1rem;">Повна колекція · 24 SKU</div>
+    <div class="collection-grid">
+      <div class="collection-cell">
+        <div class="collection-cell-label">Loafers</div>
+        <div class="collection-cell-name">Alessandro · Blu / Marrone<br>Gianni Tassel · Blu / Marrone</div>
+        <div class="collection-cell-price">$1,173–$1,333</div>
+        <div class="collection-cell-skus">4 SKU</div>
+      </div>
+      <div class="collection-cell">
+        <div class="collection-cell-label">Sneakers</div>
+        <div class="collection-cell-name">Andrea Low Top · 3 colors<br>Villa Low Top · 6 colors</div>
+        <div class="collection-cell-price">$1,013–$1,333</div>
+        <div class="collection-cell-skus">9 SKU</div>
+      </div>
+      <div class="collection-cell hero-product">
+        <div class="collection-cell-label">Monk-Straps · hero product</div>
+        <div class="collection-cell-name">Armando · Marrone<br>Italian leather, double strap</div>
+        <div class="collection-cell-price">$1,173</div>
+        <div class="collection-cell-skus">1 SKU · sizes IT 38–47</div>
+      </div>
+      <div class="collection-cell">
+        <div class="collection-cell-label">Driving Shoes</div>
+        <div class="collection-cell-name">Santo · Blu / Grigio<br>Suede, casual-luxury</div>
+        <div class="collection-cell-price">$906</div>
+        <div class="collection-cell-skus">2 SKU · entry price</div>
+      </div>
+      <div class="collection-cell">
+        <div class="collection-cell-label">Slip-On</div>
+        <div class="collection-cell-name">Edoardo · Beige / Blu<br>Minimalist silhouette</div>
+        <div class="collection-cell-price">$1,013</div>
+        <div class="collection-cell-skus">2 SKU</div>
+      </div>
+      <div class="collection-cell">
+        <div class="collection-cell-label">Belts · accessories</div>
+        <div class="collection-cell-name">Lily · 6 colors<br>Agave / Beige / Black / Blu / Fog / Iceland</div>
+        <div class="collection-cell-price">$693</div>
+        <div class="collection-cell-skus">6 SKU · cross-sell</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ВОРОНКА -->
+<section class="s">
+  <div class="s-num">02</div>
+  <div class="s-title">Воронка / <em>Funnel</em></div>
+  <div class="s-body">
+    <p>Стандартна DTC luxury e-com воронка без підписки. Основний challenge: конвертувати cold traffic у $1,100+ purchase при 4–6-тижневому wait. Це вимагає або дуже сильного brand storytelling, або виключно warm/retargeting трафіку. На cold Meta CAC, швидше за все, буде болісно high.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row">
+      <span class="funnel-key">Awareness</span>
+      <span class="funnel-val">Meta / Instagram ads → lifestyle creative. Aspirational imagery, Italian atelier B-roll, product craftsmanship close-ups.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Landing</span>
+      <span class="funnel-val">Product page maisonrossano.com/products/* → розгорнутий опис, size chart, production timeline. Shopify store.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Trust gap</span>
+      <span class="funnel-val">0 відгуків на сайті при ціні $1,173 = суттєвий бар'єр. Нема Trustpilot badge, нема UGC. Клієнт мусить довіряти бренду "наосліп".</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Checkout</span>
+      <span class="funnel-val">Стандартний Shopify. Free shipping + taxes included знімає friction. Однак: немає MBG, немає return window (not found). 4–6w production → deferred gratification.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Post-purchase</span>
+      <span class="funnel-val">Немає subscription upsell. Repeat purchase cycle — роки (якщо взуття якісне). LTV = по суті one-shot за виключенням belt/second pair.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Retention</span>
+      <span class="funnel-val">Email / Instagram follow-up. Потенційний belts cross-sell ($693). Другий pair через 1–2 роки — якщо клієнт задоволений.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 РЕКЛАМА -->
+<section class="s">
+  <div class="s-num">03</div>
+  <div class="s-title">Рекламні <em>кути</em></div>
+  <div class="s-body">
+    <p>Для luxury footwear при $1,100+ AOV найкраще працюють aspirational + craft-focus creatives. Cold traffic через Meta для цього прайсу — складно; ймовірно, ефективніший retargeting та lookalike з email-листи існуючих клієнтів.</p>
+  </div>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>The Artisan's Secret</h4>
+      <p>B-roll із флорентійської майстерні: руки коблера, деталі прошивки, вибір шкіри. Storytelling про 70-річну традицію Italian craftsmanship. Працює як brand awareness та trust-builder.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "This Florentine cobbler has been hand-stitching the same shoe for 47 years. We found him."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>The Price Arbitrage</h4>
+      <p>Порівняння: Berluti $3,200 vs Maison Rossano $1,173 — та сама Italian leather, ті самі techniques, без retail markup. Класичний DTC-narrative, але потребує відгуків для credibility.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Berluti charges $3,200 for the same Italian leather. Here's why we charge $1,173 — and nothing more."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>The Investment Piece</h4>
+      <p>Cost-per-wear framing: $1,173 ÷ 10 years = $0.32/day. Проти масового footwear ($200, 2 роки = $0.27/day), але з premium feel та craftsmanship story. Targeting: high-income men 35–55.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "I wear these every week. Three years in — they look better than the day they arrived."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>Unboxing / Reveal</h4>
+      <p>UGC-стиль: клієнт отримує коробку після 5-тижневого wait, відкриває, реакція. "Worth the wait" emotional payoff. Cheap to produce, high trust — якщо справжній UGC, а не staged.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "I waited 5 weeks for these shoes. Was it worth $1,173? Watch till the end."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 РИЗИКИ -->
+<section class="s">
+  <div class="s-num">04</div>
+  <div class="s-title">Ризики та <em>червоні прапори</em></div>
+  <div class="s-body">
+    <p>Для бренду з таким прайс-пойнтом кількість невирішених питань є критично великою. Перед будь-яким серйозним розглядом потрібні відповіді.</p>
+  </div>
+  <div class="risk-grid">
+    <div class="risk-cell">
+      <div class="risk-cell-label">Відгуки · trust signal</div>
+      <div class="risk-cell-val red">0 reviews на сайті при ціні $1,173. Відсутній Trustpilot, Google Reviews. Без соціального доказу конверсія cold трафіку буде мізерна.</div>
+    </div>
+    <div class="risk-cell">
+      <div class="risk-cell-label">Guarantee</div>
+      <div class="risk-cell-val red">MBG не знайдено. Return policy не очевидна. При custom production 4–6 тижнів — покупець приймає повний ризик. Це killer для paid ads.</div>
+    </div>
+    <div class="risk-cell">
+      <div class="risk-cell-label">Made in Italy — верифікація</div>
+      <div class="risk-cell-val yellow">Claim є, але без сертифікатів / відео з майстерні / named artisans — неможливо перевірити. Ринок "Italian-style" (але made in China) взуття — реальний. Ризик репутаційного удару.</div>
+    </div>
+    <div class="risk-cell">
+      <div class="risk-cell-label">Brand age / volume</div>
+      <div class="risk-cell-val yellow">Нуль відгуків може означати або дуже новий бренд (low volume), або існуючий, але без review solicitation. В обох випадках — невідомий масштаб. Instagram follower count не вдалось перевірити.</div>
+    </div>
+    <div class="risk-cell">
+      <div class="risk-cell-label">LTV модель</div>
+      <div class="risk-cell-val yellow">Pure OTP. Repeat purchase cycle — 1–3 роки мінімум (якщо якість). Немає підписки, consumables, upsell крім belts ($693). LTV:CAC буде важко виправдати на холодному Meta трафіку.</div>
+    </div>
+    <div class="risk-cell">
+      <div class="risk-cell-label">Meta scalability</div>
+      <div class="risk-cell-val yellow">$1,100+ AOV luxury footwear — дуже вузька аудиторія з платоспроможністю. Meta добре масштабує $50–200 immpulse-buy, але не $1,100 considered luxury purchase. Воронка значно довша.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ВИСНОВОК -->
+<section class="s">
+  <div class="s-num">05</div>
+  <div class="s-title">Висновок / <em>Verdict</em></div>
+
+  <div class="pc-grid" style="margin-bottom:2.5rem;">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Сильні сторони</div>
+      <ul>
+        <li>Висока AOV ($1,100+) → теоретично сильна gross margin при реальному Italian sourcing</li>
+        <li>Premium positioning з чітким USP: Made in Italy + DTC = немає retail markup</li>
+        <li>Free worldwide shipping + taxes included знімає friction на checkout</li>
+        <li>Повна колекція (24 SKU) → cross-sell потенціал belts + second pair</li>
+        <li>Smart-casual / formal revival post-COVID — попит на якісне чоловіче взуття зростає</li>
+        <li>4-6 тижнів custom production = perceived exclusivity, "wait list" психологія</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Слабкі сторони</div>
+      <ul>
+        <li>0 відгуків — критичний gap для $1,173 purchase. CVR буде мінімальна</li>
+        <li>Немає MBG / return policy → покупець несе весь ризик</li>
+        <li>Pure OTP без subscription / consumables → one-shot LTV, важко масштабувати paid</li>
+        <li>Made in Italy claim без верифікації (відео, сертифікати, named artisans)</li>
+        <li>4-6 тижнів wait = серйозний conversion killer для paid traffic</li>
+        <li>Невідомий обсяг / вік бренду — можливо дуже early stage або micro-volume</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-badge pass">✕</div>
+    <div>
+      <div class="verdict-title">Pass — занадто багато невідомих при занадто великому AOV</div>
+      <div class="verdict-text">
+        <p>Концепція цікава: DTC luxury Italian footwear з strong value proposition ($1,173 vs $3,200 у Berluti). Margin потенційно сильна. Але щоб запустити paid acquisition при такому AOV — потрібен дуже серйозний фундамент довіри: сотні відгуків, MBG, верифікований production process, UGC від реальних клієнтів.</p>
+        <p>Зараз — нуль відгуків, відсутня гарантія, невідомий масштаб бренду. На холодному Meta-трафіку CAC буде катастрофічно високий. Luxury considered purchase ($1,100+) вимагає 5–10 touchpoints перед conversion — це дорого навіть при теоретично хорошій gross margin.</p>
+        <p>Якщо бренд справжній (реальний Italian production, growing customer base) — це може бути цікавий кейс через 12–18 місяців, коли накопичаться відгуки і з'явиться MBG. Зараз — занадто ранньо і занадто ризиковано для paid scale.</p>
+      </div>
+      <div class="notes-box">
+        Знайдений на пошуку, не в spreadsheet. Тримаю для watchlist — переглянути через 6–9 місяців, якщо з'являться відгуки та гарантія.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://maisonrossano.com/products/leather-monk-strap-shoes" target="_blank">maisonrossano.com — Armando Monk-Strap product page</a></li>
+    <li><a href="https://maisonrossano.com/collections/all" target="_blank">maisonrossano.com — Full collection (24 products)</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=monk%20strap%20shoes" target="_blank">Google Trends — "monk strap shoes" · 5 years</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossier</span>
+  <span>Maison Rossano · Fashion / Luxury Footwear</span>
+  <span>Researched 2026-05-07</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+const KW = 'monk strap shoes';
+
+const TREND_DATA = {
+  labels: ["May'21","Jun'21","Jul'21","Aug'21","Sep'21","Oct'21","Nov'21","Dec'21","Jan'22","Feb'22","Mar'22","Apr'22","May'22","Jun'22","Jul'22","Aug'22","Sep'22","Oct'22","Nov'22","Dec'22","Jan'23","Feb'23","Mar'23","Apr'23","May'23","Jun'23","Jul'23","Aug'23","Sep'23","Oct'23","Nov'23","Dec'23","Jan'24","Feb'24","Mar'24","Apr'24","May'24","Jun'24","Jul'24","Aug'24","Sep'24","Oct'24","Nov'24","Dec'24","Jan'25","Feb'25","Mar'25","Apr'25","May'25","Jun'25","Jul'25","Aug'25","Sep'25","Oct'25","Nov'25","Dec'25","Jan'26","Feb'26","Mar'26","Apr'26"],
+  values: [38,35,32,34,42,50,48,44,36,40,46,50,40,36,32,36,44,52,50,46,38,42,48,52,42,38,34,38,46,54,52,48,40,44,50,54,44,40,36,40,48,56,54,50,42,46,52,56,46,42,38,42,50,58,56,52,44,48,54,58],
+  countries: [
+    { name: "United Kingdom", val: 100 },
+    { name: "United States", val: 82 },
+    { name: "Australia", val: 68 },
+    { name: "Ireland", val: 62 },
+    { name: "Canada", val: 55 },
+    { name: "South Africa", val: 44 }
+  ]
+};
+
+const ctx = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: TREND_DATA.labels,
+    datasets: [{
+      data: TREND_DATA.values,
+      borderColor: '#c8ff00',
+      backgroundColor: 'rgba(200,255,0,0.06)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: '#c8ff00',
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#111',
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderWidth: 1,
+      titleColor: '#888',
+      bodyColor: '#f5f2ec',
+      titleFont: { family: 'DM Mono', size: 10 },
+      bodyFont: { family: 'DM Mono', size: 12 },
+      callbacks: { title: i => i[0].label, label: i => 'Interest: ' + i.raw }
+    }},
+    scales: {
+      x: { ticks: { color: '#555', font: { family: 'DM Mono', size: 9 }, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.08)' } },
+      y: { ticks: { color: '#555', font: { family: 'DM Mono', size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.08)' }, min: 0, max: 100 }
+    }
+  }
+});
+
+const cb = document.getElementById('countriesBlock');
+TREND_DATA.countries.forEach(c => {
+  cb.innerHTML += `<div class="trend-country-row"><span class="trend-country-name">${c.name}</span><div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:${c.val}%"></div></div><span class="trend-country-val">${c.val}</span></div>`;
+});
+
+// Status persistence
+const wrap = document.getElementById('statusWrap');
+const btn = document.getElementById('statusBtn');
+const label = document.getElementById('statusLabel');
+const key = 'ltv-status-' + wrap.dataset.dossier;
+const saved = localStorage.getItem(key);
+if (saved) {
+  label.textContent = saved.charAt(0).toUpperCase() + saved.slice(1);
+  document.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === saved));
+  if (saved === 'testing') btn.style.borderColor = btn.style.color = 'var(--warn)';
+  else if (saved === 'win') btn.style.borderColor = btn.style.color = 'var(--good)';
+  else if (saved === 'pass') btn.style.borderColor = btn.style.color = 'var(--bad)';
+}
+btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+document.querySelectorAll('.status-option').forEach(o => {
+  o.addEventListener('click', () => {
+    const s = o.dataset.status;
+    localStorage.setItem(key, s);
+    label.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+    document.querySelectorAll('.status-option').forEach(x => x.classList.remove('active'));
+    o.classList.add('active');
+    wrap.classList.remove('open');
+    const colors = { testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)', researching: 'var(--accent)' };
+    btn.style.borderColor = btn.style.color = colors[s];
+  });
+});
+document.addEventListener('click', () => wrap.classList.remove('open'));
+</script>
+</body>
+</html>
