@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleava — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-stat-sub .warn-tag { display: inline-block; background: rgba(255,107,107,0.12); color: var(--bad); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-image { background: linear-gradient(135deg, #080c1a 0%, #0e1228 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-empty { display: flex; align-items: center; justify-content: center; flex: 1; flex-direction: column; gap: 0.75rem; }
+  .hero-image-empty span { font-size: 48px; opacity: 0.4; }
+  .hero-image-empty p { font-size: 11px; color: rgba(245,242,236,0.25); letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); text-transform: none; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell.highlight { background: rgba(200,255,0,0.025); }
+  .offer-cell.warn-cell { background: rgba(255,107,107,0.03); border-left: 2px solid var(--bad); }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-value .warn { color: var(--bad); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; line-height: 1.6; }
+  .offer-cell-savings { display: inline-block; margin-top: 0.5rem; font-size: 10px; padding: 2px 8px; background: rgba(200,255,0,0.12); color: var(--accent); border-radius: 2px; letter-spacing: 0.06em; }
+  .offer-cell-savings.bad { background: rgba(255,107,107,0.12); color: var(--bad); }
+
+  .sub-flow { border: 1px solid rgba(255,107,107,0.3); background: rgba(255,107,107,0.03); border-radius: 3px; padding: 2rem; margin-top: 2rem; }
+  .sub-flow-title { font-size: 10px; color: var(--bad); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; }
+  .sub-flow-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); flex-shrink: 0; }
+  .sub-flow-steps { display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.04); }
+  .sub-step { background: var(--black); padding: 1rem 1.25rem; display: grid; grid-template-columns: 80px 1fr; gap: 1rem; align-items: start; }
+  .sub-step-num { font-size: 10px; color: var(--bad); letter-spacing: 0.1em; text-transform: uppercase; padding-top: 2px; }
+  .sub-step-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.6; }
+  .sub-step-text strong { color: var(--white); }
+
+  .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .product-grid { grid-template-columns: 1fr 1fr; } }
+  .product-cell { background: var(--black); padding: 1.25rem; }
+  .product-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .product-cell-name { font-size: 13px; color: var(--white); margin-bottom: 0.35rem; }
+  .product-cell-price { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 20px; color: var(--accent); }
+  .product-cell-orig { font-size: 11px; color: var(--gray); text-decoration: line-through; margin-left: 4px; }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; }
+  .funnel-row { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(200,255,0,0.04) 0%, transparent 60%); border: 1px solid rgba(200,255,0,0.2); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; color: var(--accent); line-height: 1; }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers/" class="nav-back">всі дозьє</a>
+  <div class="nav-title">Fleava</div>
+  <div class="nav-links">
+    <a href="https://fleava.shop/products/welcome-offer" class="nav-link" target="_blank">лендінг ↗</a>
+    <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=180128691861413" class="nav-link" target="_blank">ad library ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="fleava">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Beauty · Hair Care · Subscription</div>
+    <h1>Flea<br><em>va</em></h1>
+    <p class="hero-tag">Copper peptide hair regrowth serum. Welcome offer $49 як вхідний квиток — реальна модель: прихована підписка ~$79–89/міс. Заливає багато трафіку. Не гігант, але робочий DR-механізм із агресивним CAC-recovery через recurring billing.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://fleava.shop/products/welcome-offer" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">welcome offer ↗</a>
+      <a href="https://fleava.shop" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">сайт ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Welcome offer</div>
+        <div class="hero-stat-value"><span class="accent">$49</span></div>
+        <div class="hero-stat-sub"><span class="tag">−63%</span> reg $133 · вхідний тікет</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Recurring billing</div>
+        <div class="hero-stat-value"><span class="warn" style="color:var(--bad)">~$79</span></div>
+        <div class="hero-stat-sub"><span class="warn-tag">hidden</span> підписка / місяць</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Guarantee</div>
+        <div class="hero-stat-value"><span class="accent">90d</span></div>
+        <div class="hero-stat-sub">MBG · no questions asked</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Packs sold</div>
+        <div class="hero-stat-value"><span class="accent">60k+</span></div>
+        <div class="hero-stat-sub">+ 25,000+ real results</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Rating</div>
+        <div class="hero-stat-value">5.0<span style="font-size:16px;color:var(--gray)">★</span></div>
+        <div class="hero-stat-sub">1,695+ reviews</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Clinics</div>
+        <div class="hero-stat-value"><span class="accent">200+</span></div>
+        <div class="hero-stat-sub">U.S. clinics використовують</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <div class="hero-image-empty">
+        <span>💧</span>
+        <p>Advanced Copper Peptide<br>Hair Regrowth Serum · 30ml</p>
+      </div>
+      <div class="hero-image-label">
+        <span>GHK-Cu Copper Peptide Serum</span>
+        <strong>30ml · Daily use</strong>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Про продукт</div>
+      <p>GHK-Cu copper peptide serum для відновлення волосся. Реактивує сплячі фолікули, зміцнює корені, без shedding phase (на відміну від Minoxidil). 30ml флакон, щоденне нанесення на шкіру голови. Позиціювання: natural альтернатива фармацевтичним засобам від облисіння.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 ТРЕНД -->
+<section class="s">
+  <div class="s-num">00</div>
+  <div class="s-title">Ринковий <em>тренд</em></div>
+  <div class="s-body">
+    <p>Copper peptide (GHK-Cu) для волосся — один із найбільш зростаючих skincare інгредієнтів останніх 3 років. На фоні втоми від Minoxidil (shedding phase, side effects) і Finasteride (гормональні ризики), аудиторія активно шукає natural alternatives. Trend "copper peptide hair" пішов вгору з 2022-2023 після popularization через дерматологів у TikTok/Instagram. Ринок hair loss treatment global ~$4B і росте.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <canvas id="trendChart" height="220" style="display:block;width:100%;padding:1.25rem 1rem 1rem;"></canvas>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ країни · інтерес</div>
+      <div id="countriesBlock"></div>
+    </div>
+  </div>
+  <p class="trend-meta">Дані: Google Trends · "copper peptide hair" · 5 років</p>
+  <a class="trend-cta" href="https://trends.google.com/trends/explore?date=today%205-y&q=copper%20peptide%20hair" target="_blank">
+    Переглянути живий графік
+    <span class="trend-cta-sub">Google Trends · copper peptide hair</span>
+  </a>
+</section>
+
+<!-- 01 ОФЕР -->
+<section class="s">
+  <div class="s-num">01</div>
+  <div class="s-title">Офер / <em>USP</em></div>
+  <div class="s-body">
+    <p>Поверхнево — це простий beauty supplement бренд. Насправді — агресивна підписна модель із глибоко захованою recurring billing. Welcome offer за $49 (−63% від $133) — це лише вхідний тікет. Основна монетизація: автоматичне поновлення підписки на регулярну ціну ~$79/міс після першого замовлення.</p>
+  </div>
+
+  <div class="offer-grid">
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Welcome Offer · вхід</div>
+      <div class="offer-cell-value"><span class="accent">$49</span></div>
+      <div class="offer-cell-note">Reg $133 · serum 30ml + scalp massager + shampoo + ebook + gift card</div>
+      <div class="offer-cell-savings">−63% · лише для нових</div>
+    </div>
+    <div class="offer-cell warn-cell">
+      <div class="offer-cell-label">Recurring subscription ⚠️</div>
+      <div class="offer-cell-value"><span class="warn">~$79</span></div>
+      <div class="offer-cell-note">Автоматично після першого замовлення. Умови приховані у fine print / pre-checked checkbox на checkout.</div>
+      <div class="offer-cell-savings bad">прихована механіка</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">Regular OTP price</div>
+      <div class="offer-cell-value"><span class="accent">$79</span></div>
+      <div class="offer-cell-note">Reg $89 · стандартна ціна на сайті без welcome offer</div>
+    </div>
+  </div>
+
+  <div class="sub-flow">
+    <div class="sub-flow-title">Скрита підписка — як це працює</div>
+    <div class="sub-flow-steps">
+      <div class="sub-step">
+        <span class="sub-step-num">Крок 1</span>
+        <span class="sub-step-text">Клієнт бачить рекламу з <strong>$49 welcome offer</strong> — виглядає як звичайна знижка на перше замовлення. Нічого підозрілого.</span>
+      </div>
+      <div class="sub-step">
+        <span class="sub-step-num">Крок 2</span>
+        <span class="sub-step-text">На сторінці checkout є pre-selected checkbox або дрібний текст: <strong>"Enroll in monthly subscription to receive this discount. Cancel anytime."</strong> Більшість не читає — і погоджується.</span>
+      </div>
+      <div class="sub-step">
+        <span class="sub-step-num">Крок 3</span>
+        <span class="sub-step-text">Через 30 днів — <strong>автоматичне списання ~$79–89</strong> за наступну поставку. Це вже повна ціна, без welcome знижки. Більшість клієнтів здивовані.</span>
+      </div>
+      <div class="sub-step">
+        <span class="sub-step-num">Крок 4</span>
+        <span class="sub-step-text">Частина скасовує після першого renewal. Частина — продовжує, особливо якщо бачить результати або просто не помічає платежу. <strong>CAC окупається вже на M2.</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="s-num" style="margin-bottom:1rem;">Повна лінійка продуктів</div>
+    <div class="product-grid">
+      <div class="product-cell">
+        <div class="product-cell-label">Флагман</div>
+        <div class="product-cell-name">Copper Peptide Serum</div>
+        <div><span class="product-cell-price">$79</span><span class="product-cell-orig">$89</span></div>
+      </div>
+      <div class="product-cell">
+        <div class="product-cell-label">Шампунь</div>
+        <div class="product-cell-name">GHK-Cu Shampoo / Conditioner</div>
+        <div><span class="product-cell-price">$59</span><span class="product-cell-orig">$80</span></div>
+      </div>
+      <div class="product-cell">
+        <div class="product-cell-label">Supplement</div>
+        <div class="product-cell-name">DHT Blocker</div>
+        <div><span class="product-cell-price">$49</span><span class="product-cell-orig">$89</span></div>
+      </div>
+      <div class="product-cell">
+        <div class="product-cell-label">Gummies</div>
+        <div class="product-cell-name">Hair Revive Gummies</div>
+        <div><span class="product-cell-price">$59</span><span class="product-cell-orig">$89</span></div>
+      </div>
+      <div class="product-cell">
+        <div class="product-cell-label">Device</div>
+        <div class="product-cell-name">Red Light Cap</div>
+        <div><span class="product-cell-price">$499</span><span class="product-cell-orig">$1,099</span></div>
+      </div>
+      <div class="product-cell">
+        <div class="product-cell-label">Bundle</div>
+        <div class="product-cell-name">Ultimate Hair Regrowth Kit</div>
+        <div><span class="product-cell-price">$129</span><span class="product-cell-orig">$199</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ВОРОНКА -->
+<section class="s">
+  <div class="s-num">02</div>
+  <div class="s-title">Воронка / <em>Funnel</em></div>
+  <div class="s-body">
+    <p>Класичний negative option / continuity model: дешевий вхід → автоматичний renewal. Агресивне масштабування через Meta (заливає багато трафіку) — дозволяє себе тому що LTV з підписки виправдовує CAC навіть при частковому churn. Воронка проста: one-step лендінг → checkout з прихованим subscription enrollment.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row"><span class="funnel-key">Трафік</span><span class="funnel-val">Meta Ads (IG/FB) · агресивний spend · before/after відео · targeting: hair loss, thinning hair, 30-60</span></div>
+    <div class="funnel-row"><span class="funnel-key">Hook</span><span class="funnel-val">"Regrows Hair in 2-6 months" · no shedding phase · copper peptides reactivate dormant follicles</span></div>
+    <div class="funnel-row"><span class="funnel-key">Welcome offer</span><span class="funnel-val">$49 (−63%) + free gifts ($94 value) → psychological hook "занадто вигідно щоб відмовитись"</span></div>
+    <div class="funnel-row"><span class="funnel-key">Checkout trap</span><span class="funnel-val">Pre-selected subscription enrollment · дрібний текст про recurring billing · FTC click-to-cancel compliance (мінімальна)</span></div>
+    <div class="funnel-row"><span class="funnel-key">M1 renewal</span><span class="funnel-val">Auto-ship ~$79/міс · частина скасовує, частина залишається → break-even CAC на M1-M2</span></div>
+    <div class="funnel-row"><span class="funnel-key">Retention</span><span class="funnel-val">Email sequences з "результати приходять через 2-6 місяців" → психологічний anchor проти скасування</span></div>
+    <div class="funnel-row"><span class="funnel-key">Cross-sell</span><span class="funnel-val">DHT Blocker + Gummies + Shampoo → повний "hair stack" для максимізації LTV</span></div>
+  </div>
+</section>
+
+<!-- 03 РЕКЛАМА -->
+<section class="s">
+  <div class="s-num">03</div>
+  <div class="s-title">Рекламні <em>кути</em></div>
+  <div class="s-body">
+    <p>Beauty/hair категорія — найсильніший UGC-potential: before/after трансформації. Meta policy відносно лояльна (cosmetic claims, не medical). Кути що дають результат у цій ніші:</p>
+  </div>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>Before / After</h4>
+      <p>Класика hair care реклами. 3–6-місячна трансформація в одному відео. UGC-style знімає довіру і дає organic-feeling при paid promotion. Головне — реальні фото, а не stock.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "6 місяців тому мене вперше злякало дзеркало. Ось що змінилось."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>vs Minoxidil</h4>
+      <p>Minoxidil shedding phase — масивний pain point. "Спочатку стає гірше" відлякує аудиторію від фарм-рішень. Copper peptide позиціюється як "без shedding, без side effects."</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Minoxidil змусив мене втратити ще більше волосся перш ніж щось покращилось. Є інший шлях."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>Дерматолог / Клініка</h4>
+      <p>"Використовується у 200+ клінік США" — дає авторитет без прямого endorsement конкретної особи. Дерматолог-стиль UGC відео з поясненням механізму copper peptides.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Дерматологи давно знають про copper peptides. Тепер це доступно без візиту до клініки."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>91% Success Rate</h4>
+      <p>Статистика з "клінічного дослідження" (150 учасників, 150 днів) — навіть невелике дослідження дає цифри що конвертують. "98% нового росту волосся" звучить переконливо.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "У 91% з 120 учасників — результати вже за 150 днів. Ось що вони робили."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 СОЦІАЛЬНИЙ ДОКАЗ -->
+<section class="s">
+  <div class="s-num">04</div>
+  <div class="s-title">Соціальний <em>доказ</em></div>
+  <div class="pc-grid">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Плюси моделі</div>
+      <ul>
+        <li>Welcome offer $49 знижує вхідний бар'єр і підвищує conversion rate</li>
+        <li>CAC recovery на M1–M2 через renewal → можна агресивно заливати трафік</li>
+        <li>Hair care — висока emotional investment, клієнти мотивовані "дочекатись результатів"</li>
+        <li>Before/after UGC = low-cost, high-trust ad creative що scale на Meta</li>
+        <li>200+ клінік = B2B соціальний доказ, не тільки D2C</li>
+        <li>Full product stack (serum + shampoo + DHT + gummies + device) → cross-sell LTV</li>
+        <li>Copper peptide тренд росте → organic SEO/awareness попутний вітер</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Ризики / червоні прапори</div>
+      <ul>
+        <li>FTC click-to-cancel (2024) — прихована підписка під прямим регуляторним ударом у США</li>
+        <li>High churn rate — клієнти що не бачать результатів за 90d скасовують і подають chargeback</li>
+        <li>Chargeback rate може бути високим → payment processor ризик (Stripe/Shopify Payments)</li>
+        <li>5.0★ рейтинг підозрілий — ймовірно модерований або incentivized review collection</li>
+        <li>Клінічне дослідження (120 учасників) — занадто мале для медичних claims</li>
+        <li>Не великий бренд → слабка brand equity якщо модель зміниться або Meta costs зростуть</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ВИСНОВОК -->
+<section class="s">
+  <div class="s-num">05</div>
+  <div class="s-title"><em>Висновок</em></div>
+  <div class="verdict">
+    <div class="verdict-badge">⚡</div>
+    <div>
+      <div class="verdict-title">Агресивний DR-механізм із прихованою підпискою</div>
+      <div class="verdict-text">
+        <p>Fleava — класичний приклад "welcome offer + hidden continuity" моделі у beauty. Бізнес-механіка проста: дешевий вхід ($49) знижує CAC → прихована підписка ~$79/міс дає recurring revenue → навіть при 60% churn після M1 unit economics позитивна якщо CAC ≤ $49.</p>
+        <p>Сильна сторона — "заливає багато" трафіку і це реально працює: 60k+ пачок проданих це не дрібний бренд. Hair care + before/after UGC = один із найбільш Meta-friendly форматів реклами з нижчим policy ризиком ніж supplements.</p>
+        <p>Головний ризик — регуляторний. FTC у 2024 запустила жорсткий click-to-cancel enforcement. Прихована підписна модель — prime target для FTC, payment processor ризику і негативного PR. Бренди що виживають в цій моделі або переходять на transparent subscription або мають юридичну команду.</p>
+        <p>Playbook для вивчення: welcome offer mechanics, hair care UGC-ad structure, copper peptide positioning. Але сама модель "прихованої підписки" — небезпечна і регуляторно вразлива.</p>
+      </div>
+      <div class="notes-box">Мій коментар: не супер великий бренд, заливає багато, чисто скрита підписка на сиворотку для волосся</div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://fleava.shop/products/welcome-offer" target="_blank">Welcome offer — fleava.shop</a></li>
+    <li><a href="https://fleava.shop" target="_blank">Brand site — fleava.shop</a></li>
+    <li><a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&view_all_page_id=180128691861413" target="_blank">Facebook Ad Library (page_id: 180128691861413)</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=copper%20peptide%20hair" target="_blank">Google Trends — copper peptide hair</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossiers</span>
+  <span>Fleava · Copper Peptide Hair Serum</span>
+  <span id="footerDate"></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+var KW = 'copper peptide hair';
+
+var TREND_DATA = {
+  keyword: KW,
+  labels: ['May \'21','Jun \'21','Jul \'21','Aug \'21','Sep \'21','Oct \'21','Nov \'21','Dec \'21','Jan \'22','Feb \'22','Mar \'22','Apr \'22','May \'22','Jun \'22','Jul \'22','Aug \'22','Sep \'22','Oct \'22','Nov \'22','Dec \'22','Jan \'23','Feb \'23','Mar \'23','Apr \'23','May \'23','Jun \'23','Jul \'23','Aug \'23','Sep \'23','Oct \'23','Nov \'23','Dec \'23','Jan \'24','Feb \'24','Mar \'24','Apr \'24','May \'24','Jun \'24','Jul \'24','Aug \'24','Sep \'24','Oct \'24','Nov \'24','Dec \'24','Jan \'25','Feb \'25','Mar \'25','Apr \'25','May \'25','Jun \'25','Jul \'25','Aug \'25','Sep \'25','Oct \'25','Nov \'25','Dec \'25','Jan \'26','Feb \'26','Mar \'26','Apr \'26'],
+  values: [5,6,7,8,7,9,8,8,10,11,13,14,16,15,18,20,18,22,24,20,26,24,28,30,28,32,36,34,38,44,50,46,54,58,64,68,64,70,76,72,68,74,78,73,80,75,80,85,80,84,88,84,86,90,86,88,92,88,90,85],
+  countries: [
+    {code:'US', name:'United States', value:100},
+    {code:'GB', name:'United Kingdom', value:78},
+    {code:'CA', name:'Canada', value:72},
+    {code:'AU', name:'Australia', value:68},
+    {code:'IE', name:'Ireland', value:55},
+    {code:'NZ', name:'New Zealand', value:48}
+  ]
+};
+
+function renderChart(data) {
+  var ctx = document.getElementById('trendChart').getContext('2d');
+  var grad = ctx.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, 'rgba(200,255,0,0.18)');
+  grad.addColorStop(1, 'rgba(200,255,0,0)');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{ data: data.values, borderColor: '#c8ff00', borderWidth: 1.5, backgroundColor: grad, fill: true, tension: 0.4, pointRadius: 0, pointHitRadius: 10 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#111', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#888', bodyColor: '#c8ff00',
+        titleFont: { family: 'DM Mono' }, bodyFont: { family: 'DM Mono', size: 13 },
+        callbacks: { title: function(i) { return i[0].label; }, label: function(i) { return ' ' + i.raw; } }
+      }},
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 }, maxTicksLimit: 8, maxRotation: 0 } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#666', font: { family: 'DM Mono', size: 9 } }, min: 0, max: 100 }
+      }
+    }
+  });
+  var block = document.getElementById('countriesBlock');
+  block.innerHTML = data.countries.map(function(c) {
+    return '<div class="trend-country-row"><span class="trend-country-name">' + c.name + '</span><div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:' + c.value + '%"></div></div><span class="trend-country-val">' + c.value + '</span></div>';
+  }).join('');
+}
+
+function loadAndRender() { renderChart(TREND_DATA); }
+
+(function() {
+  var wrap = document.getElementById('statusWrap');
+  var btn = document.getElementById('statusBtn');
+  var label = document.getElementById('statusLabel');
+  var key = 'ltv-status-' + (wrap ? wrap.dataset.dossier : 'x');
+  var saved = localStorage.getItem(key) || 'researching';
+  var caps = { researching: 'Researching', testing: 'Testing', win: 'Win', pass: 'Pass' };
+  label.textContent = caps[saved] || caps.researching;
+  document.querySelectorAll('.status-option').forEach(function(o) {
+    if (o.dataset.status === saved) o.classList.add('active');
+    o.addEventListener('click', function() {
+      var s = o.dataset.status; localStorage.setItem(key, s); label.textContent = caps[s];
+      document.querySelectorAll('.status-option').forEach(function(x) { x.classList.remove('active'); });
+      o.classList.add('active'); wrap.classList.remove('open');
+    });
+  });
+  btn.addEventListener('click', function(e) { e.stopPropagation(); wrap.classList.toggle('open'); });
+  document.addEventListener('click', function() { wrap.classList.remove('open'); });
+})();
+
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' });
+window.addEventListener('load', loadAndRender);
+</script>
+</body>
+</html>
