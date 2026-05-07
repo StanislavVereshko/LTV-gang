@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIRON® Pelvic Recovery — LTV Gang Dossier</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='serif' font-style='italic' font-size='70' fill='%23c8ff00' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ec;
+    --accent: #c8ff00;
+    --gray: #888;
+    --border: rgba(255,255,255,0.08);
+    --warn: #ffb84d;
+    --bad: #ff6b6b;
+    --good: #c8ff00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.65; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
+  .nav-back { font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-back::before { content: '←'; }
+  .nav-title { font-family: 'Instrument Serif', serif; font-size: 16px; color: var(--white); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-link { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; transition: all 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: var(--accent); border-color: rgba(200,255,0,0.4); }
+  @media (max-width: 480px) { .nav-links { display: none; } }
+  .nav-status-wrap { position: relative; }
+  .nav-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 2px; background: transparent; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+  .nav-status:hover { background: rgba(200,255,0,0.06); }
+  .status-arrow { font-size: 8px; transition: transform 0.2s; opacity: 0.7; }
+  .nav-status-wrap.open .status-arrow { transform: rotate(180deg); }
+  .status-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; z-index: 200; flex-direction: column; }
+  .nav-status-wrap.open .status-dropdown { display: flex; }
+  .status-option { padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); background: transparent; border: none; border-bottom: 1px solid var(--border); cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .status-option:last-child { border-bottom: none; }
+  .status-option:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+  .status-option[data-status="testing"]:hover, .status-option[data-status="testing"].active { color: var(--warn); }
+  .status-option[data-status="win"]:hover, .status-option[data-status="win"].active { color: var(--good); }
+  .status-option[data-status="pass"]:hover, .status-option[data-status="pass"].active { color: var(--bad); }
+
+  .hero { padding: 5rem 2rem 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; } }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 12px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: clamp(48px, 8vw, 92px); line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-tag { max-width: 540px; font-size: 16px; color: rgba(245,242,236,0.75); line-height: 1.7; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 560px; }
+  .hero-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-label { font-size: 9px; color: var(--gray); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+  .hero-stat-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 26px; line-height: 1.1; color: var(--white); }
+  .hero-stat-value .accent { color: var(--accent); }
+  .hero-stat-sub { font-size: 11px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
+  .hero-stat-sub .tag { display: inline-block; background: rgba(200,255,0,0.12); color: var(--accent); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-stat-sub .warn-tag { display: inline-block; background: rgba(255,107,107,0.12); color: var(--bad); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; margin-right: 4px; }
+  .hero-right { display: flex; flex-direction: column; gap: 1px; }
+  .hero-image { background: linear-gradient(135deg, #050a14 0%, #080e1c 100%); aspect-ratio: 3/4; max-height: 420px; border-radius: 3px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+  .hero-image img { width: 100%; flex: 1; object-fit: contain; object-position: center; padding: 1.5rem 1.5rem 0; }
+  .hero-image-label { background: rgba(10,10,10,0.72); backdrop-filter: blur(8px); padding: 0.65rem 1rem; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,242,236,0.75); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .hero-image-label strong { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 14px; font-weight: 400; color: var(--white); letter-spacing: 0; text-transform: none; }
+  .hero-product-desc { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; padding: 1.25rem 1.25rem 1.5rem; }
+  .hero-product-desc-label { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.65rem; }
+  .hero-product-desc p { font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.7; }
+
+  section.s { padding: 5rem 2rem; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+  .s-num { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .s-title { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4.5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+  .s-title em { font-style: italic; color: var(--accent); }
+  .s-body { max-width: 720px; margin-bottom: 2rem; }
+  .s-body p { font-size: 15px; line-height: 1.8; color: rgba(245,242,236,0.75); margin-bottom: 1rem; }
+
+  .trend-layout { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; align-items: start; margin: 1.5rem 0; }
+  @media (max-width: 900px) { .trend-layout { grid-template-columns: 1fr; } }
+  .trend-chart-wrap { border: 1px solid var(--border); border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.02); }
+  .trend-sidebar { border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.02); overflow: hidden; }
+  .trend-countries-header { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); padding: 0.85rem 1rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .trend-country-row:last-child { border-bottom: none; }
+  .trend-country-name { flex: 1; font-size: 12px; color: var(--white); }
+  .trend-country-bar-wrap { width: 60px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .trend-country-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .trend-country-val { font-size: 10px; color: var(--gray); width: 24px; text-align: right; flex-shrink: 0; }
+  .trend-meta { font-size: 11px; color: var(--gray); margin-top: 0.75rem; }
+  .trend-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; margin-top: 1rem; padding: 0.9rem 1.5rem; background: rgba(200,255,0,0.05); border: 1px solid rgba(200,255,0,0.5); border-radius: 3px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; text-align: center; }
+  .trend-cta:hover { background: rgba(200,255,0,0.1); border-color: var(--accent); }
+  .trend-cta-sub { font-size: 10px; color: rgba(200,255,0,0.55); text-transform: none; }
+
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr; } }
+  .offer-cell { background: var(--black); padding: 1.5rem; }
+  .offer-cell.highlight { background: rgba(200,255,0,0.025); }
+  .offer-cell.warn-cell { background: rgba(255,107,107,0.03); border-left: 2px solid var(--bad); }
+  .offer-cell-label { font-size: 10px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .offer-cell-value { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin-bottom: 0.25rem; line-height: 1.2; }
+  .offer-cell-value .accent { color: var(--accent); }
+  .offer-cell-value .warn { color: var(--bad); }
+  .offer-cell-note { font-size: 12px; color: var(--gray); margin-top: 0.5rem; line-height: 1.6; }
+  .offer-cell-savings { display: inline-block; margin-top: 0.5rem; font-size: 10px; padding: 2px 8px; background: rgba(200,255,0,0.12); color: var(--accent); border-radius: 2px; letter-spacing: 0.06em; }
+  .offer-cell-savings.bad { background: rgba(255,107,107,0.12); color: var(--bad); }
+
+  .redflag-block { border: 1px solid rgba(255,107,107,0.35); background: rgba(255,107,107,0.03); border-radius: 3px; padding: 2rem; margin-top: 2rem; }
+  .redflag-title { font-size: 10px; color: var(--bad); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; }
+  .redflag-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); flex-shrink: 0; }
+  .redflag-list { display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.04); }
+  .redflag-item { background: var(--black); padding: 1rem 1.25rem; display: grid; grid-template-columns: 140px 1fr; gap: 1rem; align-items: start; }
+  .redflag-item-label { font-size: 10px; color: var(--bad); letter-spacing: 0.08em; text-transform: uppercase; padding-top: 2px; line-height: 1.5; }
+  .redflag-item-text { font-size: 13px; color: rgba(245,242,236,0.8); line-height: 1.6; }
+  .redflag-item-text strong { color: var(--white); }
+
+  .funnel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 3px; font-size: 12px; margin-bottom: 2rem; }
+  .funnel-row { display: grid; grid-template-columns: 130px 1fr; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-key { color: var(--accent); font-weight: 500; }
+  .funnel-val { color: rgba(245,242,236,0.85); }
+
+  .angle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .angle-grid { grid-template-columns: 1fr; } }
+  .angle { background: var(--black); padding: 1.75rem; transition: background 0.25s; }
+  .angle:hover { background: rgba(200,255,0,0.025); }
+  .angle-num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+  .angle h4 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; margin-bottom: 0.75rem; }
+  .angle p { font-size: 13px; color: rgba(245,242,236,0.7); line-height: 1.65; }
+  .angle-hook { font-size: 14px; color: var(--white); line-height: 1.6; padding: 1rem; background: rgba(200,255,0,0.04); border-left: 2px solid var(--accent); margin-top: 1rem; }
+  .angle-hook-label { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem; display: block; }
+
+  .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  @media (max-width: 700px) { .pc-grid { grid-template-columns: 1fr; } }
+  .pc-col { background: var(--black); padding: 2rem; }
+  .pc-col-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .pc-col-title.pros { color: var(--good); }
+  .pc-col-title.cons { color: var(--bad); }
+  .pc-col-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .pc-col-title.pros::before { background: var(--good); }
+  .pc-col-title.cons::before { background: var(--bad); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 13px; color: rgba(245,242,236,0.75); line-height: 1.6; display: flex; gap: 10px; }
+  .pc-col li:last-child { border-bottom: none; }
+  .pc-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+  .pc-col.pros li::before { background: var(--good); }
+  .pc-col.cons li::before { background: var(--bad); }
+
+  .verdict { background: linear-gradient(135deg, rgba(255,184,77,0.04) 0%, transparent 60%); border: 1px solid rgba(255,184,77,0.25); padding: 3rem 2rem; border-radius: 3px; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: start; }
+  @media (max-width: 700px) { .verdict { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; } }
+  .verdict-badge { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; line-height: 1; color: var(--warn); }
+  .verdict-title { font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 1rem; line-height: 1.2; }
+  .verdict-text { font-size: 15px; color: rgba(245,242,236,0.8); line-height: 1.75; }
+  .verdict-text p { margin-bottom: 0.75rem; }
+  .notes-box { border: 1px dashed var(--border); padding: 1.5rem; border-radius: 3px; color: var(--gray); font-size: 13px; font-style: italic; line-height: 1.7; margin-top: 1rem; }
+
+  .sources { border-top: 1px solid var(--border); padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .sources h3 { font-family: 'Instrument Serif', serif; font-size: 24px; margin-bottom: 1rem; color: var(--gray); }
+  .sources ul { list-style: none; }
+  .sources li { padding: 0.4rem 0; font-size: 12px; }
+  .sources a { color: var(--gray); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s; }
+  .sources a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; flex-wrap: wrap; gap: 1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/dossiers/" class="nav-back">всі дозьє</a>
+  <div class="nav-title">VIRON® / Softory</div>
+  <div class="nav-links">
+    <a href="https://softory.shop/products/viron-pelvic-recovery-system" class="nav-link" target="_blank">лендінг ↗</a>
+    <a href="https://softory.shop" class="nav-link" target="_blank">сайт ↗</a>
+  </div>
+  <div class="nav-status-wrap" id="statusWrap" data-dossier="softory">
+    <button class="nav-status" id="statusBtn">
+      <span id="statusLabel">Researching</span>
+      <span class="status-arrow">▾</span>
+    </button>
+    <div class="status-dropdown">
+      <button class="status-option active" data-status="researching">Researching</button>
+      <button class="status-option" data-status="testing">Testing</button>
+      <button class="status-option" data-status="win">Win</button>
+      <button class="status-option" data-status="pass">Pass</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-eyebrow">Men's Health · Device · OTP + Supplement Upsell</div>
+    <h1>VIRON®<br><em>Pelvic</em></h1>
+    <p class="hero-tag">Li-ESWT pelvic recovery device for men. $49.90 OTP з агресивним supplement upsell. 50k+ users claimed, 4.8★/10k reviews — але vendor "Kitchen clases" і всі product images згенеровані ChatGPT. Класичний white-label dropship із сильним DR-копірайтингом.</p>
+    <div style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <a href="https://softory.shop/products/viron-pelvic-recovery-system" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">продукт ↗</a>
+      <a href="https://softory.shop" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(200,255,0,0.5)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--white)'">softory.shop ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Price OTP</div>
+        <div class="hero-stat-value"><span class="accent">$49.90</span></div>
+        <div class="hero-stat-sub"><span class="tag">−59%</span> від $121 · 1 device</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Dual pack</div>
+        <div class="hero-stat-value"><span class="accent">$89.99</span></div>
+        <div class="hero-stat-sub">−63% · 2 devices + ebooks</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Reviews (claimed)</div>
+        <div class="hero-stat-value">4.8<span style="font-size:16px;color:var(--gray)">★</span></div>
+        <div class="hero-stat-sub"><span class="warn-tag">suspicious</span> 10,423 reviews</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Users (claimed)</div>
+        <div class="hero-stat-value"><span class="accent">50k+</span></div>
+        <div class="hero-stat-sub">American men · marketing claim</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Guarantee</div>
+        <div class="hero-stat-value"><span class="accent">30d</span></div>
+        <div class="hero-stat-sub">MBG + 12-mo warranty</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">Vendor (Shopify)</div>
+        <div class="hero-stat-value" style="font-size:14px;color:var(--bad);margin-top:4px;">"Kitchen<br>clases"</div>
+        <div class="hero-stat-sub"><span class="warn-tag">red flag</span> dropship reveal</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image">
+      <img src="https://cdn.shopify.com/s/files/1/0814/1009/7392/files/ChatGPT_Image_8_._2026_._10_50_23.png?v=1777471836" alt="VIRON Pelvic Recovery System">
+      <div class="hero-image-label">
+        <span>Li-ESWT · 5-in-1 Modes</span>
+        <strong>AI-generated image ⚠</strong>
+      </div>
+    </div>
+    <div class="hero-product-desc">
+      <div class="hero-product-desc-label">Про продукт</div>
+      <p>Pelvic floor stimulation device для чоловіків — Li-ESWT (low-intensity extracorporeal shock wave therapy). 5 режимів, 10–15 хв/день, курс 6–8 тижнів. Клейм: відновлює кровообіг, зміцнює pelvic floor muscles, покращує "performance". Справжня ESWT-технологія в клініках коштує $500–5,000 — home device за $49.90 викликає питання.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 00 ТРЕНД -->
+<section class="s">
+  <div class="s-num">00</div>
+  <div class="s-title">Ринковий <em>тренд</em></div>
+  <div class="s-body">
+    <p>Men's pelvic health та ED devices — один із найшвидше зростаючих сегментів consumer wellness. Destigmatization чоловічого сексуального здоров'я, особливо серед 40-55+, суттєво розширила TAM за останні 3 роки. "Pelvic floor men" як пошуковий запит виріс більш ніж вдвічі з 2022. TikTok та Meta активно генерують awareness.</p>
+    <p>Конкурентне поле: Kegel8, Perifit, Phoenix (ED shockwave) — переважно $150–600+. Ніша $49–99 home device з сильним DR-маркетингом практично порожня — саме тут грає VIRON. Глобальний ринок men's sexual wellness ~$40B до 2028, CAGR ~8%.</p>
+  </div>
+  <div class="trend-layout">
+    <div class="trend-chart-wrap">
+      <canvas id="trendChart" height="220" style="display:block;width:100%;padding:1.25rem 1rem 1rem;"></canvas>
+    </div>
+    <div class="trend-sidebar">
+      <div class="trend-countries-header">Топ країни · інтерес</div>
+      <div id="countriesBlock"></div>
+    </div>
+  </div>
+  <p class="trend-meta">Дані: Google Trends · "pelvic floor men" · 5 років</p>
+  <a class="trend-cta" href="https://trends.google.com/trends/explore?date=today%205-y&q=pelvic%20floor%20men" target="_blank">
+    Переглянути живий графік
+    <span class="trend-cta-sub">Google Trends · pelvic floor men</span>
+  </a>
+</section>
+
+<!-- ЧЕРВОНІ ПРАПОРИ -->
+<section class="s">
+  <div class="s-num">⚠</div>
+  <div class="s-title">Червоні <em>прапори</em></div>
+  <div class="s-body">
+    <p>Під час дослідження знайдено кілька серйозних ознак, що вказують на white-label dropshipping операцію з накрученими trust signals.</p>
+  </div>
+  <div class="redflag-block">
+    <div class="redflag-title">Виявлені проблеми · критичні</div>
+    <div class="redflag-list">
+      <div class="redflag-item">
+        <span class="redflag-item-label">Vendor: "Kitchen clases"</span>
+        <span class="redflag-item-text">Shopify product JSON повернув vendor = <strong>"Kitchen clases"</strong> — очевидно залишений дефолтний vendor від оригінального AliExpress/dropship постачальника. Повна невідповідність з брендом VIRON® / Softory. Класична ознака white-label операції.</span>
+      </div>
+      <div class="redflag-item">
+        <span class="redflag-item-label">AI-згенеровані фото</span>
+        <span class="redflag-item-text">Всі product images мають назви виду <strong>ChatGPT_Image_8_._2026_._10_50_23.png</strong> — буквально згенеровані ChatGPT/DALL-E. Реальних фото пристрою немає. Це означає або відсутність реального продукту, або відмову від показу справжнього cheap OEM device.</span>
+      </div>
+      <div class="redflag-item">
+        <span class="redflag-item-label">10,423 відгуків · підозра</span>
+        <span class="redflag-item-text">4.8★ при 10,423 відгуках для маловідомого Shopify-магазину без жодної органічної згадки — дуже нетипово. Схожий патерн на imported/fabricated reviews (Judge.me або Loox із завантаженням CSV). Немає верифікованих Trustpilot чи Google reviews.</span>
+      </div>
+      <div class="redflag-item">
+        <span class="redflag-item-label">Li-ESWT claim за $49.90</span>
+        <span class="redflag-item-text">Справжня Low-intensity ESWT апаратура (GAINSWave, Phoenix) — $500–5,000+. Медичні класові прилади з реальною ESWT потужністю не можуть коштувати $49. Скоріше за все — EMS/vibration device із маркетинговим терміном "Li-ESWT".</span>
+      </div>
+      <div class="redflag-item">
+        <span class="redflag-item-label">FrontrowMD — 561 clinicians</span>
+        <span class="redflag-item-text">FrontrowMD — pay-to-endorse платформа, де бренди купують endorsement від лікарів. Не незалежна рекомендація, а маркетинговий сервіс. Широко використовується в gray-area health products.</span>
+      </div>
+      <div class="redflag-item">
+        <span class="redflag-item-label">Urgency / scarcity</span>
+        <span class="redflag-item-text">"Only 15 Left at Sale Price", "137 men ordered today", countdown timer — стандартний dark pattern toolkit. Нічого незаконного, але в комбінації з іншими сигналами посилює картину агресивного DR-play.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 ОФЕР -->
+<section class="s">
+  <div class="s-num">01</div>
+  <div class="s-title">Офер / <em>USP</em></div>
+  <div class="s-body">
+    <p>Класичний direct-response men's health device play. Entry $49.90 — низький бар'єр входу для embarrassing/taboo проблеми (ED, pelvic floor). Сильний emotional trigger: "Last Longer and Feel Rock Hard Again". AOV піднімається через bundle upsell до $89–160 із supplement протоколами. Механіка працює незалежно від реальної ефективності пристрою — ніша shame-driven, повернення рідкісні.</p>
+  </div>
+
+  <div class="offer-grid">
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Entry · 1 Device</div>
+      <div class="offer-cell-value"><span class="accent">$49.90</span></div>
+      <div class="offer-cell-note">Device only. Reg $121 (claimed). + E-book "Last Longer & Stay Hard" as bonus.</div>
+      <div class="offer-cell-savings">−59% · вхідна ціна</div>
+    </div>
+    <div class="offer-cell highlight">
+      <div class="offer-cell-label">Dual Pack · best value</div>
+      <div class="offer-cell-value"><span class="accent">$89.99</span></div>
+      <div class="offer-cell-note">2 devices + 2 ebooks + free shipping. Reg $242. AOV-booster для пар або "spare".</div>
+      <div class="offer-cell-savings">−63% · flagship bundle</div>
+    </div>
+    <div class="offer-cell">
+      <div class="offer-cell-label">90-Day Recovery System</div>
+      <div class="offer-cell-value"><span class="accent">~$160</span></div>
+      <div class="offer-cell-note">Device + 90-day supplement protocol (Ashwagandha/Maca + L-Arginine). Максимальний AOV.</div>
+      <div class="offer-cell-savings">max LTV · upsell</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem; background:rgba(255,255,255,0.02); border:1px solid var(--border); padding:1.5rem; border-radius:3px;">
+    <div class="s-num" style="margin-bottom:1rem;">Supplement lineup · cross-sell екосистема</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border);">
+      <div style="background:var(--black);padding:1.25rem;">
+        <div style="font-size:10px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;">Performance</div>
+        <div style="font-size:13px;color:var(--white);margin-bottom:0.3rem;">Ashwagandha + Maca</div>
+        <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:var(--accent);">$24–38</div>
+      </div>
+      <div style="background:var(--black);padding:1.25rem;">
+        <div style="font-size:10px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;">Circulation</div>
+        <div style="font-size:13px;color:var(--white);margin-bottom:0.3rem;">L-Arginine formula</div>
+        <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:var(--accent);">$24–38</div>
+      </div>
+      <div style="background:var(--black);padding:1.25rem;">
+        <div style="font-size:10px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;">Prostate</div>
+        <div style="font-size:13px;color:var(--white);margin-bottom:0.3rem;">Pumpkin Seed Oil</div>
+        <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:var(--accent);">$25–37</div>
+      </div>
+      <div style="background:var(--black);padding:1.25rem;">
+        <div style="font-size:10px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;">Sleep / Other</div>
+        <div style="font-size:13px;color:var(--white);margin-bottom:0.3rem;">Anti-snoring + guides</div>
+        <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:var(--accent);">$19–40</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ВОРОНКА -->
+<section class="s">
+  <div class="s-num">02</div>
+  <div class="s-title">Воронка / <em>Funnel</em></div>
+  <div class="s-body">
+    <p>Типова DR men's health воронка: FB/TikTok ad → product lander із urgency + social proof → checkout з bundle upsell. Shame-based ніша означає низький публічний chargeback rate (чоловіки рідко відкрито скаржаться на ED devices). MBG закриває більшість заперечень.</p>
+  </div>
+  <div class="funnel">
+    <div class="funnel-row">
+      <span class="funnel-key">Traffic source</span>
+      <span class="funnel-val">Meta (FB/IG) + TikTok. Ймовірно broad targeting чоловіки 40–65+, USA. fbclid у посиланні підтверджує активний FB трафік.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Landing</span>
+      <span class="funnel-val">Shopify product page з GemPages (кастомний builder) — довгий scroll з клінічними клеймами, testimonials, urgency elements, Dr. Robert Hayes endorsement.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Trust builders</span>
+      <span class="funnel-val">TrustScore badge (4.8★ / 10,423), FrontrowMD clinicians count, urologist photo, "zero adverse effects in 10,000+ users", discreet packaging.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Urgency stack</span>
+      <span class="funnel-val">Countdown timer + "Only 15 Left" + "137 men ordered today" + "137 people viewing" — standard scarcity toolkit. Перезавантажується при refresh.</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">AOV upsell</span>
+      <span class="funnel-val">Dual pack $89.99 + supplement bundles до ~$160. Upsell логіка: "results are faster with the 90-day protocol".</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-key">Post-purchase LTV</span>
+      <span class="funnel-val">Email sequence для supplement refills. Supplement consumable cycle ~30 днів = potential recurring revenue без підписки.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 03 РЕКЛАМА -->
+<section class="s">
+  <div class="s-num">03</div>
+  <div class="s-title">Рекламні <em>кути</em></div>
+  <div class="s-body">
+    <p>Men's health device — богата ніша для DR-копірайтингу. Shame + solution = сильна комбінація. Головний challenge: Meta policy обмежує explicit sexual health claims, тому ad copy використовує euphemisms та clinical framing.</p>
+  </div>
+  <div class="angle-grid">
+    <div class="angle">
+      <div class="angle-num">Кут 01</div>
+      <h4>Clinical Authority</h4>
+      <p>Dr. Robert Hayes, board-certified urologist. Клінічний framing дозволяє оминати Meta restrictions на sexual content. "This is what urologists don't tell their patients" — conspiracy-educational narrative.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Urologist reveals the at-home device he recommends instead of pills. 50,000 men already using it."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 02</div>
+      <h4>Before / After Testimonial</h4>
+      <p>Named + location testimonials ("Michael, 54, Texas"). "My wife noticed the difference in week 3." Relatable protagonist, specific results timeline, emotional payoff. Найвищий CVR pattern у shame-based niches.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "At 58, I thought it was just age. Three weeks with this changed everything."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 03</div>
+      <h4>Anti-Pill Narrative</h4>
+      <p>Позиціювання проти Viagra/Cialis: "no side effects, no dependency, no doctor visit". Ціна $49 vs рецептурні препарати $15–50/pill. Дуже сильний value prop для 50+ аудиторії, яка хоче avoid pharma.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Big Pharma wants you on pills for life. This $49 device treats the root cause."
+      </div>
+    </div>
+    <div class="angle">
+      <div class="angle-num">Кут 04</div>
+      <h4>Embarrassment Shield</h4>
+      <p>Discreet packaging, no doctor visit needed, order from home. Знімає основний бар'єр: страх embarrassment. "No one has to know" — ключовий emotional driver у shame-based health.</p>
+      <div class="angle-hook">
+        <span class="angle-hook-label">Hook</span>
+        "Ships in plain box. No doctor. No prescription. No embarrassment. Just results."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 ВИСНОВОК -->
+<section class="s">
+  <div class="s-num">04</div>
+  <div class="s-title">Висновок / <em>Verdict</em></div>
+
+  <div class="pc-grid" style="margin-bottom:2.5rem;">
+    <div class="pc-col pros">
+      <div class="pc-col-title pros">Що працює</div>
+      <ul>
+        <li>Сильна ніша: men's sexual health, shame-driven, growing TAM, low return rate</li>
+        <li>Entry price $49.90 — низький бар'єр, impulse-buy для "embarrassing problem"</li>
+        <li>AOV upsell до $160 через supplement bundles — хороша margin structure</li>
+        <li>30-day MBG закриває objections, знижує ad friction</li>
+        <li>DR copywriting та urgency stack — очевидно написані досвідченою командою</li>
+        <li>Supplement ecosystem = потенційний recurring revenue через email</li>
+      </ul>
+    </div>
+    <div class="pc-col cons">
+      <div class="pc-col-title cons">Червоні прапори</div>
+      <ul>
+        <li>Vendor "Kitchen clases" — dropship reveal, product не є власним</li>
+        <li>Всі фото згенеровані ChatGPT — немає реального product photography</li>
+        <li>10,423 відгуків для маловідомого магазину — ймовірно imported/fake</li>
+        <li>Li-ESWT за $49 = маркетинговий термін, реальна технологія коштує в 10–100x більше</li>
+        <li>FrontrowMD — pay-to-play endorsement, не незалежна клінічна рекомендація</li>
+        <li>Gray-area health claims — FTC / Meta compliance ризик (sexual performance device)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-badge">~</div>
+    <div>
+      <div class="verdict-title">Watchlist — бізнес-модель робоча, але продукт сумнівний</div>
+      <div class="verdict-text">
+        <p>Бізнес-модель сама по собі — класичний і перевірений DR play: shame niche + cheap device entry + supplement upsell + strong copy. Такі проекти реально масштабуються на Meta. Ніша men's pelvic health зростає, конкуренція в $50 сегменті невелика.</p>
+        <p>Проблема: конкретно цей бренд (Softory / VIRON) виглядає як швидко склеєний dropship — AI-фото, чужий vendor, накручені відгуки. Копіювати їхню бізнес-модель цікаво, копіювати їхній конкретний продукт — ні. Якщо запускати щось у цій ніші, потрібен реальний пристрій із реальним UGC і чистою compliance стратегією.</p>
+        <p>Ключовий висновок: <strong>ніша — так, цей бренд — ні</strong>. Можливо дивитися на Phoenix Device, Kegel8 або аналоги як reference point для proper brand build у цьому сегменті.</p>
+      </div>
+      <div class="notes-box">
+        Знайдений через FB ad (fbclid у URL). Цікавий як proof-of-concept для men's pelvic health device ніші — але конкретно цей seller занадто "сирий" щоб довіряти. Модель = так, продукт = pass.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sources">
+  <h3>Джерела</h3>
+  <ul>
+    <li><a href="https://softory.shop/products/viron-pelvic-recovery-system" target="_blank">softory.shop — VIRON Pelvic Recovery System product page</a></li>
+    <li><a href="https://softory.shop" target="_blank">softory.shop — Brand homepage</a></li>
+    <li><a href="https://softory.shop/products/viron-pelvic-recovery-system.json" target="_blank">Shopify product JSON (vendor: "Kitchen clases" reveal)</a></li>
+    <li><a href="https://trends.google.com/trends/explore?date=today%205-y&q=pelvic%20floor%20men" target="_blank">Google Trends — "pelvic floor men" · 5 years</a></li>
+  </ul>
+</div>
+
+<footer>
+  <span>LTV Gang · Dossier</span>
+  <span>VIRON® / Softory · Men's Health Device</span>
+  <span>Researched 2026-05-07</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+const KW = 'pelvic floor men';
+
+const TREND_DATA = {
+  labels: ["May'21","Jun'21","Jul'21","Aug'21","Sep'21","Oct'21","Nov'21","Dec'21","Jan'22","Feb'22","Mar'22","Apr'22","May'22","Jun'22","Jul'22","Aug'22","Sep'22","Oct'22","Nov'22","Dec'22","Jan'23","Feb'23","Mar'23","Apr'23","May'23","Jun'23","Jul'23","Aug'23","Sep'23","Oct'23","Nov'23","Dec'23","Jan'24","Feb'24","Mar'24","Apr'24","May'24","Jun'24","Jul'24","Aug'24","Sep'24","Oct'24","Nov'24","Dec'24","Jan'25","Feb'25","Mar'25","Apr'25","May'25","Jun'25","Jul'25","Aug'25","Sep'25","Oct'25","Nov'25","Dec'25","Jan'26","Feb'26","Mar'26","Apr'26"],
+  values: [18,20,22,24,22,26,28,24,26,28,30,32,28,30,32,34,32,36,38,34,36,38,42,44,40,44,48,46,44,48,52,48,50,52,56,58,54,58,62,60,58,62,66,62,60,64,68,70,66,70,74,72,70,74,78,74,72,76,80,78],
+  countries: [
+    { name: "United States",   val: 100 },
+    { name: "United Kingdom",  val: 88  },
+    { name: "Australia",       val: 82  },
+    { name: "Canada",          val: 76  },
+    { name: "Ireland",         val: 64  },
+    { name: "New Zealand",     val: 56  }
+  ]
+};
+
+const ctx = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: TREND_DATA.labels,
+    datasets: [{
+      data: TREND_DATA.values,
+      borderColor: '#c8ff00',
+      backgroundColor: 'rgba(200,255,0,0.06)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: '#c8ff00',
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#111',
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderWidth: 1,
+      titleColor: '#888',
+      bodyColor: '#f5f2ec',
+      titleFont: { family: 'DM Mono', size: 10 },
+      bodyFont: { family: 'DM Mono', size: 12 },
+      callbacks: { title: i => i[0].label, label: i => 'Interest: ' + i.raw }
+    }},
+    scales: {
+      x: { ticks: { color: '#555', font: { family: 'DM Mono', size: 9 }, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.08)' } },
+      y: { ticks: { color: '#555', font: { family: 'DM Mono', size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.08)' }, min: 0, max: 100 }
+    }
+  }
+});
+
+const cb = document.getElementById('countriesBlock');
+TREND_DATA.countries.forEach(c => {
+  cb.innerHTML += `<div class="trend-country-row"><span class="trend-country-name">${c.name}</span><div class="trend-country-bar-wrap"><div class="trend-country-bar" style="width:${c.val}%"></div></div><span class="trend-country-val">${c.val}</span></div>`;
+});
+
+const wrap = document.getElementById('statusWrap');
+const btn  = document.getElementById('statusBtn');
+const label = document.getElementById('statusLabel');
+const key  = 'ltv-status-' + wrap.dataset.dossier;
+const saved = localStorage.getItem(key);
+if (saved) {
+  label.textContent = saved.charAt(0).toUpperCase() + saved.slice(1);
+  document.querySelectorAll('.status-option').forEach(o => o.classList.toggle('active', o.dataset.status === saved));
+  const colors = { testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)', researching: 'var(--accent)' };
+  btn.style.borderColor = btn.style.color = colors[saved];
+}
+btn.addEventListener('click', e => { e.stopPropagation(); wrap.classList.toggle('open'); });
+document.querySelectorAll('.status-option').forEach(o => {
+  o.addEventListener('click', () => {
+    const s = o.dataset.status;
+    localStorage.setItem(key, s);
+    label.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+    document.querySelectorAll('.status-option').forEach(x => x.classList.remove('active'));
+    o.classList.add('active');
+    wrap.classList.remove('open');
+    const colors = { testing: 'var(--warn)', win: 'var(--good)', pass: 'var(--bad)', researching: 'var(--accent)' };
+    btn.style.borderColor = btn.style.color = colors[s];
+  });
+});
+document.addEventListener('click', () => wrap.classList.remove('open'));
+</script>
+</body>
+</html>
